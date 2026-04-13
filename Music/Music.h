@@ -11,13 +11,10 @@
  */
 #pragma once
 
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
-
 #include "MusicTypes.h"
 #include "MusicConst.h"
 #include "MusicHelpers.h"
+#include "Tables.h"
 #include "Temperament.h"
 #include "ScaleMap.h"
 #include "PitchEngine.h"

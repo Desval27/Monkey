@@ -11,8 +11,6 @@
  */
 #pragma once
 
-#include <stdint.h>
-
 #include <Music/Temperament.h>
 
 namespace Music

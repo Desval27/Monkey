@@ -271,7 +271,6 @@ size_t generatePattern(const TimeSignature &ts,
     int n = (ts.beats * bars)
             * (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
     int k = n * density;
-    DPRINTF("Generating Events %d in %d Slots using Density %f\n", k, n, density);
     return buildEuclid(k, n, 1, out, outMax);
 }
 

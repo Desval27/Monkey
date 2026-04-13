@@ -4,7 +4,7 @@
 
 #include <Monkey.h>
 #include <Music/Music.h>
-#include <Music/Labels.h>
+#include <Music/Tables.h>
 #include <Music/ScaleMaps.h>
 
 int main()
@@ -21,7 +21,7 @@ int main()
                                  ArrayLen(Music::NOTE_NAMES_12));
 
     ScaleT scale;
-    scale.setDegrees(Music::MAJOR_PENTATONIC_DEGREES_12, ArrayLen(Music::MAJOR_PENTATONIC_DEGREES_12));
+    scale.setDegrees(Music::MAJOR_PENTATONIC_D12, ArrayLen(Music::MAJOR_PENTATONIC_D12));
     // scale.setWeightedDegrees(Music::MAJOR_PENTATONIC_DEGREES_12,
     //                         //  Music::SCALE_WEIGHTS_5_CHORD_TONE_HEAVY,
     //                          ArrayLen(Music::MAJOR_PENTATONIC_DEGREES_12));

@@ -11,6 +11,7 @@
  */
 #pragma once
 
+// #include <ostream>
 #include "MusicConst.h"
 
 namespace Music 
@@ -49,10 +50,76 @@ inline NoteValue operator+(const NoteValue &lhs, const NoteValue &rhs)
                                   + static_cast<int>(rhs));
 }
 
-inline int operator+(const NoteValue &lhs, int &rhs)
-{ return static_cast<int>(static_cast<int>(lhs) + rhs); }
+inline int operator+(const NoteValue &lhs, int rhs)
+{ return static_cast<int>(lhs) + rhs; }
 
-inline NoteValue operator*(const NoteValue &lhs, int &rhs)
+inline int operator+(int lhs, const NoteValue &rhs)
+{ return lhs + static_cast<int>(rhs); }
+
+inline int operator-(const NoteValue &lhs, const NoteValue &rhs)
+{ return static_cast<int>(lhs) - static_cast<int>(rhs); }
+
+inline int operator-(const NoteValue &lhs, int rhs)
+{ return static_cast<int>(lhs) - rhs; }
+
+inline NoteValue operator*(const NoteValue &lhs, int rhs)
 { return static_cast<NoteValue>(static_cast<int>(lhs) * rhs); }
+
+inline NoteValue operator*(int lhs, const NoteValue &rhs)
+{ return static_cast<NoteValue>(lhs * static_cast<int>(rhs)); }
+
+inline NoteValue operator/(const NoteValue &lhs, int rhs)
+{ return static_cast<NoteValue>(static_cast<int>(lhs) / rhs); }
+
+inline int operator%(const NoteValue &lhs, int rhs)
+{ return static_cast<int>(lhs) % rhs; }
+
+inline NoteValue &operator+=(NoteValue &lhs, const NoteValue &rhs)
+{
+    lhs = static_cast<NoteValue>(static_cast<int>(lhs) + static_cast<int>(rhs));
+    return lhs;
+}
+
+inline NoteValue &operator+=(NoteValue &lhs, int rhs)
+{
+    lhs = static_cast<NoteValue>(static_cast<int>(lhs) + rhs);
+    return lhs;
+}
+
+inline NoteValue &operator-=(NoteValue &lhs, const NoteValue &rhs)
+{
+    lhs = static_cast<NoteValue>(static_cast<int>(lhs) - static_cast<int>(rhs));
+    return lhs;
+}
+
+inline NoteValue &operator-=(NoteValue &lhs, int rhs)
+{
+    lhs = static_cast<NoteValue>(static_cast<int>(lhs) - rhs);
+    return lhs;
+}
+
+inline NoteValue &operator*=(NoteValue &lhs, int rhs)
+{
+    lhs = static_cast<NoteValue>(static_cast<int>(lhs) * rhs);
+    return lhs;
+}
+
+inline NoteValue &operator/=(NoteValue &lhs, int rhs)
+{
+    lhs = static_cast<NoteValue>(static_cast<int>(lhs) / rhs);
+    return lhs;
+}
+
+inline NoteValue &operator%=(NoteValue &lhs, int rhs)
+{
+    lhs = static_cast<NoteValue>(static_cast<int>(lhs) % rhs);
+    return lhs;
+}
+
+// inline std::ostream &operator<<(std::ostream &os, const NoteValue &value)
+// {
+//     os << static_cast<int>(value);
+//     return os;
+// }
 
 } // namespace Music

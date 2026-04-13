@@ -11,7 +11,9 @@
  */
 #pragma once
 
-#include <math.h>
+#ifndef DAISY_PLATFORM
+#include <cmath>
+#endif
 
 namespace Music 
 {

@@ -12,8 +12,8 @@
  * See <http://creativecommons.org>
  */
 
- #include <stdint.h>
- #include <algorithm>
+//  #include <stdint.h>
+//  #include <algorithm>
  #include <Monkey.h>
  #include <Music/Music.h>
 

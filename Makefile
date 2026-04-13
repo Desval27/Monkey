@@ -4,7 +4,7 @@ DEBUG_FLAG = -g
 
 TARGETS = music_test.exe weighted_map_example.exe
 
-DEFINES = -DUSE_DEBUG=$(USE_DEBUG)
+DEFINES = -DUSE_DEBUG=$(USE_DEBUG) -Wno-unused-variable
 
 CPP_SOURCES = \
 	Monkey.cpp\

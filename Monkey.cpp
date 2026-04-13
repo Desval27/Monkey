@@ -1,8 +1,8 @@
 #include <Monkey.h>
 
 #if USE_DEBUG
-#include <cstdarg>
-#include <cstdio>
+// #include <cstdarg>
+// #include <cstdio>
 DebugFunc debugFunc = nullptr;
 void setDebugFunc(DebugFunc f)
 {

@@ -15,10 +15,10 @@
  */
 #pragma once
 
-#include <stdint.h>
-#include <stddef.h>
-#include <string.h>
-#include <math.h>
+// #include <stdint.h>
+// #include <stddef.h>
+// #include <string.h>
+// #include <math.h>
 
 #include "MusicTypes.h"
 #include "MusicHelpers.h"

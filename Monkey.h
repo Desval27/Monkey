@@ -11,8 +11,12 @@
  */
 #pragma once
 
-#include <cstdlib> 
-#include <type_traits>
+#ifndef DAISY_PLATFORM
+#include <cstddef>
+#include <cstdlib>
+#include <cstdint>
+#endif
+
 
 #if USE_DEBUG
 #include <cstdarg>
@@ -66,7 +70,7 @@ template <typename T>
 constexpr const T fastPow(T base, int exp)
 {
     // Optional: Ensure that T is a floating-point type at compile time
-    static_assert(std::is_floating_point<T>::value, "T must be a floating-point type");
+    //static_assert(std::is_floating_point<T>::value, "T must be a floating-point type");
 
     if(exp == 0)
         return static_cast<T>(1.0);
@@ -86,11 +90,6 @@ constexpr const T fastPow(T base, int exp)
     return neg ? (static_cast<T>(1.0) / result) : result;
 }
 
-template <typename T>
-constexpr const T randomRange(const T& low, const T& high)
-{
-    return low + static_cast<T>(std::rand()) / (static_cast<T>(RAND_MAX/(high - low)));
-}
 
 #ifndef bitRead
 #define bitRead(value, bit) (((value) >> (bit)) & 0x01)
@@ -108,6 +107,15 @@ constexpr const T randomRange(const T& low, const T& high)
 #define bitWrite(value, bit, bitvalue) \
     ((bitvalue) ? bitSet(value, bit) : bitClear(value, bit))
 #endif
+#ifndef DAISY_PLATFORM
+#define rand() std::rand()
+#endif
+
+template <typename T>
+constexpr const T randomRange(const T& low, const T& high)
+{
+    return low + static_cast<T>(rand()) / (static_cast<T>(RAND_MAX/(high - low)));
+}
 
 template <typename T, size_t N>
 constexpr size_t ArrayLen(const T (&)[N])

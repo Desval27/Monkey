@@ -9,19 +9,19 @@
 #include <Monkey.h>
 #include <Music/Music.h>
 #include <Music/Temperament.h>
-#include <Music/Labels.h>
+#include <Music/Tables.h>
 #include <Music/ScaleMaps.h>
 
 using namespace Music;
 
-#define PALETTE Music::MIXOLYDIAN_DEGREES_12
+#define PALETTE Music::AEOLIAN_D12
 #define PALETTE_LEN ArrayLen(PALETTE)
 
 TimeSignature      ts;
 Temperament        t;
 ScaleMap           scale;
 PitchEngine        pe;
-const HarmonicMode mode = HarmonicMode::Major;
+const HarmonicMode mode = HarmonicMode::Minor;
 
 void doDebug(const char *format, va_list args)
 { std::vprintf(format, args); }
@@ -51,14 +51,16 @@ void testThing()
     for(size_t i = 0; i < cEventSize; i++)
     {
         char noteName[6];
-        Note chordTones[10];
-        size_t chordToneLen;
+        int periodOffset;
 
-        chordToneLen = cEvents[i].getChordTones(scale, chordTones, ArrayLen(chordTones));
-        for (size_t j = 0; j < chordToneLen; j++)
+        Degree root = cEvents[i].root;
+        t.getNoteLabel(root, noteName, sizeof(noteName));
+        DPRINTF("Chord Event %zu: Root %s (Degree %d)", i, noteName);       
+        for (int j = 2; j < 5; j++)
         {
-            t.getNoteLabel(chordTones[j], noteName, sizeof(noteName));
-            DPRINTF("%s ", noteName);
+            Degree d = scale.mappedDegree(scale.indexOfDegree(root) + j, periodOffset);        
+            t.getNoteLabel(d, noteName, sizeof(noteName));
+            DPRINTF(", Interval %d: %s (Degree %d)", j, noteName, d);
         }
         DPRINTF("\n");
     }
@@ -70,6 +72,16 @@ int main(int argc, char *argv[])
     std::srand(std::time(nullptr));
 
     SET_DEBUG(doDebug);
+
+    // for (size_t i = 0; i < NUM_SCALES; i++)
+    // {
+    //     const auto& scaleTable = Music::SCALE_TABLES[i];
+    //     std::cout << "Scale: " << scaleTable.name
+    //               << " (Degrees in Period: " << scaleTable.degreesInPeriod
+    //               << " (Degrees in Scale: " << scaleTable.degreesInScale
+    //               << " (Minor: " << (scaleTable.isMinor() ? "Yes" : "No") << ")"
+    //               << std::endl;
+    // }
 
     t.makeEqualDivision(12, 2.0f);
     t.attachNoteLabels(Music::NOTE_NAMES_12, ArrayLen(Music::NOTE_NAMES_12));
