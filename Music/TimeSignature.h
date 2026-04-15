@@ -87,6 +87,14 @@ struct TimeSignature
             return TimeSignatureType::Irregular;
     }
 
+    int getDenominator() const 
+    {
+        if (static_cast<int>(beatValue) != 0)
+            return (4 * PPQN) / static_cast<int>(beatValue);
+        else
+            return 0; // Avoid division by zero, though this case should be handled more gracefully in practice.
+    }
+
     /**
      * @brief Calculates the total number of pulses in one bar.
      *

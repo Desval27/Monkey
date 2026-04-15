@@ -74,7 +74,7 @@ tuning_copy_string(char *dst, const char *src, size_t maxLen)
  * @param ratio 
  * @return float 
  */
-static inline float ratioToCents(float ratio)
+static inline float RatioToCents(float ratio)
 { return (ratio > 0.0f) ? (1200.0f * logf(ratio) / logf(2.0f)) : 0.0f; }
 
 /**
@@ -83,7 +83,7 @@ static inline float ratioToCents(float ratio)
  * @param cents 
  * @return float 
  */
-static inline float centsToRatio(float cents)
+static inline float CentsToRatio(float cents)
 { return powf(2.0f, cents / 1200.0f); }
 
 } // namespace Music

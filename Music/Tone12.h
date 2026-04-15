@@ -4,12 +4,13 @@
 
 namespace Music
 {
+    // clang-format off
+
 ////////////////////////////////////////////////////////////////////////////////
 // 12 Tone Temperaments
 //    0     1     2     3     4     5     6     7     8     9    10    11
 // i_P1, i_m2, i_M2, i_m3, i_M3, i_P4, i_TT, i_P5, i_m6, i_M6, i_m7, i_M7};
 ////////////////////////////////////////////////////////////////////////////////
-//
 // For mapping 12 tone scales
 #define P1 0
 #define m2 1
@@ -59,7 +60,7 @@ static const Degree SUPER_LOCRIAN_D12[]          = {P1, m2, m3, d4, d5, m6, m7};
 static const Degree HARMONIC_MAJOR_D12[]         = {P1, M2, M3, P4, P5, m6, M7};
 static const Degree DORIAN_b5_D12[]              = {P1, M2, m3, P4, d5, m6, m7};
 static const Degree PHRYGIAN_b4_D12[]            = {P1, m2, m3, d4, P5, m6, m7};
-static const Degree LYDIAN_b3_D12[]              = {P1, M2, M3, A4, P5, M6, M7};
+static const Degree LYDIAN_b3_D12[]              = {P1, M2, m3, A4, P5, M6, M7};
 static const Degree MIXOLYDIAN_b2_D12[]          = {P1, m2, M3, P4, P5, M6, m7};
 static const Degree LYDIAN_AUG_s2_D12[]          = {P1, A2, M3, A4, A5, M6, M7};
 static const Degree LOCRIAN_b7_D12[]             = {P1, m2, m3, P4, d5, m6, d7};
@@ -79,11 +80,10 @@ static const Degree MINOR_BLUES_PENTATONIC_D12[] = {P1, m3, P4, m6, m7};
 static const Degree MAJOR_BLUES_PENTATONIC_D12[] = {P1, M2, P4, P5, M6};
 static const Degree MINOR_PENTATONIC_D12[]       = {P1, m3, P4, P5, m7};
 
-
 // Common hexatonic maps in 12-EDO.
 static const Degree WHOLE_TONE_HEXATONIC_D12[] = {P1, M2, M3, A4, A5, M6};
 static const Degree BLUES_HEXATONIC_D12[]      = {P1, m3, P4, d5, P5, m7};
-static const Degree AUGMENTED_HEXATONIC_D12[]  = {0, 3, 4, 7, 8, 11};
+static const Degree AUGMENTED_HEXATONIC_D12[]  = {P1, m3, M3, A4, A5, M6};
 
 #undef P1
 #undef m2
@@ -104,5 +104,15 @@ static const Degree AUGMENTED_HEXATONIC_D12[]  = {0, 3, 4, 7, 8, 11};
 #undef d7
 #undef m7
 #undef M7
+
+static_assert(ArrayLen(IONIAN_D12) == 7, "IONIAN_D12 array length mismatch");
+static_assert(ArrayLen(DORIAN_D12) == 7, "DORIAN_D12 array length mismatch");
+static_assert(ArrayLen(PHRYGIAN_D12) == 7, "PHRYGIAN_D12 array length mismatch");
+static_assert(ArrayLen(LYDIAN_D12) == 7, "LYDIAN_D12 array length mismatch");
+static_assert(ArrayLen(MIXOLYDIAN_D12) == 7, "MIXOLYDIAN_D12 array length mismatch");
+static_assert(ArrayLen(AEOLIAN_D12) == 7, "AEOLIAN_D12 array length mismatch");
+static_assert(ArrayLen(LOCRIAN_D12) == 7, "LOCRIAN_D12 array length mismatch");
+
+    // clang-format on
 
 } // namespace Music

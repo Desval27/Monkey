@@ -24,7 +24,7 @@
   // Bucket method + rotation
   // ============================================================
   bool _buffer[128];
-  size_t buildEuclid(int k, int n, int r, bool *out, size_t outSize)
+  size_t BuildEuclid(int k, int n, int r, bool *out, size_t outSize)
   {
     DEBUG_GOT_HERE();
     n = clamp(n, 1, static_cast<int>(std::min(outSize, ArrayLen(_buffer))));

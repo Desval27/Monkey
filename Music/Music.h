@@ -28,14 +28,14 @@ namespace Music
 ////////////////////////////////////////////////////////////////////////////////
 // Misc. Functions
 ////////////////////////////////////////////////////////////////////////////////
-extern size_t      generateStandardChordEvents(const TimeSignature &ts,
+extern size_t      GenerateStandardChordEvents(const TimeSignature &ts,
                                                const ScaleMap      &scale,
                                                int                  bars,
                                                HarmonicMode         mode,
                                                NoteValue            granularity,
                                                ChordEvent          *eventsOut,
                                                size_t               eventMax);
-extern size_t      generateWeightedChordEvents(const TimeSignature &ts,
+extern size_t      GenerateWeightedChordEvents(const TimeSignature &ts,
                                                const ScaleMap      &scale,
                                                int                  bars,
                                                HarmonicMode         mode,
@@ -43,33 +43,33 @@ extern size_t      generateWeightedChordEvents(const TimeSignature &ts,
                                                NoteValue            value,
                                                ChordEvent          *eventsOut,
                                                size_t               eventMax);
-extern ScaleDegree getWeightedStartingChord(HarmonicMode mode
+extern ScaleDegree GetWeightedStartingChord(HarmonicMode mode
                                             = HarmonicMode::Major);
-extern ScaleDegree getWeightedNextChord(ScaleDegree  fromDegree,
+extern ScaleDegree GetWeightedNextChord(ScaleDegree  fromDegree,
                                         HarmonicMode mode
                                         = HarmonicMode::Major);
-extern size_t      generateChordEventsFromPattern(const bool *pattern,
+extern size_t      GenerateChordEventsFromPattern(const bool *pattern,
                                                   size_t      patternSize,
                                                   NoteValue   granularity,
                                                   ChordEvent *eventsOut,
                                                   size_t      eventsMax);
-extern size_t      generatePattern(const TimeSignature &ts,
+extern size_t      GeneratePattern(const TimeSignature &ts,
                                    int                  bars,
                                    float                density,
                                    NoteValue            granularity,
                                    bool                *out,
                                    size_t               outSize);
-extern size_t      buildEuclid(int k, int n, int r, bool *out, size_t outMax);
+extern size_t      BuildEuclid(int k, int n, int r, bool *out, size_t outMax);
 #if USE_DEBUG
-extern void debugPattern(const TimeSignature &ts,
+extern void DebugPattern(const TimeSignature &ts,
                          NoteValue            granularity,
                          const bool          *pattern,
                          size_t               patternSize);
-extern void debugChordEvents(const Temperament   &t,
+extern void DebugChordEvents(const Temperament   &t,
                              const TimeSignature &ts,
                              const ChordEvent    *events,
                              size_t               eventsSize);
-extern void debugNoteEvents(const Temperament   &t,
+extern void DebugNoteEvents(const Temperament   &t,
                             const TimeSignature &ts,
                             const NoteEvent     *events,
                             size_t               eventsSize);

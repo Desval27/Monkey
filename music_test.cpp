@@ -14,14 +14,14 @@
 
 using namespace Music;
 
-#define PALETTE Music::AEOLIAN_D12
+#define PALETTE Music::IONIAN_D15
 #define PALETTE_LEN ArrayLen(PALETTE)
 
 TimeSignature      ts;
 Temperament        t;
 ScaleMap           scale;
 PitchEngine        pe;
-const HarmonicMode mode = HarmonicMode::Minor;
+const HarmonicMode mode = HarmonicMode::Major;
 
 void doDebug(const char *format, va_list args)
 { std::vprintf(format, args); }
@@ -36,17 +36,17 @@ void testThing()
     const NoteValue g       = NoteValue::Eighth;
 
     size_t patternSize
-        = generatePattern(ts, bars, density, g, pattern, ArrayLen(pattern));
+        = GeneratePattern(ts, bars, density, g, pattern, ArrayLen(pattern));
     // size_t cEventSize = generateChordEventsFromPattern(
     //     pattern, patternSize, g, cEvents, ArrayLen(cEvents));
     size_t cEventSize
-        = generateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, cEvents, ArrayLen(cEvents));
+        = GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, cEvents, ArrayLen(cEvents));
 
     // const float density = randomRange(0.2f, 0.9f);
     // const NoteValue g = NoteValue::Eighth;
     // size_t count = Music::generatePattern(ts, bars, density, g, pattern, ArrayLen(pattern));
-    debugPattern(ts, g, pattern, patternSize);
-    debugChordEvents(t, ts, cEvents, cEventSize);
+    DebugPattern(ts, g, pattern, patternSize);
+    DebugChordEvents(t, ts, cEvents, cEventSize);
 
     for(size_t i = 0; i < cEventSize; i++)
     {
@@ -54,12 +54,12 @@ void testThing()
         int periodOffset;
 
         Degree root = cEvents[i].root;
-        t.getNoteLabel(root, noteName, sizeof(noteName));
+        t.GetNoteLabel(root, noteName, sizeof(noteName));
         DPRINTF("Chord Event %zu: Root %s (Degree %d)", i, noteName);       
         for (int j = 2; j < 5; j++)
         {
-            Degree d = scale.mappedDegree(scale.indexOfDegree(root) + j, periodOffset);        
-            t.getNoteLabel(d, noteName, sizeof(noteName));
+            Degree d = scale.GetMappedDegree(scale.GetIndexOfDegree(root) + j, periodOffset);        
+            t.GetNoteLabel(d, noteName, sizeof(noteName));
             DPRINTF(", Interval %d: %s (Degree %d)", j, noteName, d);
         }
         DPRINTF("\n");
@@ -83,18 +83,18 @@ int main(int argc, char *argv[])
     //               << std::endl;
     // }
 
-    t.makeEqualDivision(12, 2.0f);
-    t.attachNoteLabels(Music::NOTE_NAMES_12, ArrayLen(Music::NOTE_NAMES_12));
-    t.attachIntervalLabels(Music::INTERVAL_NAMES_12,
-                              ArrayLen(Music::INTERVAL_NAMES_12));
+    t.MakeEqualDivision(15, 2.0f);
+    t.AttachNoteLabels(Music::NOTE_NAMES_15, ArrayLen(Music::NOTE_NAMES_15));
+    t.AttachIntervalLabels(Music::INTERVAL_NAMES_15,
+                              ArrayLen(Music::INTERVAL_NAMES_15));
 
-    std::rand();
+    scale.SetDegrees(PALETTE, PALETTE_LEN);
 
-    scale.setDegrees(PALETTE, PALETTE_LEN);
+    std::srand(std::time(nullptr));
 
-    pe.setTemperament(&t);
-    pe.setScaleMap(&scale);
-    pe.setRootHz(261.6256f); // C4
+    pe.SetTemperament(&t);
+    pe.SetScaleMap(&scale);
+    pe.SetRootHz(261.6256f); // C4
 
     for(;;)
     {

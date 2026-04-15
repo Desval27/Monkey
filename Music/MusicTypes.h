@@ -32,7 +32,7 @@ namespace Music
 
     /**
      * @brief Represents a scale degree within the musical context.
-     * 
+     *
      */
     enum class ScaleDegree : int
     {
@@ -70,7 +70,10 @@ namespace Music
         Period basePeriod = 0;
     };
 
-    ////////////////////////////////////////////////////////////////////////////////
+    /**
+     * @brief 
+     * 
+     */
     struct TemperedPitch
     {
         Degree degree;
@@ -78,6 +81,7 @@ namespace Music
         float fineCents;
 
         TemperedPitch() : degree(0), period(0), fineCents(0.0f) {}
+
         TemperedPitch(Degree d, Period p, float fc = 0.0f)
             : degree(d), period(p), fineCents(fc)
         {
@@ -86,7 +90,7 @@ namespace Music
 
     /**
      * @brief Represents a tuning reference within the musical context.
-     * 
+     *
      */
     struct TuningReference
     {
@@ -96,7 +100,7 @@ namespace Music
 
         /**
          * @brief Construct a new Tuning Reference object
-         * 
+         *
          */
         TuningReference()
             : referenceHz(BASE_HZ), referenceDegree(0), referencePeriod(0)
@@ -104,11 +108,11 @@ namespace Music
         }
 
         /**
-         * @brief Construct a new Tuning Reference object with specific values 
-         * 
-         * @param hz 
-         * @param d 
-         * @param p 
+         * @brief Construct a new Tuning Reference object with specific values
+         *
+         * @param hz
+         * @param d
+         * @param p
          */
         TuningReference(float hz, Degree d, Period p)
             : referenceHz(hz), referenceDegree(d), referencePeriod(p)
@@ -132,8 +136,9 @@ namespace Music
         const char *name;
         HarmonicMode harmonicMode;
         const Degree *degrees;
+        size_t degreeCount;
 
-        bool isMinor() const
+        bool IsMinor() const
         {
             return harmonicMode == HarmonicMode::Minor;
         }

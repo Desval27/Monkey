@@ -42,7 +42,7 @@ namespace Music
         int inversion;
 
         // Rigged for the moment to just get chord tones for testing.
-        size_t getChordTones(const ScaleMap &scale, Note note[], size_t noteLen)
+        size_t GetChordTones(const ScaleMap &scale, Note note[], size_t noteLen)
         {
             // Rigged for testing
             size_t size = 0;
@@ -50,16 +50,16 @@ namespace Music
             if (size < noteLen)
             {
                 note[size] = root;
-                uint16_t rootIdx = scale.indexOfDegree(root);
+                uint16_t rootIdx = scale.GetIndexOfDegree(root);
                 size++;
                 if (size < noteLen)
                 {
-                    note[size] = scale.mappedDegree(rootIdx + 2, periodOffset);
+                    note[size] = scale.GetMappedDegree(rootIdx + 2, periodOffset);
                     size++;
 
                     if (size < noteLen)
                     {
-                        note[size] = scale.mappedDegree(rootIdx + 4, periodOffset);
+                        note[size] = scale.GetMappedDegree(rootIdx + 4, periodOffset);
                         size++;
                     }
                 }
@@ -138,20 +138,20 @@ namespace Music
          /*****/ {1.00f, 0.15f, 0.50f, 0.75f, 0.25f, 0.75f, 0.10f}},
     };
 
-    static inline const ScaleDegree *scaleDegreesForMode(HarmonicMode mode)
+    static inline const ScaleDegree *ScaleDegreesForMode(HarmonicMode mode)
     {
         return (mode == HarmonicMode::Minor) ? MINOR_SCALE_DEGREES
                                              : MAJOR_SCALE_DEGREES;
     }
 
     static inline const ChordProbability *
-    chordProbabilityTableForMode(HarmonicMode mode)
+    ChordProbabilityTableForMode(HarmonicMode mode)
     {
         return (mode == HarmonicMode::Minor) ? MinorScaleChordProbability
                                              : MajorScaleChordProbability;
     }
 
-    static inline const float *startingChordWeightsForMode(HarmonicMode mode)
+    static inline const float *StartingChordWeightsForMode(HarmonicMode mode)
     {
         return (mode == HarmonicMode::Minor) ? MINOR_STARTING_CHORD_WEIGHTS
                                              : MAJOR_STARTING_CHORD_WEIGHTS;
@@ -164,9 +164,9 @@ namespace Music
      * @param mode The harmonic mode.
      * @return int The index of the scale degree, or -1 if not found.
      */
-    static inline int scaleDegreeIndex(ScaleDegree degree, HarmonicMode mode)
+    static inline int ScaleDegreeIndex(ScaleDegree degree, HarmonicMode mode)
     {
-        const ScaleDegree *degrees = scaleDegreesForMode(mode);
+        const ScaleDegree *degrees = ScaleDegreesForMode(mode);
         for (size_t i = 0; i < SCALE_CHORD_COUNT; ++i)
         {
             if (degrees[i] == degree)
@@ -175,16 +175,16 @@ namespace Music
         return -1;
     }
 
-    static inline ScaleDegree scaleDegreeFromIndex(int index, HarmonicMode mode)
+    static inline ScaleDegree ScaleDegreeFromIndex(int index, HarmonicMode mode)
     {
         if (index < 0)
             index = 0;
 
         const int wrapped = index % static_cast<int>(SCALE_CHORD_COUNT);
-        return scaleDegreesForMode(mode)[wrapped];
+        return ScaleDegreesForMode(mode)[wrapped];
     }
 
-    static inline Note scaleDegreeToSemitone(ScaleDegree degree)
+    static inline Note ScaleDegreeToSemitone(ScaleDegree degree)
     {
         switch (degree)
         {
