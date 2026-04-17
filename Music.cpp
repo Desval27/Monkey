@@ -58,86 +58,86 @@ ScaleDegree GetWeightedNextChord(ScaleDegree fromDegree, HarmonicMode mode) {
   return ScaleDegreeFromIndex(toIdx, mode);
 }
 
-size_t GeneratePhrygianDominantChordEvents(ChordEvent* eventsOut,
-                                           size_t eventSize) {
-  // Key chords (I, bII, #iii(dim), iv, v(dim), +V, vii)
-  // Common Progressions:
-  //      I(7) - bII
-  //      I(7) - bII - vi - I(7)
-  // Andalusian Cadance:
-  //      vi - III - bII - I(7)
-  // Jazz/Tension:
-  //      I(7b9) - vii(7)
-  size_t eventIdx = 0;
+// size_t GeneratePhrygianDominantChordEvents(ChordEvent* eventsOut,
+//                                            size_t eventSize) {
+//   // Key chords (I, bII, #iii(dim), iv, v(dim), +V, vii)
+//   // Common Progressions:
+//   //      I(7) - bII
+//   //      I(7) - bII - vi - I(7)
+//   // Andalusian Cadance:
+//   //      vi - III - bII - I(7)
+//   // Jazz/Tension:
+//   //      I(7b9) - vii(7)
+//   size_t eventIdx = 0;
 
-  if (eventSize < 10) return eventIdx;
+//   if (eventSize < 10) return eventIdx;
 
-  // Bar 1
-  eventsOut[eventIdx].root = 0;
-  eventsOut[eventIdx].value = NoteValue::Whole;
-  eventIdx++;
+//   // Bar 1
+//   eventsOut[eventIdx].root = 0;
+//   eventsOut[eventIdx].value = NoteValue::Whole;
+//   eventIdx++;
 
-  // Bar 2
-  eventsOut[eventIdx].root = 1;
-  eventsOut[eventIdx].value = NoteValue::Whole;
-  eventIdx++;
+//   // Bar 2
+//   eventsOut[eventIdx].root = 1;
+//   eventsOut[eventIdx].value = NoteValue::Whole;
+//   eventIdx++;
 
-  // Bar 3
-  eventsOut[eventIdx].root = 0;
-  eventsOut[eventIdx].value = NoteValue::Whole;
-  eventIdx++;
+//   // Bar 3
+//   eventsOut[eventIdx].root = 0;
+//   eventsOut[eventIdx].value = NoteValue::Whole;
+//   eventIdx++;
 
-  // Bar 4
-  eventsOut[eventIdx].root = 1;
-  eventsOut[eventIdx].value = NoteValue::Whole;
-  eventIdx++;
+//   // Bar 4
+//   eventsOut[eventIdx].root = 1;
+//   eventsOut[eventIdx].value = NoteValue::Whole;
+//   eventIdx++;
 
-  // Bar 5
-  eventsOut[eventIdx].root = 0;
-  eventsOut[eventIdx].value = NoteValue::Whole;
-  eventIdx++;
+//   // Bar 5
+//   eventsOut[eventIdx].root = 0;
+//   eventsOut[eventIdx].value = NoteValue::Whole;
+//   eventIdx++;
 
-  // Bar 6
-  eventsOut[eventIdx].root = 1;
-  eventsOut[eventIdx].value = NoteValue::Whole;
-  eventIdx++;
+//   // Bar 6
+//   eventsOut[eventIdx].root = 1;
+//   eventsOut[eventIdx].value = NoteValue::Whole;
+//   eventIdx++;
 
-  // Bar 7
-  eventsOut[eventIdx].root = 5;
-  eventsOut[eventIdx].value = NoteValue::Half;
-  eventIdx++;
+//   // Bar 7
+//   eventsOut[eventIdx].root = 5;
+//   eventsOut[eventIdx].value = NoteValue::Half;
+//   eventIdx++;
 
-  eventsOut[eventIdx].root = 3;
-  eventsOut[eventIdx].value = NoteValue::Half;
-  eventIdx++;
+//   eventsOut[eventIdx].root = 3;
+//   eventsOut[eventIdx].value = NoteValue::Half;
+//   eventIdx++;
 
-  // Bar 8
-  eventsOut[eventIdx].root = 1;
-  eventsOut[eventIdx].value = NoteValue::Half;
-  eventIdx++;
+//   // Bar 8
+//   eventsOut[eventIdx].root = 1;
+//   eventsOut[eventIdx].value = NoteValue::Half;
+//   eventIdx++;
 
-  eventsOut[eventIdx].root = 0;
-  eventsOut[eventIdx].value = NoteValue::Half;
-  eventIdx++;
+//   eventsOut[eventIdx].root = 0;
+//   eventsOut[eventIdx].value = NoteValue::Half;
+//   eventIdx++;
 
-  return eventIdx;
-}
+//   return eventIdx;
+// }
 
-size_t GenerateLydian1(const TimeSignature& ts, int bars, ChordEvent* eventsOut,
-                       size_t eventSize) {
-  // I - II - I - V
-  size_t eventIdx = 0;
-  const Note notes[] = {0, 2, 0, 7};
+// size_t GenerateLydian1(const TimeSignature& ts, int bars, ChordEvent* eventsOut,
+//                        size_t eventSize) {
+//   // I - II - I - V
+//   size_t eventIdx = 0;
+//   const Note notes[] = {0, 2, 0, 7};
 
-  for (eventIdx = 0;
-       eventIdx < static_cast<size_t>(bars) && eventIdx < eventSize;
-       eventIdx++) {
-    eventsOut[eventIdx].root = notes[eventIdx % ArrayLen(notes)];
-    eventsOut[eventIdx].value = NoteValue::Whole;
-  }
+//   for (eventIdx = 0;
+//        eventIdx < static_cast<size_t>(bars) && eventIdx < eventSize;
+//        eventIdx++) {
+//     eventsOut[eventIdx].root = notes[eventIdx % ArrayLen(notes)];
+//     eventsOut[eventIdx].value = NoteValue::Whole;
+//   }
 
-  return eventIdx;
-}
+//   return eventIdx;
+// }
 
 size_t GenerateStandardChordEvents(const TimeSignature& ts,
                                    const ScaleMap& scale, int bars,

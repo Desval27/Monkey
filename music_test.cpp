@@ -35,6 +35,8 @@ void testThing()
     const float     density = randomRange(0.4f, 0.6f); //0.50f;
     const NoteValue g       = NoteValue::Eighth;
 
+    NoteEventSet<> noteEvents;
+
     size_t patternSize
         = GeneratePattern(ts, bars, density, g, pattern, ArrayLen(pattern));
     // size_t cEventSize = generateChordEventsFromPattern(

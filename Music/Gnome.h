@@ -2,12 +2,12 @@
 /**
  * @file Gnome.h
  * @author pfburdette <paul.f.burdette@gmail.com>
- * @brief 
+ * @brief
  * @copyright This work is dedicated to the public domain under CC0 1.0.
  * To the extent possible under law, the author(s) have waived all copyright
  * and related or neighboring rights to this software.
  * See <http://creativecommons.org>
-*/
+ */
 #pragma once
 
 #include <Music/Music.h>
@@ -15,117 +15,119 @@
 namespace Music
 {
 
-/**
- * @brief 
- * 
- */
-class Gnome
-{
+  /**
+   * @brief
+   *
+   */
+  class Gnome
+  {
   public:
     /**
-     * @brief 
-     * 
-     * @param ts 
-     * @param bars 
+     * @brief
+     *
+     * @param ts
+     * @param bars
      */
-    Gnome(TimeSignature& ts, int bars) : _ts(ts), _bars(bars) 
+    Gnome(const TimeSignature &ts, int bars) : _ts(ts), _bars(bars)
     {
-        Reset();
-        _beat = -1;  // Not running yet.
-        _pulse = -1;
+      Reset();
+      _beat = -1; // Not running yet.
+      _pulse = -1;
     }
 
     /**
      * @brief Advances to the next beat
-     * 
+     *
      */
     void DoBeat()
     {
-        _beat++;
-        if(_beat == _ts.beats)
+      _beat++;
+      if (_beat == _ts.beats)
+      {
+        _bar++;
+        if (_bar == _bars)
         {
-            _bar++;
-            if (_bar == _bars)
-            {
-                Reset();
-            }
-            else 
-            {
-                _beat = 0;
-            }
+          Reset();
         }
+        else
+        {
+          _beat = 0;
+        }
+      }
     }
 
     /**
-     * @brief 
-     * 
-     * @return int 
+     * @brief
+     *
+     * @return int
      */
-    int DoPulse() 
+    int DoPulse()
     {
-        _pulse++;
-        if (RisingBeatEdge())
-        {
-            DoBeat();
-        }
-        return _pulse;
+      _pulse++;
+      if (RisingBeatEdge())
+      {
+        DoBeat();
+      }
+      return _pulse;
     }
 
     /**
      * @brief Returns the current beat
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int GetBeat() const { return _beat; }
 
     /**
      * @brief Returns the current bar
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int GetBar() const { return _bar; }
 
     /**
      * @brief Returns the current pulse count
-     * 
-     * @return int 
+     *
+     * @return int
      */
     int GetPulse() const { return _pulse; }
 
     /**
-     * @brief 
-     * 
-     * @return true 
-     * @return false 
+     * @brief
+     *
+     * @return true
+     * @return false
      */
-    bool RisingBeatEdge() const { return (_pulse % static_cast<int>(_ts.beatValue)) == 0; }
+    bool RisingBeatEdge() const
+    {
+      return (_pulse % static_cast<int>(_ts.beatValue)) == 0;
+    }
 
     /**
-     * @brief 
-     * 
-     * @return true 
-     * @return false 
+     * @brief
+     *
+     * @return true
+     * @return false
      */
     bool RisingBarEdge() const { return (_beat == 0); };
 
     /**
      * @brief Resets the current bar and beat to one.
-     * 
+     *
      */
     void Reset()
     {
-        _beat  = 0;
-        _bar   = 0;
-        _pulse = 0;
+      _beat = 0;
+      _bar = 0;
+      _pulse = 0;
     }
 
   private:
-    TimeSignature _ts;
-    int           _bars;
-    int           _beat;
-    int           _bar;
-    int           _pulse;
-};
-
+    const TimeSignature _ts;
+    int _bars;
+    int _beat;
+    int _bar;
+    int _pulse;
+  };
 
 } // namespace Music

@@ -9,6 +9,7 @@ DEFINES = -DUSE_DEBUG=$(USE_DEBUG) -Wno-unused-variable
 CPP_SOURCES = \
 	Monkey.cpp\
 	Music.cpp \
+	EventSet.cpp \
 	Euclid.cpp
 CPP_OBJS=$(CPP_SOURCES:%.cpp=%.o)
 

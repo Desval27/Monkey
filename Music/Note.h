@@ -1,7 +1,7 @@
 /* SPDX-License-Identifier: CC0-1.0 */
 /**
  * @file Note.h
- * @brief 
+ * @brief
  * @author pfburdette <paul.f.burdette@gmail.com>
  *
  * @copyright This work is dedicated to the public domain under CC0 1.0.
@@ -11,28 +11,27 @@
  */
 #pragma once
 
-namespace Music
-{
+#include <Music/MusicTypes.h>
+#include <Music/NoteValue.h>
 
-struct NoteEvent
-{
-    NoteEvent()
-    {
-        note   = REST;
-        period = 0;
-        value  = NoteValue::None;
-    }
+namespace Music {
 
-    NoteEvent(Note n, Period p, NoteValue v)
-    {
-        note   = n;
-        period = p;
-        value  = v;
-    }
+struct NoteEvent {
+  NoteEvent() {
+    note = REST;
+    period = 0;
+    value = NoteValue::None;
+  }
 
-    Note      note;
-    Period    period;
-    NoteValue value;
+  NoteEvent(Note n, Period p, NoteValue v) {
+    note = n;
+    period = p;
+    value = v;
+  }
+
+  Note note;
+  Period period;
+  NoteValue value;
 };
 
-} // namespace Music
+}  // namespace Music

@@ -23,19 +23,20 @@ class PitchEngine {
   enum class RandomShape : uint8_t { Uniform = 0, BiasedLow, BiasedHigh };
 
   PitchEngine() : _t(nullptr), _s(nullptr), _rootHz(BASE_HZ) {}
-  PitchEngine(const Temperament* t, const ScaleMap* s, float rootHz) : _t(t), _s(s), _rootHz(rootHz) {}
+  PitchEngine(const Temperament *t, const ScaleMap *s, float rootHz)
+      : _t(t), _s(s), _rootHz(rootHz) {}
 
-  void SetTemperament(const Temperament* t) { _t = t; }
-  void SetScaleMap(const ScaleMap* s) { _s = s; }
+  void SetTemperament(const Temperament *t) { _t = t; }
+  void SetScaleMap(const ScaleMap *s) { _s = s; }
   void SetRootHz(float rootHz) { _rootHz = rootHz; }
 
   /**
-   * @brief 
-   * 
-   * @param scaleIndex 
-   * @param extraPeriod 
-   * @param fineCents 
-   * @return float 
+   * @brief
+   *
+   * @param scaleIndex
+   * @param extraPeriod
+   * @param fineCents
+   * @return float
    */
   float FrequencyFromScaleIndex(int scaleIndex, int extraPeriod = 0,
                                 float fineCents = 0.0f) const {
@@ -71,8 +72,8 @@ class PitchEngine {
       return _t->FrequencyFromRoot(_rootHz, scaleIndex, extraPeriod, fineCents);
 
     int scalePeriod;
-    Degree degree = _s->GetWeightedMappedDegree(scaleIndex, unitRandom,
-                                             scalePeriod, weights, weightCount);
+    Degree degree = _s->GetWeightedMappedDegree(
+        scaleIndex, unitRandom, scalePeriod, weights, weightCount);
     return _t->FrequencyFromRoot(_rootHz, degree, scalePeriod + extraPeriod,
                                  fineCents);
   }
@@ -120,12 +121,12 @@ class PitchEngine {
   }
 
   /**
-   * @brief 
-   * 
-   * @param pitch 
-   * @return float 
+   * @brief
+   *
+   * @param pitch
+   * @return float
    */
-  float Frequency(const TemperedPitch& pitch) const {
+  float Frequency(const TemperedPitch &pitch) const {
     if (!_t) return _rootHz;
 
     return _t->FrequencyFromRoot(_rootHz, pitch.degree, pitch.period,
@@ -133,15 +134,15 @@ class PitchEngine {
   }
 
  private:
-  const Temperament* _t;
-  const ScaleMap* _s;
+  const Temperament *_t;
+  const ScaleMap *_s;
   float _rootHz;
 
   /**
-   * @brief 
-   * 
-   * @param v 
-   * @return float 
+   * @brief
+   *
+   * @param v
+   * @return float
    */
   static float ClampUnit(float v) {
     if (v < 0.0f) return 0.0f;

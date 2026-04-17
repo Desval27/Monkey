@@ -21,6 +21,7 @@
 #include "TimeSignature.h"
 #include "Note.h"
 #include "Chord.h"
+#include "EventSet.h"
 
 namespace Music
 {
