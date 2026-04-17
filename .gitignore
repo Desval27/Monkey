@@ -1,3 +1,5 @@
 *.o
 *.exe
 *.d
+music_test
+weighted_map_example

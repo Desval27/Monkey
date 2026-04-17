@@ -4,5 +4,13 @@
 			"path": "."
 		}
 	],
-	"settings": {}
+	"settings": {
+		"makefile.launchConfigurations": [
+			{
+				"cwd": "/home/desval27/src/Monkey",
+				"binaryPath": "/home/desval27/src/Monkey/music_test",
+				"binaryArgs": []
+			}
+		]
+	}
 }

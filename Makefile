@@ -2,7 +2,7 @@
 USE_DEBUG = 1
 DEBUG_FLAG = -g
 
-TARGETS = music_test.exe weighted_map_example.exe
+TARGETS = music_test weighted_map_example
 
 DEFINES = -DUSE_DEBUG=$(USE_DEBUG) -Wno-unused-variable
 
@@ -16,7 +16,7 @@ INCLUDES = -I./
 
 DEPDIR := .deps
 DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
-DEPFILES := $(TARGETS:%.exe=$(DEPDIR)/%.d) $(CPP_SOURCES:%.cpp=$(DEPDIR)/%.d)
+DEPFILES := $(TARGETS:%=$(DEPDIR)/%.d) $(CPP_SOURCES:%.cpp=$(DEPDIR)/%.d)
 
 # Define Variables
 CXX = g++
@@ -24,10 +24,10 @@ CXXFLAGS = $(DEBUG_FLAG) $(DEFINES) $(DEPFLAGS) -pedantic -pedantic-errors -Wall
 
 all: $(TARGETS)
 
-music_test.exe: music_test.o $(CPP_OBJS)
+music_test: music_test.o $(CPP_OBJS)
 	$(CXX) $^ -o $@
 
-weighted_map_example.exe: weighted_map_example.o $(CPP_OBJS)
+weighted_map_example: weighted_map_example.o $(CPP_OBJS)
 	$(CXX) $^ -o $@
 
 clean:
@@ -36,8 +36,7 @@ clean:
 # test.exe: test.o $(CPP_OBJS)
 # 	$(CXX) test.o -o $@
 
-%.o: %.cpp $(DEPDIR)/%.d
+%.o: %.cpp 
 	$(CXX) $(CXXFLAGS) -c $< -o $@
-
 
 -include $(DEPFILES)

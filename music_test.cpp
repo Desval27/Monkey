@@ -54,15 +54,16 @@ void testThing()
         int periodOffset;
 
         Degree root = cEvents[i].root;
+        Degree d = scale.GetMappedDegree(scale.GetIndexOfDegree(root), periodOffset);        
         t.GetNoteLabel(root, noteName, sizeof(noteName));
-        DPRINTF("Chord Event %zu: Root %s (Degree %d)", i, noteName);       
+        std::printf("Chord Event %zu: Root %s (Degree %d)", i, noteName, d);       
         for (int j = 2; j < 5; j++)
         {
-            Degree d = scale.GetMappedDegree(scale.GetIndexOfDegree(root) + j, periodOffset);        
+            d = scale.GetMappedDegree(scale.GetIndexOfDegree(root) + j, periodOffset);        
             t.GetNoteLabel(d, noteName, sizeof(noteName));
-            DPRINTF(", Interval %d: %s (Degree %d)", j, noteName, d);
+            std::printf(", Interval %d: %s (Degree %d)", j, noteName, d);
         }
-        DPRINTF("\n");
+        std::printf("\n");
     }
 }
 
