@@ -11,6 +11,8 @@
  */
 #pragma once
 
+#include <cstdint>
+
 namespace Music
 {
 
@@ -60,6 +62,14 @@ namespace Music
     {
         Major,
         Minor,
+    };
+
+    ///////////////////////////////////////////////////////////////////////////////
+    enum class Articulation : uint8_t
+    {
+        Staccato,
+        Normal,
+        Legato,
     };
 
     ///////////////////////////////////////////////////////////////////////////////
