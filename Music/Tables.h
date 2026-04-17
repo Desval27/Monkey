@@ -96,37 +96,37 @@ namespace Music
     static const char *s_AEOLIAN           = "AEOLIAN";
     static const char *s_LOCRIAN           = "LOCRIAN";
 
-    static const char *s_HARMONIC_MINOR    = "HARMIC MIN";
+    static const char *s_HARMONIC_MINOR    = "HARMONIC MINOR";
     static const char *s_LOCRIAN_s6        = "LOCRIAN #6";
     static const char *s_IONIAN_s5         = "IONIAN #5";
     static const char *s_DORIAN_s4         = "DORIAN #4";
-    static const char *s_PHYRGIAN_DOMINANT = "PHYR DOMIN";
+    static const char *s_PHYRGIAN_DOMINANT = "PHYR DOMINANT";
     static const char *s_LYDIAN_s2         = "LYDIAN #2";
-    static const char *s_ULTRALOCRIAN      = "ULTRALOCRI";
+    static const char *s_ULTRALOCRIAN      = "ULTRALOCRIAN";
 
-    static const char *s_MELODIC_MINOR     = "MELDIC MIN";
+    static const char *s_MELODIC_MINOR     = "MELODIC MINOR";
     static const char *s_DORIAN_b2         = "DORIAN b2";
-    static const char *s_LYDIAN_AUG        = "LYDIAN AUG";
-    static const char *s_LYDIAN_DOMINANT   = "LYDIAN DOM";
+    static const char *s_LYDIAN_AUG        = "LYDIAN AUGMENTED";
+    static const char *s_LYDIAN_DOMINANT   = "LYDIAN DOMINANT";
     static const char *s_MIXOLYDIAN_b6     = "MIXOLYD b6";
     static const char *s_LOCRIAN_s2        = "LOCRIAN #2";
-    static const char *s_SUPER_LOCRIAN     = "SUPER LOCR";
+    static const char *s_SUPER_LOCRIAN     = "SUPER LOCRIAN";
 
-    static const char *s_HARMONIC_MAJOR    = "HARMIC MAJ";
+    static const char *s_HARMONIC_MAJOR    = "HARMONIC MAJOR";
     static const char *s_DORIAN_b5         = "DORIAN b5";
-    static const char *s_PHRYGIAN_b4       = "PHRYGIN b4";
+    static const char *s_PHRYGIAN_b4       = "PHRYGIAN b4";
     static const char *s_LYDIAN_b3         = "LYDIAN b3";
-    static const char *s_MIXOLYDIAN_b2     = "MIXOLYD b2";
-    static const char *s_LYDIAN_AUG_s2     = "LYD AUG #2";
+    static const char *s_MIXOLYDIAN_b2     = "MIXOLYDIAN b2";
+    static const char *s_LYDIAN_AUG_s2     = "LYDIAN AUG #2";
     static const char *s_LOCRIAN_b7        = "LOCRIAN b7";
 
-    static const char *s_DOUBLE_HARMONIC   = "DBL HARMON";
-    static const char *s_LYDIAN_b6_b7      = "LYDIA b6b7";
-    static const char *s_ULTRAPHRYGIAN     = "ULTRAPHRYG";
-    static const char *s_HUNGARIAN_MINOR   = "HUNGAR MIN";
+    static const char *s_DOUBLE_HARMONIC   = "DBL HARMONIC MAJOR";
+    static const char *s_LYDIAN_b6_b7      = "LYDIAN b6b7";
+    static const char *s_ULTRAPHRYGIAN     = "ULTRAPHRYGIAN";
+    static const char *s_HUNGARIAN_MINOR   = "HUNGARIAN MINOR";
     static const char *s_ORIENTAL          = "ORIENTAL";
-    static const char *s_IONIAN_s2_s5      = "IONIAN#2#5";
-    static const char *s_LOCRIAN_bb3_bb7   = "LOC bb3bb7";
+    static const char *s_IONIAN_s2_s5      = "IONIAN #2#5";
+    static const char *s_LOCRIAN_bb3_bb7   = "LOCRIAN bb3bb7";
 
     // clang-format on
 

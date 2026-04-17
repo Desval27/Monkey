@@ -28,7 +28,7 @@ namespace Music
      * @param ts
      * @param bars
      */
-    Gnome(const TimeSignature &ts, int bars) : _ts(ts), _bars(bars)
+    Gnome(const TimeSignature &ts, int bars) : _ts(&ts), _bars(bars)
     {
       Reset();
       _beat = -1; // Not running yet.
@@ -42,7 +42,7 @@ namespace Music
     void DoBeat()
     {
       _beat++;
-      if (_beat == _ts.beats)
+      if (_beat == _ts->beats)
       {
         _bar++;
         if (_bar == _bars)
@@ -100,7 +100,7 @@ namespace Music
      */
     bool RisingBeatEdge() const
     {
-      return (_pulse % static_cast<int>(_ts.beatValue)) == 0;
+      return (_pulse % static_cast<int>(_ts->beatValue)) == 0;
     }
 
     /**
@@ -123,7 +123,7 @@ namespace Music
     }
 
   private:
-    const TimeSignature _ts;
+    const TimeSignature *_ts;
     int _bars;
     int _beat;
     int _bar;
