@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include "NoteValue.h"
+#include <Music/Music.h>
 
 namespace Music
 {

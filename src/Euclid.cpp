@@ -5,7 +5,7 @@
  * @author pfburdette <paul.f.burdette@gmail.com>
  *
  * @brief
- * 
+ *
  * @copyright This work is dedicated to the public domain under CC0 1.0.
  * To the extent possible under law, the author(s) have waived all copyright
  * and related or neighboring rights to this software.
@@ -14,11 +14,11 @@
 
 //  #include <stdint.h>
 //  #include <algorithm>
- #include <Monkey.h>
- #include <Music/Music.h>
+#include <Monkey.h>
+#include <Music/Music.h>
 
- namespace Music
- {
+namespace Music
+{
   // ============================================================
   // -------------------- EUCLIDEAN BUILDER ----------------------
   // Bucket method + rotation
@@ -58,4 +58,41 @@
     }
     return n;
   }
- } // namespace Music
+
+  size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern)
+  {
+    DEBUG_GOT_HERE();
+    n = clamp(n, 1, static_cast<int>(std::min(pattern.Capacity(), ArrayLen(_buffer))));
+    k = clamp(k, 0, n);
+    DPRINTF("Euclid(%d,%d,%d)\n", k, n, r);
+
+    // Start with a clear pattern
+    for (uint8_t i = 0; i < n; i++)
+      pattern.Add(false);
+
+    uint16_t bucket = 0;
+    for (uint8_t i = 0; i < n; i++)
+    {
+      bucket += k;
+      if (bucket >= n)
+      {
+        bucket -= n;
+        pattern[i] = true;
+      }
+    }
+
+    r = (n == 0) ? 0 : (r % n);
+    if (r)
+    {
+      for (uint8_t i = 0; i < n; i++)
+        _buffer[i] = pattern[i];
+      for (uint8_t i = 0; i < n; i++)
+      {
+        uint8_t src = (i + (n - r)) % n; // right rotate
+        pattern[i] = _buffer[src];
+      }
+    }
+    return pattern.Count();
+  }
+
+} // namespace Music

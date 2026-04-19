@@ -1,4 +1,4 @@
-#include <Music/EventSet.h>
+#include <Music/Music.h>
 
 namespace Music {
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Music/MusicTypes.h>
+#include <Music/Music.h>
 
 namespace Music
 {

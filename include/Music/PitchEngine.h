@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include <Music/Temperament.h>
+#include <Music/Music.h>
 
 namespace Music {
 /**

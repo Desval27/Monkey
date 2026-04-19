@@ -10,10 +10,11 @@
  */
 #pragma once
 
-#include "MusicTypes.h"
-#include "NoteValue.h"
-#include "ScaleMap.h"
-#include "Tables.h"
+#include <cstddef>
+
+#include <Music/MusicTypes.h>
+#include <Music/NoteValue.h>
+#include <Music/ScaleMap.h>
 
 namespace Music
 {
@@ -35,6 +36,25 @@ namespace Music
      */
     struct ChordEvent
     {
+        ChordEvent()
+            : root(0),
+              value(NoteValue::None),
+              extensions(ChordExtension{}),
+              alterations(ChordAlteration{}),
+              inversion(0)
+        {
+        }
+
+        ChordEvent(Note r, NoteValue v, ChordExtension ext = ChordExtension{},
+                   ChordAlteration alt = ChordAlteration{}, int inv = 0)
+            : root(r),
+              value(v),
+              extensions(ext),
+              alterations(alt),
+              inversion(inv)
+        {
+        }
+
         Note root;
         NoteValue value;
         ChordExtension extensions;

@@ -25,8 +25,7 @@
 #endif
 #endif
 
-#include <Monkey.h>
-#include "Chord.h"
+#include <Music/Music.h>
 
 #include <Music/Tone12.h>
 #include <Music/Tone15.h>

@@ -1,43 +1,90 @@
+
+
+####################################################################################################
+# Directory Definitions
+####################################################################################################
+SRC_DIR := src
+INC_DIR := include
+LIB_DIR := lib
+BIN_DIR := bin
+BUILD_DIR := build
+TEST_DIR := test
+
+####################################################################################################
+# Targets
+####################################################################################################
+LIB_NAME := libMonkey.a
+LIB_OUT := $(LIB_DIR)/$(LIB_NAME)
+
+####################################################################################################
 # Build Options
-USE_DEBUG = 1
-DEBUG_FLAG = -g
+####################################################################################################
+USE_DEBUG = -DUSE_DEBUG
+DEBUGFLAGS = -g
+OPTIMIZEFLAGS = -O2
+CXXSTANDARD = -std=c++17
+#DEPFLAGS = -MT $@ -MMD -MP -MF $(DEP_DIR)/$*.d
+DEPFLAGS = -MMD -MP
 
-TARGETS = music_test weighted_map_example
+DEFINES = $(DEBUGFLAGS) $(USE_DEBUG)
+INCLUDES = -I$(INC_DIR)
+WARNINGS = -Wall -Wextra
+EXTRA_WARNINGS = -Wno-unused-parameter -Wno-unused-variable
 
-DEFINES = -DUSE_DEBUG=$(USE_DEBUG) -Wno-unused-variable
+####################################################################################################
+# Compilers and Flags
+####################################################################################################
+CXX := g++
+CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS)
+LDFLAGS = -L$(LIB_DIR)
+LDLIBS = -lMonkey
 
-CPP_SOURCES = \
-	Monkey.cpp\
-	Music.cpp \
-	EventSet.cpp \
-	Euclid.cpp
-CPP_OBJS=$(CPP_SOURCES:%.cpp=%.o)
+AR := ar
+ARFLAGS = rcs
 
-INCLUDES = -I./
+####################################################################################################
+# Files and Targets
+####################################################################################################
+LIB_SRCS := $(wildcard $(SRC_DIR)/*.cpp)
+LIB_OBJS := $(LIB_SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
-DEPDIR := .deps
-DEPFLAGS = -MT $@ -MMD -MP -MF $(DEPDIR)/$*.d
-DEPFILES := $(TARGETS:%=$(DEPDIR)/%.d) $(CPP_SOURCES:%.cpp=$(DEPDIR)/%.d)
+TEST_SRCS := $(wildcard $(TEST_DIR)/*.cpp)
+TEST_BINS := $(TEST_SRCS:$(TEST_DIR)/%.cpp=$(BIN_DIR)/%)
 
-# Define Variables
-CXX = g++
-CXXFLAGS = $(DEBUG_FLAG) $(DEFINES) $(DEPFLAGS) -pedantic -pedantic-errors -Wall -O2 $(INCLUDES)
+# Collect all potential .d files for inclusion
+ALL_DEPS := $(LIB_OBJS:.o=.d) $(TEST_OBJS:.o=.d)
 
-all: $(TARGETS)
+####################################################################################################
+# Main Build Rules
+####################################################################################################
+.PHONY: all clean tests directories
 
-music_test: music_test.o $(CPP_OBJS)
-	$(CXX) $^ -o $@
+all: directories $(LIB_OUT) tests
 
-weighted_map_example: weighted_map_example.o $(CPP_OBJS)
-	$(CXX) $^ -o $@
+directories: 
+	@mkdir -p $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR)
 
-clean:
-	rm -f $(TARGETS) $(TARGETS:.exe=.o) $(CPP_OBJS) $(DEPFILES)
+$(LIB_OUT): $(LIB_OBJS)
+	$(AR) $(ARFLAGS) $@ $^
 
-# test.exe: test.o $(CPP_OBJS)
-# 	$(CXX) test.o -o $@
-
-%.o: %.cpp 
+$(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
--include $(DEPFILES)
+tests: $(TEST_BINS)
+
+$(BIN_DIR)/%: $(TEST_DIR)/%.cpp $(LIB_OUT)
+	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
+
+clean:
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR)
+
+echo: 
+	@echo $(LIB_SRCS)
+	@echo $(LIB_OBJS)
+	@echo $(LIB_OUT)
+	@echo $(TEST_SRCS)
+	@echo $(TEST_BINS)
+	@echo $(ALL_DEPS)
+
+# Automatic Dependency Inclusion
+-include $(ALL_DEPS)

@@ -17,7 +17,7 @@
 #include <cstdint>
 #endif
 
-#if USE_DEBUG
+#ifdef USE_DEBUG
 #include <cstdarg>
 using DebugFunc = void (*)(const char* format, va_list args);
 extern void setDebugFunc(DebugFunc f);

@@ -11,8 +11,7 @@
  */
 #pragma once
 
-#include <Monkey.h>
-#include <Music/MusicTypes.h>
+#include <Music/Music.h>
 
 namespace Music
 {

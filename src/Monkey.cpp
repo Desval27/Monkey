@@ -1,6 +1,6 @@
 #include <Monkey.h>
 
-#if USE_DEBUG
+#ifdef USE_DEBUG
 // #include <cstdarg>
 // #include <cstdio>
 DebugFunc debugFunc = nullptr;
