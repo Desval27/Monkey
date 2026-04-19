@@ -44,6 +44,7 @@ namespace Music
     size_t Count() const { return _eventCount; }
     bool Empty() const { return _eventCount == 0; }
     void Clear() { _eventCount = 0; }
+    bool AtCapacity() const { return Count() >= Capacity()-1; }
 
     int GetEventStartPulse(size_t index) const
     {

@@ -134,16 +134,16 @@ namespace Music
     //
     static const char *const NOTE_NAMES_12[] = {
         n_C,
-        n_Cs_Db,
+        n_Db, // n_Cs_Db,
         n_D,
-        n_Ds_Eb,
+        n_Eb, //n_Ds_Eb,
         n_E,
         n_F,
-        n_Fs_Gb,
+        n_Fs, //n_Fs_Gb,
         n_G,
-        n_Gs_Ab,
+        n_Ab, //n_Gs_Ab,
         n_A,
-        n_As_Bb,
+        n_Bb, //n_As_Bb,
         n_B};
 
     static const char *const INTERVAL_NAMES_12[] = {
