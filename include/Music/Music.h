@@ -60,6 +60,13 @@ namespace Music
                                      int bars,
                                      NoteValue granularity,
                                      NoteEventSet<> &events);
+    size_t GenerateEventsFromPattern2(const PatternEventSet<> &pattern,
+                                     const ChordEventSet<> &chords,
+                                     const TimeSignature &ts,
+                                     const ScaleMap &scale,
+                                     int bars,
+                                     NoteValue granularity,
+                                     NoteEventSet<> &events);
 
     size_t GeneratePattern(const TimeSignature &ts, int bars, float density,
                            NoteValue granularity, PatternEventSet<> &pattern);

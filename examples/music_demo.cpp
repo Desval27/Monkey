@@ -30,7 +30,7 @@ void testThing()
 {
     std::cout << std::string(80, '-') << std::endl;
     const int bars = 8;
-    const float density = randomRange(0.2f, 0.8f); // 0.50f;
+    const float density = randomRange(0.6f, 0.9f); // 0.50f;
     const NoteValue g = NoteValue::Eighth;
     ChordEventSet<> chords;
     PatternEventSet<> pattern;
@@ -46,7 +46,7 @@ void testThing()
     DebugPattern(ts, g, pattern);
     std::cout << std::endl;
 
-    size_t eventSize = GenerateEventsFromPattern(pattern, chords, ts, scale, bars, g, noteEvents);
+    size_t eventSize = GenerateEventsFromPattern2(pattern, chords, ts, scale, bars, g, noteEvents);
     std::cout << "Note Events" << std::endl;
     DebugNoteEvents(t, ts, noteEvents);
     std::cout << std::endl;

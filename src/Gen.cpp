@@ -2,15 +2,15 @@
 
 namespace Music
 {
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief 
-  /// @param ts 
-  /// @param scale 
-  /// @param bars 
-  /// @param mode 
-  /// @param granularity 
-  /// @param chords 
-  /// @return 
+  ////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param ts
+  /// @param scale
+  /// @param bars
+  /// @param mode
+  /// @param granularity
+  /// @param chords
+  /// @return
   size_t GenerateStandardChordEvents(const TimeSignature &ts,
                                      const ScaleMap &scale,
                                      int bars,
@@ -21,16 +21,16 @@ namespace Music
     return GenerateWeightedChordEvents(ts, scale, bars, mode, 0, granularity, chords);
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief 
-  /// @param ts 
-  /// @param scale 
-  /// @param bars 
-  /// @param mode 
-  /// @param tonic 
-  /// @param value 
-  /// @param chords 
-  /// @return 
+  ////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param ts
+  /// @param scale
+  /// @param bars
+  /// @param mode
+  /// @param tonic
+  /// @param value
+  /// @param chords
+  /// @return
   size_t GenerateWeightedChordEvents(const TimeSignature &ts,
                                      const ScaleMap &scale,
                                      int bars,
@@ -66,12 +66,12 @@ namespace Music
     return barsToEmit;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief 
-  /// @param pattern 
-  /// @param granularity 
-  /// @param events 
-  /// @return 
+  ////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param pattern
+  /// @param granularity
+  /// @param events
+  /// @return
   size_t GenerateChordEventsFromPattern(const PatternEventSet<> &pattern,
                                         NoteValue granularity,
                                         ChordEventSet<> &events)
@@ -136,17 +136,16 @@ namespace Music
     return events.Count();
   }
 
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief 
-  /// @param pattern 
-  /// @param chords 
-  /// @param ts 
-  /// @param bars 
-  /// @param granularity 
-  /// @param events 
-  /// @return 
-  size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,                                  
+  ////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param pattern
+  /// @param chords
+  /// @param ts
+  /// @param bars
+  /// @param granularity
+  /// @param events
+  /// @return
+  size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,
                                    const ChordEventSet<> &chords,
                                    const TimeSignature &ts,
                                    const ScaleMap &scale,
@@ -166,7 +165,7 @@ namespace Music
 
     Note tones[20];
     size_t toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
-    
+
     for (size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
     {
       if (chordPulses >= static_cast<int>(chords[chordIdx].value) && chordIdx < chords.Count() - 1)
@@ -178,8 +177,8 @@ namespace Music
       }
 
       if (pattern[i])
-      {      
-        // Is this at the start of a bar?
+      {
+        // Is this at the start of a bar?  Then start with a chord
         if (pulses % ppb == 0)
           events.Emplace(tones[0], 0, granularity);
         else
@@ -192,8 +191,89 @@ namespace Music
       {
         // If our last event was also a rest then just add to its value
         // Unless the new event is at the start of a bar
-        if (pulses % ppb != 0 && events.Count() > 1 && events[events.Count()-1].note == REST)
-          events[events.Count()-1].value += granularity;
+        if (pulses % ppb != 0 && events.Count() > 1 && events[events.Count() - 1].note == REST)
+          events[events.Count() - 1].value += granularity;
+        else
+          events.Emplace(REST, 0, granularity);
+      }
+    }
+    return events.Count();
+  }
+
+  ////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param pattern
+  /// @param chords
+  /// @param ts
+  /// @param bars
+  /// @param granularity
+  /// @param events
+  /// @return
+  size_t GenerateEventsFromPattern2(const PatternEventSet<> &pattern,
+                                    const ChordEventSet<> &chords,
+                                    const TimeSignature &ts,
+                                    const ScaleMap &scale,
+                                    int bars,
+                                    NoteValue granularity,
+                                    NoteEventSet<> &events)
+  {
+    events.Clear();
+    if (chords.Count() == 0)
+      return 0;
+
+    // Direct one-to-one copy of events to notes
+    int pulses = 0;
+    int chordPulses = 0;
+    int ppb = ts.PulsesPerBar();
+    size_t chordIdx = 0;
+
+    Note tones[20];
+    size_t toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
+
+    for (size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
+    {
+      if (chordPulses >= static_cast<int>(chords[chordIdx].value) && chordIdx < chords.Count() - 1)
+      {
+        chordIdx++;
+        chordPulses = 0;
+
+        toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
+      }
+
+      if (pattern[i])
+      {
+        // Is this at the start of a bar?  Then start with a chord
+        if (pulses % ppb == 0)
+        {
+          // Start with a random chord tone.
+          size_t idx = randomRange((size_t)0, toneCount);
+          events.Emplace(tones[0], 0, granularity);
+        }
+        else
+        {
+          int periodOffset = 0;
+          float unitRandom = randomRange(0.0f, 0.999999f);
+          Note n = scale.GetWeightedNote(unitRandom, periodOffset, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY, ArrayLen(SCALE_WEIGHTS_7_CHORD_TONE_HEAVY));
+
+          // If our last event was the same note then (for now) just add to the original duraton
+          // If our last event was also a rest then just add to its value
+          // Unless the new event is at the start of a bar
+          if (pulses % ppb != 0 && events.Count() > 1 && events[events.Count() - 1].note == n)
+          {
+            events[events.Count() - 1].value += granularity;
+          }
+          else
+          {
+            events.Emplace(n, periodOffset, granularity);
+          }
+        }
+      }
+      else
+      {
+        // If our last event was also a rest then just add to its value
+        // Unless the new event is at the start of a bar
+        if (pulses % ppb != 0 && events.Count() > 1 && events[events.Count() - 1].note == REST)
+          events[events.Count() - 1].value += granularity;
         else
           events.Emplace(REST, 0, granularity);
       }
