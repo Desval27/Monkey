@@ -11,81 +11,101 @@
  */
 #pragma once
 
+#include <Monkey.h>
+#include <Music/Chord.h>
+#include <Music/EventSet.h>
+#include <Music/MusicConst.h>
+#include <Music/MusicHelpers.h>
+#include <Music/MusicTypes.h>
+#include <Music/Note.h>
+#include <Music/NoteValue.h>
+#include <Music/Persona.h>
+#include <Music/PitchEngine.h>
+#include <Music/ScaleMap.h>
+#include <Music/Tables.h>
+#include <Music/Temperament.h>
+#include <Music/TimeSignature.h>
+
 #include <cstddef>
 #include <cstdint>
 
-#include <Monkey.h>
-
-#include <Music/MusicTypes.h>
-#include <Music/MusicConst.h>
-#include <Music/MusicHelpers.h>
-#include <Music/Note.h>
-#include <Music/Chord.h>
-#include <Music/NoteValue.h>
-#include <Music/EventSet.h>
-
-#include <Music/TimeSignature.h>
-#include <Music/Temperament.h>
-#include <Music/ScaleMap.h>
-#include <Music/PitchEngine.h>
-
-#include <Music/Tables.h>
-
 namespace Music
 {
+  // Different Pattern Generators
+  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  class NullGenerator
+  {
+  public:
+    static size_t GeneratePattern(const TimeSignature &ts, int bars,
+                                  float density, NoteValue granularity,
+                                  PatternEventSet<MAX_EVENTS> &pattern)
+    {
+      pattern.Clear();
+      return pattern.Count();
+    }
+  };
 
-    ////////////////////////////////////////////////////////////////////////////////
-    // Misc. Functions
-    ////////////////////////////////////////////////////////////////////////////////
-    size_t GenerateChordEventsFromPattern(const PatternEventSet<> &pattern,
-                                          NoteValue granularity,
-                                          ChordEventSet<> &events);
-    size_t GenerateStandardChordEvents(const TimeSignature &ts,
-                                       const ScaleMap &scale,
-                                       int bars,
-                                       HarmonicMode mode,
-                                       NoteValue granularity,
-                                       ChordEventSet<> &chords);
-    size_t GenerateWeightedChordEvents(const TimeSignature &ts,
-                                       const ScaleMap &scale,
-                                       int bars,
-                                       HarmonicMode mode,
-                                       Note tonic,
-                                       NoteValue value,
-                                       ChordEventSet<> &chords);
-    size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,
-                                     const ChordEventSet<> &chords,
-                                     const TimeSignature &ts,
-                                     const ScaleMap &scale,
-                                     int bars,
-                                     NoteValue granularity,
-                                     NoteEventSet<> &events);
-    size_t GenerateEventsFromPattern2(const PatternEventSet<> &pattern,
-                                     const ChordEventSet<> &chords,
-                                     const TimeSignature &ts,
-                                     const ScaleMap &scale,
-                                     int bars,
-                                     NoteValue granularity,
-                                     NoteEventSet<> &events);
+  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  class EuclidianGenerator
+  {
+  public:
+    static size_t GeneratePattern(const TimeSignature &ts, int bars,
+                                  float density, NoteValue granularity,
+                                  PatternEventSet<MAX_EVENTS> &pattern)
+    {
+      if (pattern.Capacity() == 0 || bars == 0 || ts.beatValue == NoteValue::None || granularity == NoteValue::None)
+        return 0; // Sanity check
 
-    size_t GeneratePattern(const TimeSignature &ts, int bars, float density,
-                           NoteValue granularity, PatternEventSet<> &pattern);
+      int n = (ts.beats * bars) *
+              (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
+      int k = n * density;
+      return BuildEuclid(k, n, 1, pattern);
+    }
+  };
 
-    ScaleDegree GetWeightedStartingChord(HarmonicMode mode = HarmonicMode::Major);
-    ScaleDegree GetWeightedNextChord(ScaleDegree fromDegree,
-                                     HarmonicMode mode = HarmonicMode::Major);
+  ////////////////////////////////////////////////////////////////////////////////
+  // Misc. Functions
+  ////////////////////////////////////////////////////////////////////////////////
+  size_t GenerateChordEventsFromPattern(const PatternEventSet<> &pattern,
+                                        NoteValue granularity,
+                                        ChordEventSet<> &events);
+  size_t GenerateStandardChordEvents(const TimeSignature &ts,
+                                     const ScaleMap &scale, int bars,
+                                     HarmonicMode mode, NoteValue granularity,
+                                     ChordEventSet<> &chords);
+  size_t GenerateWeightedChordEvents(const TimeSignature &ts,
+                                     const ScaleMap &scale, int bars,
+                                     HarmonicMode mode, Note tonic,
+                                     NoteValue value, ChordEventSet<> &chords);
+  size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,
+                                   const ChordEventSet<> &chords,
+                                   const TimeSignature &ts, const ScaleMap &scale,
+                                   int bars, NoteValue granularity,
+                                   NoteEventSet<> &events);
+  size_t GenerateEventsFromPattern2(const PatternEventSet<> &pattern,
+                                    const ChordEventSet<> &chords,
+                                    const TimeSignature &ts,
+                                    const ScaleMap &scale, int bars,
+                                    NoteValue granularity,
+                                    NoteEventSet<> &events);
 
-    size_t BuildEuclid(int k, int n, int r, bool *out, size_t outMax);
-    size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern);
+  size_t GeneratePattern(const TimeSignature &ts, int bars, float density,
+                         NoteValue granularity, PatternEventSet<> &pattern);
+
+  ScaleDegree GetWeightedStartingChord(HarmonicMode mode = HarmonicMode::Major);
+  ScaleDegree GetWeightedNextChord(ScaleDegree fromDegree,
+                                   HarmonicMode mode = HarmonicMode::Major);
+
+  size_t BuildEuclid(int k, int n, int r, bool *out, size_t outMax);
+  size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern);
 
 #if USE_DEBUG
-    void DebugPattern(const TimeSignature &ts, NoteValue granularity, PatternEventSet<> pattern);
-    void DebugNoteEvents(const Temperament &t,
-                         const TimeSignature &ts,
-                         const NoteEventSet<> &events);
-    void DebugChordEvents(const Temperament &t,
-                          const TimeSignature &ts,
-                          const ChordEventSet<> chords);
+  void DebugPattern(const TimeSignature &ts, NoteValue granularity,
+                    PatternEventSet<> pattern);
+  void DebugNoteEvents(const Temperament &t, const TimeSignature &ts,
+                       const NoteEventSet<> &events);
+  void DebugChordEvents(const Temperament &t, const TimeSignature &ts,
+                        const ChordEventSet<> chords);
 #endif
 
 } // namespace Music

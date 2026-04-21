@@ -70,7 +70,7 @@ namespace Music
           _bar = 0;
       }
 
-      _pulse = (_bar * _ts->PulsesPerBar()) + (_beat * PulsesPerBeat());
+      _pulse = (_bar * _ts->GetPulsesPerBar()) + (_beat * PulsesPerBeat());
     }
 
     /**

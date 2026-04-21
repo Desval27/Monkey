@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <utility>
 
+#include <Music/TimeSignature.h>
 #include <Music/Chord.h>
 #include <Music/Note.h>
 
@@ -38,13 +39,22 @@ namespace Music
   public:
     using EventType = T;
 
-    EventSet() : _emptyEvent(), _eventCount(0) {}
+    EventSet() : emptyEvent_(), eventCount_(0) {}
 
+    void Clear() { eventCount_ = 0; }
+
+    bool AtCapacity() const { return Count() >= Capacity() - 1; }
     constexpr size_t Capacity() const { return MAX_EVENTS; }
-    size_t Count() const { return _eventCount; }
-    bool Empty() const { return _eventCount == 0; }
-    void Clear() { _eventCount = 0; }
-    bool AtCapacity() const { return Count() >= Capacity()-1; }
+    size_t Count() const { return eventCount_; }
+    bool IsEmpty() const { return eventCount_ == 0; }
+
+    int GetBarsForTimeSignature(const TimeSignature &ts) const
+    {
+      int ppb = ts.GetPulsesPerBar();
+      if (ppb != 0)
+        return GetTotalEventPulses() / ppb;
+      return 0;
+    }
 
     int GetEventStartPulse(size_t index) const
     {
@@ -75,15 +85,15 @@ namespace Music
 
       const int normalizedPulse = pulse % totalPulses;
 
-        int pulseCursor = 0;
-        for (size_t i = 0; i < Count(); i++)
-        {
-          const int span = static_cast<int>(Value(i));
-          if (normalizedPulse < (pulseCursor + span))
-            return static_cast<int>(i);
+      int pulseCursor = 0;
+      for (size_t i = 0; i < Count(); i++)
+      {
+        const int span = static_cast<int>(Value(i));
+        if (normalizedPulse < (pulseCursor + span))
+          return static_cast<int>(i);
 
-          pulseCursor += span;
-        }
+        pulseCursor += span;
+      }
 
       return static_cast<int>(Count() - 1);
     }
@@ -92,55 +102,55 @@ namespace Music
     {
       int index = GetEventIndexForPulse(pulse);
       if (index >= 0 && index < static_cast<int>(Count()))
-        return _events[index];
-      return _emptyEvent;
+        return events_[index];
+      return emptyEvent_;
     }
 
-    T *Data() { return _events; }
-    const T *Data() const { return _events; }
+    T *Data() { return events_; }
+    const T *Data() const { return events_; }
 
-    T &operator[](size_t index) { return _events[index]; }
-    const T &operator[](size_t index) const { return _events[index]; }
+    T &operator[](size_t index) { return events_[index]; }
+    const T &operator[](size_t index) const { return events_[index]; }
 
     bool Add(const T &event)
     {
-      if (_eventCount >= MAX_EVENTS)
+      if (eventCount_ >= MAX_EVENTS)
       {
         return false;
       }
 
-      _events[_eventCount++] = event;
+      events_[eventCount_++] = event;
       return true;
     }
 
     template <typename... Args>
     bool Emplace(Args &&...args)
     {
-      if (_eventCount >= MAX_EVENTS)
+      if (eventCount_ >= MAX_EVENTS)
       {
         return false;
       }
 
-      _events[_eventCount++] = T(std::forward<Args>(args)...);
+      events_[eventCount_++] = T(std::forward<Args>(args)...);
       return true;
     }
 
-    Note &Pitch(size_t index) { return EventTraits<T>::Pitch(_events[index]); }
+    Note &Pitch(size_t index) { return EventTraits<T>::Pitch(events_[index]); }
     const Note &Pitch(size_t index) const
     {
-      return EventTraits<T>::Pitch(_events[index]);
+      return EventTraits<T>::Pitch(events_[index]);
     }
 
-    NoteValue &Value(size_t index) { return EventTraits<T>::Value(_events[index]); }
+    NoteValue &Value(size_t index) { return EventTraits<T>::Value(events_[index]); }
     const NoteValue &Value(size_t index) const
     {
-      return EventTraits<T>::Value(_events[index]);
+      return EventTraits<T>::Value(events_[index]);
     }
 
   private:
-    T _emptyEvent;
-    T _events[MAX_EVENTS];
-    size_t _eventCount;
+    T emptyEvent_;
+    T events_[MAX_EVENTS];
+    size_t eventCount_;
   };
 
   template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>

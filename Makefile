@@ -1,4 +1,15 @@
+# SPDX-License-Identifier: CC0-1.0 
 
+###############################################################################
+#* @file Makefile
+#* @brief General Dev Utilities.
+#* @author pfburdette <paul.f.burdette@gmail.com>
+#*
+#* @copyright This work is dedicated to the public domain under CC0 1.0.
+#* To the extent possible under law, the author(s) have waived all copyright
+#* and related or neighboring rights to this software.
+#* See <http://creativecommons.org>
+###############################################################################
 
 ###############################################################################
 # Directory Definitions
@@ -62,7 +73,7 @@ ALL_DEPS := $(LIB_OBJS:.o=.d) $(TEST_OBJS:.o=.d)
 ###############################################################################
 # Main Build Rules
 ###############################################################################
-.PHONY: all clean tests check examples directories
+.PHONY: all clean tests examples directories
 
 all: directories $(LIB_OUT) tests examples
 
@@ -75,9 +86,7 @@ $(LIB_OUT): $(LIB_OBJS)
 $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-tests: $(TEST_BINS)
-
-check: directories tests
+tests: directories $(TEST_BINS)
 	@set -e; for test_bin in $(TEST_BINS); do ./$$test_bin; done
 
 examples: directories $(EXAMPLE_BINS)

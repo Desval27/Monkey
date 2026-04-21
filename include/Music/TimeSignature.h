@@ -41,7 +41,7 @@ namespace Music
         /**
          * @brief Number of beats in each bar.
          */
-        int beats; // e.g., 4 for 4/4 time
+        int beats; // e.g., 4 for 4/4 time, 6 for 6/8 time
         /**
          * @brief Note value that counts as one beat.
          */
@@ -99,7 +99,7 @@ namespace Music
          *
          * @return int Pulses contained in a full bar.
          */
-        int PulsesPerBar() const { return (beats * static_cast<int>(beatValue)); }
+        int GetPulsesPerBar() const { return (beats * static_cast<int>(beatValue)); }
     };
 
 } // namespace Music

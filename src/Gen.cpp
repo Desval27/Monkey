@@ -160,7 +160,7 @@ namespace Music
     // Direct one-to-one copy of events to notes
     int pulses = 0;
     int chordPulses = 0;
-    int ppb = ts.PulsesPerBar();
+    int ppb = ts.GetPulsesPerBar();
     size_t chordIdx = 0;
 
     Note tones[20];
@@ -224,7 +224,7 @@ namespace Music
     // Direct one-to-one copy of events to notes
     int pulses = 0;
     int chordPulses = 0;
-    int ppb = ts.PulsesPerBar();
+    int ppb = ts.GetPulsesPerBar();
     size_t chordIdx = 0;
 
     Note tones[20];

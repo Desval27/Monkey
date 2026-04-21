@@ -111,9 +111,36 @@ constexpr const T fastPow(T base, int exp)
 #endif
 
 template <typename T>
+struct Range
+{
+    Range() : low(0), high(0) {};
+    Range(T low, T high) : low(low), high(high) {};
+    T low;
+    T high;
+};
+
+template <typename T>
+struct RangeWithDefault
+{
+    RangeWithDefault() : low(0), high(0), def(0) {};
+    RangeWithDefault(T low, T high, T def) : low(low), high(high), def(def) {};
+    
+    T low;
+    T high;
+    T def;
+};
+
+
+template <typename T>
 constexpr const T randomRange(const T& low, const T& high)
 {
     return low + static_cast<T>(rand()) / (static_cast<T>(RAND_MAX/(high - low)));
+}
+
+template <typename T>
+constexpr const T randomRange(const Range<T>& range)
+{
+    return randomRange<T>(range.low, range.high);
 }
 
 template <typename T, size_t N>
@@ -121,3 +148,6 @@ constexpr size_t ArrayLen(const T (&)[N])
 {
     return N;
 }
+
+
+
