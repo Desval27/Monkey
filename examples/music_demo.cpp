@@ -32,18 +32,24 @@ void testThing()
     const int bars = 8;
     const float density = randomRange(0.2f, 0.8f); // 0.50f;
     const NoteValue g = NoteValue::Eighth;
-    PatternEventSet<> pattern;
     ChordEventSet<> chords;
-
-    GeneratePattern(ts, bars, density, g, pattern);
-    DebugPattern(ts, g, pattern);
+    PatternEventSet<> pattern;
+    NoteEventSet<> noteEvents;
 
     GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
+    std::cout << "Chord Events" << std::endl;
     DebugChordEvents(t, ts, chords);
+    std::cout << std::endl;
 
-    NoteEventSet<> noteEvents;
+    GeneratePattern(ts, bars, density, g, pattern);
+    std::cout << "Pattern Events" << std::endl;
+    DebugPattern(ts, g, pattern);
+    std::cout << std::endl;
+
     size_t eventSize = GenerateEventsFromPattern(pattern, chords, ts, scale, bars, g, noteEvents);
-    DebugNoteEventsX(t, ts, noteEvents);
+    std::cout << "Note Events" << std::endl;
+    DebugNoteEvents(t, ts, noteEvents);
+    std::cout << std::endl;
 }
 
 int main(int argc, char *argv[])

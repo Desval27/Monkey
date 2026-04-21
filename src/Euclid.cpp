@@ -26,10 +26,8 @@ namespace Music
   bool _buffer[128];
   size_t BuildEuclid(int k, int n, int r, bool *out, size_t outSize)
   {
-    DEBUG_GOT_HERE();
     n = clamp(n, 1, static_cast<int>(std::min(outSize, ArrayLen(_buffer))));
     k = clamp(k, 0, n);
-    DPRINTF("Euclid(%d,%d,%d)\n", k, n, r);
 
     for (uint8_t i = 0; i < n; i++)
       out[i] = false;
@@ -61,10 +59,8 @@ namespace Music
 
   size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern)
   {
-    DEBUG_GOT_HERE();
     n = clamp(n, 1, static_cast<int>(std::min(pattern.Capacity(), ArrayLen(_buffer))));
     k = clamp(k, 0, n);
-    DPRINTF("Euclid(%d,%d,%d)\n", k, n, r);
 
     // Start with a clear pattern
     for (uint8_t i = 0; i < n; i++)

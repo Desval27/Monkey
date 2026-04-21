@@ -62,7 +62,7 @@ namespace Music
         int inversion;
 
         // Rigged for the moment to just get chord tones for testing.
-        size_t GetChordTones(const ScaleMap &scale, Note note[], size_t noteLen)
+        size_t GetChordTones(const ScaleMap &scale, Note note[], size_t noteLen) const
         {
             // Rigged for testing
             size_t size = 0;

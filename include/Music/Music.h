@@ -37,7 +37,7 @@ namespace Music
     ////////////////////////////////////////////////////////////////////////////////
     // Misc. Functions
     ////////////////////////////////////////////////////////////////////////////////
-    size_t GenerateChordEventsFromPattern(PatternEventSet<> &pattern,
+    size_t GenerateChordEventsFromPattern(const PatternEventSet<> &pattern,
                                           NoteValue granularity,
                                           ChordEventSet<> &events);
     size_t GenerateStandardChordEvents(const TimeSignature &ts,
@@ -53,13 +53,14 @@ namespace Music
                                        Note tonic,
                                        NoteValue value,
                                        ChordEventSet<> &chords);
-    size_t GenerateEventsFromPattern(PatternEventSet<> &pattern,
-                                     ChordEventSet<> &chords,
-                                     TimeSignature &ts,
-                                     ScaleMap &scale,
+    size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,
+                                     const ChordEventSet<> &chords,
+                                     const TimeSignature &ts,
+                                     const ScaleMap &scale,
                                      int bars,
                                      NoteValue granularity,
                                      NoteEventSet<> &events);
+
     size_t GeneratePattern(const TimeSignature &ts, int bars, float density,
                            NoteValue granularity, PatternEventSet<> &pattern);
 
@@ -69,22 +70,15 @@ namespace Music
 
     size_t BuildEuclid(int k, int n, int r, bool *out, size_t outMax);
     size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern);
+
 #if USE_DEBUG
-    void DebugPattern(const TimeSignature &ts,
-                      NoteValue granularity,
-                      const bool *pattern,
-                      size_t patternSize);
     void DebugPattern(const TimeSignature &ts, NoteValue granularity, PatternEventSet<> pattern);
+    void DebugNoteEvents(const Temperament &t,
+                         const TimeSignature &ts,
+                         const NoteEventSet<> &events);
     void DebugChordEvents(const Temperament &t,
                           const TimeSignature &ts,
                           const ChordEventSet<> chords);
-    void DebugNoteEvents(const Temperament &t,
-                         const TimeSignature &ts,
-                         const NoteEvent *events,
-                         size_t eventsSize);
-    void DebugNoteEventsX(const Temperament &t,
-                          const TimeSignature &ts,
-                          const NoteEventSet<> &events);
 #endif
 
 } // namespace Music

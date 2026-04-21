@@ -47,6 +47,7 @@ namespace Music
     ScaleDegree degree = GetWeightedStartingChord(mode);
     const bool hasScale = (scale.Count() >= SCALE_CHORD_COUNT);
 
+    chords.Clear();
     for (size_t i = 0; i < barsToEmit; ++i)
     {
       const int degreeIndex = ScaleDegreeIndex(degree, mode);
@@ -71,7 +72,7 @@ namespace Music
   /// @param granularity 
   /// @param events 
   /// @return 
-  size_t GenerateChordEventsFromPattern(PatternEventSet<> &pattern,
+  size_t GenerateChordEventsFromPattern(const PatternEventSet<> &pattern,
                                         NoteValue granularity,
                                         ChordEventSet<> &events)
   {
@@ -145,10 +146,10 @@ namespace Music
   /// @param granularity 
   /// @param events 
   /// @return 
-  size_t GenerateEventsFromPattern(PatternEventSet<> &pattern,                                  
-                                   ChordEventSet<> &chords,
-                                   TimeSignature &ts,
-                                   ScaleMap &scale,
+  size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,                                  
+                                   const ChordEventSet<> &chords,
+                                   const TimeSignature &ts,
+                                   const ScaleMap &scale,
                                    int bars,
                                    NoteValue granularity,
                                    NoteEventSet<> &events)
@@ -166,7 +167,7 @@ namespace Music
     Note tones[20];
     size_t toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
     
-    for (size_t i = 0; i < pattern.Count(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
+    for (size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
     {
       if (chordPulses >= static_cast<int>(chords[chordIdx].value) && chordIdx < chords.Count() - 1)
       {

@@ -1,7 +1,8 @@
 /* SPDX-License-Identifier: CC0-1.0 */
 /**
  * @file PitchEngine.h
- * @brief
+ * @brief Pitch quantization helpers backed by a temperament and optional scale
+ * map.
  * @author pfburdette <paul.f.burdette@gmail.com>
  *
  * @copyright This work is dedicated to the public domain under CC0 1.0.
@@ -15,11 +16,16 @@
 
 namespace Music {
 /**
- * @brief Quantized pitch helper using temperament + scale map
+ * @brief Converts scale or tempered pitch inputs into frequencies.
  *
+ * When a scale map is present, incoming scale indices are first mapped to scale
+ * degrees and period offsets before the temperament converts them to Hz.
  */
 class PitchEngine {
  public:
+  /**
+   * @brief Shapes a unit random value before weighted note selection.
+   */
   enum class RandomShape : uint8_t { Uniform = 0, BiasedLow, BiasedHigh };
 
   PitchEngine() : _t(nullptr), _s(nullptr), _rootHz(BASE_HZ) {}
@@ -31,12 +37,16 @@ class PitchEngine {
   void SetRootHz(float rootHz) { _rootHz = rootHz; }
 
   /**
-   * @brief
+   * @brief Converts a scale index to a frequency in Hz.
    *
-   * @param scaleIndex
-   * @param extraPeriod
-   * @param fineCents
-   * @return float
+   * If no scale map is configured, the scale index is treated as a direct
+   * temperament degree. Otherwise it is mapped through the active scale map,
+   * and the mapped period offset is added to @p extraPeriod.
+   *
+   * @param scaleIndex Index within the current scale map.
+   * @param extraPeriod Additional period offset applied after scale mapping.
+   * @param fineCents Fine tuning offset in cents.
+   * @return Frequency in Hz.
    */
   float FrequencyFromScaleIndex(int scaleIndex, int extraPeriod = 0,
                                 float fineCents = 0.0f) const {
@@ -52,15 +62,18 @@ class PitchEngine {
   }
 
   /**
-   * @brief
+   * @brief Picks a weighted mapped degree and converts it to a frequency in Hz.
    *
-   * @param scaleIndex
-   * @param unitRandom
-   * @param weights
-   * @param weightCount
-   * @param extraPeriod
-   * @param fineCents
-   * @return float
+   * The random input is expected in the half-open range [0, 1). If no scale map
+   * is configured, @p scaleIndex is treated as a direct temperament degree.
+   *
+   * @param scaleIndex Base scale index used to determine the period offset.
+   * @param unitRandom Unit random value used for weighted selection.
+   * @param weights Per-degree weights used by the scale map.
+   * @param weightCount Number of entries available in @p weights.
+   * @param extraPeriod Additional period offset applied after scale mapping.
+   * @param fineCents Fine tuning offset in cents.
+   * @return Frequency in Hz.
    */
   float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,
                                         const float weights[], int weightCount,
@@ -79,16 +92,16 @@ class PitchEngine {
   }
 
   /**
-   * @brief
+   * @brief Applies a random shaping curve, then performs weighted pitch lookup.
    *
-   * @param scaleIndex
-   * @param unitRandom
-   * @param shape
-   * @param weights
-   * @param weightCount
-   * @param extraPeriod
-   * @param fineCents
-   * @return float
+   * @param scaleIndex Base scale index used to determine the period offset.
+   * @param unitRandom Unit random value used for weighted selection.
+   * @param shape Curve applied to @p unitRandom before selection.
+   * @param weights Per-degree weights used by the scale map.
+   * @param weightCount Number of entries available in @p weights.
+   * @param extraPeriod Additional period offset applied after scale mapping.
+   * @param fineCents Fine tuning offset in cents.
+   * @return Frequency in Hz.
    */
   float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,
                                         RandomShape shape,
@@ -101,11 +114,13 @@ class PitchEngine {
   }
 
   /**
-   * @brief
+   * @brief Biases a unit random value toward low or high selections.
    *
-   * @param unitRandom
-   * @param shape
-   * @return float
+   * The returned value is clamped to the half-open range [0, 1).
+   *
+   * @param unitRandom Source random value.
+   * @param shape Bias curve to apply.
+   * @return Shaped unit random value.
    */
   static float ShapeUnitRandom(float unitRandom, RandomShape shape) {
     float r = ClampUnit(unitRandom);
@@ -121,10 +136,10 @@ class PitchEngine {
   }
 
   /**
-   * @brief
+   * @brief Converts a fully specified tempered pitch to a frequency in Hz.
    *
-   * @param pitch
-   * @return float
+   * @param pitch Tempered pitch expressed as degree, period, and fine cents.
+   * @return Frequency in Hz.
    */
   float Frequency(const TemperedPitch &pitch) const {
     if (!_t) return _rootHz;
@@ -139,10 +154,13 @@ class PitchEngine {
   float _rootHz;
 
   /**
-   * @brief
+   * @brief Clamps a value to the half-open unit interval [0, 1).
    *
-   * @param v
-   * @return float
+   * Keeping the upper bound below 1.0 prevents weighted index calculations from
+   * stepping one element past the end.
+   *
+   * @param v Input value to clamp.
+   * @return Clamped unit interval value.
    */
   static float ClampUnit(float v) {
     if (v < 0.0f) return 0.0f;

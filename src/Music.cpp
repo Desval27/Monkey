@@ -19,6 +19,11 @@ namespace Music
   // I  ii  II iii III IV TT  V  V+   vi  vii  VII
   // 0  1   2  3   4   5  6   7  8    9   10   11
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param weights
+  /// @param count
+  /// @return
   static int WeightedIndexFromRow(const float *weights, size_t count)
   {
     if (!weights || count == 0)
@@ -49,6 +54,10 @@ namespace Music
     return static_cast<int>(count - 1);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param mode
+  /// @return
   ScaleDegree GetWeightedStartingChord(HarmonicMode mode)
   {
     const int index = WeightedIndexFromRow(StartingChordWeightsForMode(mode),
@@ -56,6 +65,11 @@ namespace Music
     return ScaleDegreeFromIndex(index, mode);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param fromDegree
+  /// @param mode
+  /// @return
   ScaleDegree GetWeightedNextChord(ScaleDegree fromDegree, HarmonicMode mode)
   {
     const int fromIndex = ScaleDegreeIndex(fromDegree, mode);
@@ -68,91 +82,17 @@ namespace Music
     return ScaleDegreeFromIndex(toIdx, mode);
   }
 
-  // size_t GeneratePhrygianDominantChordEvents(ChordEvent* eventsOut,
-  //                                            size_t eventSize) {
-  //   // Key chords (I, bII, #iii(dim), iv, v(dim), +V, vii)
-  //   // Common Progressions:
-  //   //      I(7) - bII
-  //   //      I(7) - bII - vi - I(7)
-  //   // Andalusian Cadance:
-  //   //      vi - III - bII - I(7)
-  //   // Jazz/Tension:
-  //   //      I(7b9) - vii(7)
-  //   size_t eventIdx = 0;
-
-  //   if (eventSize < 10) return eventIdx;
-
-  //   // Bar 1
-  //   eventsOut[eventIdx].root = 0;
-  //   eventsOut[eventIdx].value = NoteValue::Whole;
-  //   eventIdx++;
-
-  //   // Bar 2
-  //   eventsOut[eventIdx].root = 1;
-  //   eventsOut[eventIdx].value = NoteValue::Whole;
-  //   eventIdx++;
-
-  //   // Bar 3
-  //   eventsOut[eventIdx].root = 0;
-  //   eventsOut[eventIdx].value = NoteValue::Whole;
-  //   eventIdx++;
-
-  //   // Bar 4
-  //   eventsOut[eventIdx].root = 1;
-  //   eventsOut[eventIdx].value = NoteValue::Whole;
-  //   eventIdx++;
-
-  //   // Bar 5
-  //   eventsOut[eventIdx].root = 0;
-  //   eventsOut[eventIdx].value = NoteValue::Whole;
-  //   eventIdx++;
-
-  //   // Bar 6
-  //   eventsOut[eventIdx].root = 1;
-  //   eventsOut[eventIdx].value = NoteValue::Whole;
-  //   eventIdx++;
-
-  //   // Bar 7
-  //   eventsOut[eventIdx].root = 5;
-  //   eventsOut[eventIdx].value = NoteValue::Half;
-  //   eventIdx++;
-
-  //   eventsOut[eventIdx].root = 3;
-  //   eventsOut[eventIdx].value = NoteValue::Half;
-  //   eventIdx++;
-
-  //   // Bar 8
-  //   eventsOut[eventIdx].root = 1;
-  //   eventsOut[eventIdx].value = NoteValue::Half;
-  //   eventIdx++;
-
-  //   eventsOut[eventIdx].root = 0;
-  //   eventsOut[eventIdx].value = NoteValue::Half;
-  //   eventIdx++;
-
-  //   return eventIdx;
-  // }
-
-  // size_t GenerateLydian1(const TimeSignature& ts, int bars, ChordEvent* eventsOut,
-  //                        size_t eventSize) {
-  //   // I - II - I - V
-  //   size_t eventIdx = 0;
-  //   const Note notes[] = {0, 2, 0, 7};
-
-  //   for (eventIdx = 0;
-  //        eventIdx < static_cast<size_t>(bars) && eventIdx < eventSize;
-  //        eventIdx++) {
-  //     eventsOut[eventIdx].root = notes[eventIdx % ArrayLen(notes)];
-  //     eventsOut[eventIdx].value = NoteValue::Whole;
-  //   }
-
-  //   return eventIdx;
-  // }
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param ts
+  /// @param bars
+  /// @param density
+  /// @param granularity
+  /// @param pattern
+  /// @return
   size_t GeneratePattern(const TimeSignature &ts, int bars, float density,
                          NoteValue granularity, PatternEventSet<> &pattern)
   {
-    DEBUG_GOT_HERE();
     if (pattern.Capacity() == 0 || bars == 0 || ts.beatValue == NoteValue::None || granularity == NoteValue::None)
       return 0; // Sanity check
 
@@ -163,28 +103,12 @@ namespace Music
   }
 
 #if USE_DEBUG
-  // #if true
-  void DebugPattern(const TimeSignature &ts, NoteValue granularity,
-                    const bool *pattern, size_t patternSize)
-  {
-    if (patternSize <= 0 || granularity == NoteValue::None)
-      return;
 
-    int kPerBar = ts.beats * (static_cast<int>(ts.beatValue) /
-                              static_cast<int>(granularity));
-    DPRINTF("%d events per bar\n", kPerBar);
-    for (size_t i = 0; i < patternSize; i++)
-    {
-      if (i % kPerBar == 0)
-        DPRINTF("|");
-      if (pattern[i])
-        DPRINTF("*");
-      else
-        DPRINTF("-");
-    }
-    DPRINTF("|\n");
-  }
-
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param ts
+  /// @param granularity
+  /// @param pattern
   void DebugPattern(const TimeSignature &ts, NoteValue granularity, PatternEventSet<> pattern)
   {
     if (pattern.Count() == 0 || granularity == NoteValue::None)
@@ -192,7 +116,6 @@ namespace Music
 
     int kPerBar = ts.beats * (static_cast<int>(ts.beatValue) /
                               static_cast<int>(granularity));
-    DPRINTF("%d events per bar\n", kPerBar);
     for (size_t i = 0; i < pattern.Count(); i++)
     {
       if (i % kPerBar == 0)
@@ -205,25 +128,14 @@ namespace Music
     DPRINTF("|\n");
   }
 
-  void DebugNoteEvents(const TimeSignature &ts, const NoteEvent *events,
-                       size_t eventsSize)
-  {
-    int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
-    int v = 0;
-    for (size_t i = 0; i < eventsSize; i++)
-    {
-      if (v % vPerBar == 0)
-        DPRINTF("| ");
-      DPRINTF("%d(%d) ", events[i].note, static_cast<int>(events[i].value));
-
-      v = events[i].value + v;
-    }
-    DPRINTF("|\n");
-  }
-
-  void DebugNoteEventsX(const Temperament &t,
-                        const TimeSignature &ts,
-                        const NoteEventSet<> &events)
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param t
+  /// @param ts
+  /// @param events
+  void DebugNoteEvents(const Temperament &t,
+                       const TimeSignature &ts,
+                       const NoteEventSet<> &events)
   {
     int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
     int v = 0;
@@ -239,6 +151,11 @@ namespace Music
     }
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param t
+  /// @param ts
+  /// @param chords
   void DebugChordEvents(const Temperament &t,
                         const TimeSignature &ts,
                         const ChordEventSet<> chords)

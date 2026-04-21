@@ -42,7 +42,7 @@ int main()
     {
         const float   unitRandom = randomRange(0.0f, 0.999999f);
         int           period     = 0;
-        const int16_t degree     = scale.GetWeightedNote(
+        const int16_t degree     = scale.GetWeightedMappedDegree(
             step,
             unitRandom,
             period,

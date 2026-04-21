@@ -1,24 +1,25 @@
 
 
-####################################################################################################
+###############################################################################
 # Directory Definitions
-####################################################################################################
+###############################################################################
 SRC_DIR := src
 INC_DIR := include
 LIB_DIR := lib
 BIN_DIR := bin
 BUILD_DIR := build
 TEST_DIR := test
+EXAMPLES_DIR := examples
 
-####################################################################################################
+###############################################################################
 # Targets
-####################################################################################################
+###############################################################################
 LIB_NAME := libMonkey.a
 LIB_OUT := $(LIB_DIR)/$(LIB_NAME)
 
-####################################################################################################
+###############################################################################
 # Build Options
-####################################################################################################
+###############################################################################
 USE_DEBUG = -DUSE_DEBUG
 DEBUGFLAGS = -g
 OPTIMIZEFLAGS = -O2
@@ -28,41 +29,45 @@ DEPFLAGS = -MMD -MP
 
 DEFINES = $(DEBUGFLAGS) $(USE_DEBUG)
 INCLUDES = -I$(INC_DIR)
+TEST_INCLUDES = $(INCLUDES) -I$(TEST_DIR)
 WARNINGS = -Wall -Wextra
 EXTRA_WARNINGS = -Wno-unused-parameter -Wno-unused-variable
 
-####################################################################################################
+###############################################################################
 # Compilers and Flags
-####################################################################################################
+###############################################################################
 CXX := g++
 CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS)
+TEST_CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(TEST_INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS)
 LDFLAGS = -L$(LIB_DIR)
 LDLIBS = -lMonkey
 
 AR := ar
 ARFLAGS = rcs
 
-####################################################################################################
+###############################################################################
 # Files and Targets
-####################################################################################################
+###############################################################################
 LIB_SRCS := $(wildcard $(SRC_DIR)/*.cpp)
 LIB_OBJS := $(LIB_SRCS:$(SRC_DIR)/%.cpp=$(BUILD_DIR)/%.o)
 
-TEST_SRCS := $(wildcard $(TEST_DIR)/*.cpp)
+TEST_SRCS := $(wildcard $(TEST_DIR)/*_test.cpp)
 TEST_BINS := $(TEST_SRCS:$(TEST_DIR)/%.cpp=$(BIN_DIR)/%)
+EXAMPLE_SRCS := $(wildcard $(EXAMPLES_DIR)/*.cpp)
+EXAMPLE_BINS := $(EXAMPLE_SRCS:$(EXAMPLES_DIR)/%.cpp=$(BIN_DIR)/%)
 
 # Collect all potential .d files for inclusion
 ALL_DEPS := $(LIB_OBJS:.o=.d) $(TEST_OBJS:.o=.d)
 
-####################################################################################################
+###############################################################################
 # Main Build Rules
-####################################################################################################
-.PHONY: all clean tests directories
+###############################################################################
+.PHONY: all clean tests check examples directories
 
-all: directories $(LIB_OUT) tests
+all: directories $(LIB_OUT) tests examples
 
 directories: 
-	@mkdir -p $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR)
+	@mkdir -p $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR) $(EXAMPLES_DIR)
 
 $(LIB_OUT): $(LIB_OBJS)
 	$(AR) $(ARFLAGS) $@ $^
@@ -72,7 +77,15 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 
 tests: $(TEST_BINS)
 
+check: directories tests
+	@set -e; for test_bin in $(TEST_BINS); do ./$$test_bin; done
+
+examples: directories $(EXAMPLE_BINS)
+
 $(BIN_DIR)/%: $(TEST_DIR)/%.cpp $(LIB_OUT)
+	$(CXX) $(TEST_CXXFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
+
+$(BIN_DIR)/%: $(EXAMPLES_DIR)/%.cpp $(LIB_OUT)
 	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
 
 clean:
@@ -84,6 +97,8 @@ echo:
 	@echo $(LIB_OUT)
 	@echo $(TEST_SRCS)
 	@echo $(TEST_BINS)
+	@echo $(EXAMPLE_SRCS)
+	@echo $(EXAMPLE_BINS)
 	@echo $(ALL_DEPS)
 
 # Automatic Dependency Inclusion
