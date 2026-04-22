@@ -99,9 +99,11 @@ namespace Music
   size_t BuildEuclid(int k, int n, int r, bool *out, size_t outMax);
   size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern);
 
+  NoteEventScore ScoreNoteEvents(const Temperament &t, const NoteEventSet<> &events);
+
 #if USE_DEBUG
   void DebugPattern(const TimeSignature &ts, NoteValue granularity,
-                    PatternEventSet<> pattern);
+                        PatternEventSet<> pattern);
   void DebugNoteEvents(const Temperament &t, const TimeSignature &ts,
                        const NoteEventSet<> &events);
   void DebugChordEvents(const Temperament &t, const TimeSignature &ts,

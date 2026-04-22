@@ -8,7 +8,7 @@
             "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/bin/event_set_test",
+            "program": "${workspaceFolder}/bin/music_demo",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${fileDirname}",

@@ -42,7 +42,7 @@ DEFINES = $(DEBUGFLAGS) $(USE_DEBUG)
 INCLUDES = -I$(INC_DIR)
 TEST_INCLUDES = $(INCLUDES) -I$(TEST_DIR)
 WARNINGS = -Wall -Wextra
-EXTRA_WARNINGS = -Wno-unused-parameter -Wno-unused-variable
+EXTRA_WARNINGS = -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-variable
 
 ###############################################################################
 # Compilers and Flags

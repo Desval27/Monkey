@@ -36,5 +36,6 @@ constexpr Note Note_M6 = 9;
 constexpr Note Note_m7 = 10;
 constexpr Note Note_M7 = 11;
 
+constexpr float C4FREQ = 261.6256f;
 
 } // namespace Music

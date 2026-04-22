@@ -107,7 +107,7 @@ constexpr const T fastPow(T base, int exp)
     ((bitvalue) ? bitSet(value, bit) : bitClear(value, bit))
 #endif
 #ifndef DAISY_PLATFORM
-#define rand() std::rand()
+//#define rand() std::rand()
 #endif
 
 template <typename T>

@@ -50,6 +50,17 @@ void testThing()
     std::cout << "Note Events" << std::endl;
     DebugNoteEvents(t, ts, noteEvents);
     std::cout << std::endl;
+
+    NoteEventScore score = ScoreNoteEvents(t, noteEvents);
+    std::cout << "Event Score: Overall    " << score.overall << std::endl;
+    std::cout << "           : Density    " << score.density << std::endl;
+    std::cout << "           : Rests      " << score.rests << std::endl;
+    std::cout << "           : Cadence    " << score.cadence << std::endl;
+    std::cout << "           : Repetition " << score.repetition << std::endl;
+    std::cout << "           : Contour    " << score.contour << std::endl;
+    std::cout << "           : Phrase     " << score.phrase << std::endl;
+    std::cout << "           : Rhythm     " << score.rhythm << std::endl;
+    
 }
 
 int main(int argc, char *argv[])
@@ -80,7 +91,7 @@ int main(int argc, char *argv[])
 
     pe.SetTemperament(&t);
     pe.SetScaleMap(&scale);
-    pe.SetRootHz(261.6256f); // C4
+    pe.SetRootHz(C4FREQ); // C4
 
     for (;;)
     {

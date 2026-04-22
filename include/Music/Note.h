@@ -33,6 +33,12 @@ struct NoteEvent {
   Note note;
   Period period;
   NoteValue value;
+
+  /**
+   * @brief
+   */
+  bool IsPitched() const
+  { return note != REST; }
 };
 
 }  // namespace Music

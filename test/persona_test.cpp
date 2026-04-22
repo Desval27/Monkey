@@ -14,9 +14,11 @@ using FRange = Range<float>;
 
 struct Role1 {
   static constexpr const char Name[] = "Role1";
+  const int octaveOffset;
   const FRange density;
   const NoteValue granularity = NoteValue::Quarter;
-  Role1(float dl, float dh) : density(dl, dh) {};
+
+  Role1(int o, float dl, float dh) : octaveOffset(o), density(dl, dh) {};
 };
 
 TimeSignature ts(4, NoteValue::Quarter);
@@ -25,7 +27,7 @@ ScaleMap s;
 
 const float dLow = 0.0f;
 const float dHigh = 0.9f;
-Role1 role(dLow, dHigh);
+Role1 role(-1, dLow, dHigh);
 
 TEST_CASE("Name Test") {
   Persona<Role1> p(ts, t, s, role);  

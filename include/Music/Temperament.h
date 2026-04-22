@@ -85,13 +85,13 @@ namespace Music
      */
     void Clear()
     {
-      _kind = Kind::RatioTable;
-      _degreesPerPeriod = 0;
-      _periodRatio = 2.0f;
+      kind_ = Kind::RatioTable;
+      degreesPerPeriod_ = 0;
+      periodRatio_ = 2.0f;
 
       // Defaults to no ratios
       for (size_t i = 0; i < MAX_DEGREES; ++i)
-        _ratios[i] = 1.0f;
+        ratios_[i] = 1.0f;
 
       RebuildPeriodMultipliers();
     }
@@ -111,12 +111,12 @@ namespace Music
           periodRatio <= 0.0f)
         return false;
 
-      _kind = Kind::EqualDivision;
-      _degreesPerPeriod = degreesPerPeriod;
-      _periodRatio = periodRatio;
+      kind_ = Kind::EqualDivision;
+      degreesPerPeriod_ = degreesPerPeriod;
+      periodRatio_ = periodRatio;
 
-      for (uint16_t i = 0; i < _degreesPerPeriod; ++i)
-        _ratios[i] = powf(_periodRatio, (float)i / (float)_degreesPerPeriod);
+      for (uint16_t i = 0; i < degreesPerPeriod_; ++i)
+        ratios_[i] = powf(periodRatio_, (float)i / (float)degreesPerPeriod_);
 
       RebuildPeriodMultipliers();
       return true;
@@ -137,12 +137,12 @@ namespace Music
       if (!ratios || count == 0 || count > MAX_DEGREES || periodRatio <= 0.0f)
         return false;
 
-      _kind = Kind::RatioTable;
-      _degreesPerPeriod = count;
-      _periodRatio = periodRatio;
+      kind_ = Kind::RatioTable;
+      degreesPerPeriod_ = count;
+      periodRatio_ = periodRatio;
 
       for (uint16_t i = 0; i < count; ++i)
-        _ratios[i] = ratios[i];
+        ratios_[i] = ratios[i];
 
       RebuildPeriodMultipliers();
       return true;
@@ -163,9 +163,9 @@ namespace Music
       if (!ratios || count == 0 || count > MAX_DEGREES || periodRatio <= 1.0f)
         return false;
 
-      _kind = Kind::RatioTable;
-      _degreesPerPeriod = count;
-      _periodRatio = periodRatio;
+      kind_ = Kind::RatioTable;
+      degreesPerPeriod_ = count;
+      periodRatio_ = periodRatio;
 
       for (uint16_t i = 0; i < count; ++i)
       {
@@ -174,11 +174,11 @@ namespace Music
           return false;
 
         while (r < 1.0f)
-          r *= _periodRatio;
-        while (r >= _periodRatio)
-          r /= _periodRatio;
+          r *= periodRatio_;
+        while (r >= periodRatio_)
+          r /= periodRatio_;
 
-        _ratios[i] = r;
+        ratios_[i] = r;
       }
 
       SortRatios();
@@ -196,7 +196,7 @@ namespace Music
      */
     bool AttachNoteLabels(const char *const *labels, uint16_t count)
     {
-      return _noteLabels.Attach(labels, count);
+      return noteLabels_.Attach(labels, count);
     }
 
     /**
@@ -209,7 +209,7 @@ namespace Music
      */
     bool AttachIntervalLabels(const char *const *labels, uint16_t count)
     {
-      return _intervalLabels.Attach(labels, count);
+      return intervalLabels_.Attach(labels, count);
     }
 
     /**
@@ -223,15 +223,15 @@ namespace Music
      */
     bool GetNoteLabel(Degree degree, char *out, size_t maxOut) const
     {
-      if (_degreesPerPeriod == 0)
+      if (degreesPerPeriod_ == 0)
         return false;
 
       if (degree == REST)
         return strncpy(out, "REST", maxOut);
       else
-        return _noteLabels.Get(
+        return noteLabels_.Get(
             static_cast<Degree>(wrap(static_cast<int>(degree),
-                                     static_cast<int>(_degreesPerPeriod))),
+                                     static_cast<int>(degreesPerPeriod_))),
             out, maxOut);
     }
 
@@ -246,12 +246,12 @@ namespace Music
      */
     bool GetIntervalLabel(Degree degree, char *out, size_t maxOut) const
     {
-      if (_degreesPerPeriod == 0)
+      if (degreesPerPeriod_ == 0)
         return false;
 
-      return _intervalLabels.Get(
+      return intervalLabels_.Get(
           static_cast<Degree>(wrap(static_cast<int>(degree),
-                                   static_cast<int>(_degreesPerPeriod))),
+                                   static_cast<int>(degreesPerPeriod_))),
           out, maxOut);
     }
 
@@ -260,14 +260,14 @@ namespace Music
      *
      * @return uint16_t
      */
-    uint16_t DegreesPerPeriod() const { return _degreesPerPeriod; }
+    uint16_t DegreesPerPeriod() const { return degreesPerPeriod_; }
 
     /**
      * @brief
      *
      * @return float
      */
-    float PeriodRatio() const { return _periodRatio; }
+    float PeriodRatio() const { return periodRatio_; }
 
     /**
      * @brief
@@ -277,12 +277,12 @@ namespace Music
      */
     float RatioAt(Degree degree) const
     {
-      if (_degreesPerPeriod == 0)
+      if (degreesPerPeriod_ == 0)
         return 1.0f;
 
       int idx =
-          wrap(static_cast<int>(degree), static_cast<int>(_degreesPerPeriod));
-      return _ratios[idx];
+          wrap(static_cast<int>(degree), static_cast<int>(degreesPerPeriod_));
+      return ratios_[idx];
     }
 
     /**
@@ -294,9 +294,9 @@ namespace Music
     float PeriodMultiplier(Period period) const
     {
       if (period >= MIN_PERIOD && period <= MAX_PERIOD)
-        return _periodMultipliers[period - MIN_PERIOD];
+        return periodMultipliers_[period - MIN_PERIOD];
 
-      return fastPow(_periodRatio, period);
+      return fastPow(periodRatio_, period);
     }
 
     /**
@@ -376,20 +376,20 @@ namespace Music
     bool FindNearestDegreeForRatio(float targetRatio, Degree &outDegree,
                                    float &outErrorCents) const
     {
-      if (_degreesPerPeriod == 0 || targetRatio <= 0.0f)
+      if (degreesPerPeriod_ == 0 || targetRatio <= 0.0f)
         return false;
 
       while (targetRatio < 1.0f)
-        targetRatio *= _periodRatio;
-      while (targetRatio >= _periodRatio)
-        targetRatio /= _periodRatio;
+        targetRatio *= periodRatio_;
+      while (targetRatio >= periodRatio_)
+        targetRatio /= periodRatio_;
 
       Degree best = 0;
       float bestErr = 1e30f;
 
-      for (uint16_t i = 0; i < _degreesPerPeriod; ++i)
+      for (uint16_t i = 0; i < degreesPerPeriod_; ++i)
       {
-        float err = RatioToCents(targetRatio / _ratios[i]);
+        float err = RatioToCents(targetRatio / ratios_[i]);
         float absErr = fabsf(err);
         if (absErr < bestErr)
         {
@@ -403,16 +403,46 @@ namespace Music
       return true;
     }
 
+    /**
+     * @brief
+     */
+    int GetNoteDistance(Note a, Note b) const
+    {
+      return abs(b - a) % degreesPerPeriod_;
+    }
+
+    /**
+     * @brief
+     *
+     * TODO: This does not support anything but 12EDO
+     */
+    bool IsConsonant(Degree interval) const
+    {
+      switch (interval % degreesPerPeriod_)
+      {
+      case 0:
+      case 3:
+      case 4:
+      case 5:
+      case 7:
+      case 8:
+      case 9:
+        return true;
+      default:
+        return false;
+      }
+    }
+
   private:
     const float FREQ_C0 = 16.35f;
 
-    Kind _kind;
-    uint16_t _degreesPerPeriod;
-    float _periodRatio;
-    float _ratios[MAX_DEGREES];
-    float _periodMultipliers[(MAX_PERIOD - MIN_PERIOD) + 1];
-    LabelSet _noteLabels;
-    LabelSet _intervalLabels;
+    Kind kind_;
+    uint16_t degreesPerPeriod_;
+    float periodRatio_;
+    float ratios_[MAX_DEGREES];
+    float periodMultipliers_[(MAX_PERIOD - MIN_PERIOD) + 1];
+    LabelSet noteLabels_;
+    LabelSet intervalLabels_;
 
     /**
      * @brief
@@ -421,7 +451,7 @@ namespace Music
     void RebuildPeriodMultipliers()
     {
       for (Period p = MIN_PERIOD; p <= MAX_PERIOD; ++p)
-        _periodMultipliers[p - MIN_PERIOD] = fastPow(_periodRatio, p);
+        periodMultipliers_[p - MIN_PERIOD] = fastPow(periodRatio_, p);
     }
 
     /**
@@ -430,18 +460,18 @@ namespace Music
      */
     void SortRatios()
     {
-      for (uint16_t i = 1; i < _degreesPerPeriod; ++i)
+      for (uint16_t i = 1; i < degreesPerPeriod_; ++i)
       {
-        float key = _ratios[i];
+        float key = ratios_[i];
         int j = (int)i - 1;
 
-        while (j >= 0 && _ratios[j] > key)
+        while (j >= 0 && ratios_[j] > key)
         {
-          _ratios[j + 1] = _ratios[j];
+          ratios_[j + 1] = ratios_[j];
           --j;
         }
 
-        _ratios[j + 1] = key;
+        ratios_[j + 1] = key;
       }
     }
   };

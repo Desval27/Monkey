@@ -162,4 +162,17 @@ namespace Music
         const float *weights;
     };
 
+    ////////////////////////////////////////////////////////////////////////////////
+    struct NoteEventScore
+    {
+        int overall = 0;
+        int density = 0;
+        int rests = 0;
+        int cadence = 0;
+        int repetition = 0;
+        int contour = 0;
+        int phrase = 0;
+        int rhythm = 0;
+    };
+    
 } // namespace Music
