@@ -12,13 +12,14 @@
 #pragma once
 
 #include <Monkey.h>
-#include <Music/Chord.h>
-#include <Music/EventSet.h>
+#include <Music/MusicTypes.h>
 #include <Music/MusicConst.h>
 #include <Music/MusicHelpers.h>
-#include <Music/MusicTypes.h>
+#include <Music/Chord.h>
 #include <Music/Note.h>
 #include <Music/NoteValue.h>
+#include <Music/EventSet.h>
+#include <Music/Generator.h>
 #include <Music/Persona.h>
 #include <Music/PitchEngine.h>
 #include <Music/ScaleMap.h>
@@ -31,38 +32,6 @@
 
 namespace Music
 {
-  // Different Pattern Generators
-  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
-  class NullGenerator
-  {
-  public:
-    static size_t GeneratePattern(const TimeSignature &ts, int bars,
-                                  float density, NoteValue granularity,
-                                  PatternEventSet<MAX_EVENTS> &pattern)
-    {
-      pattern.Clear();
-      return pattern.Count();
-    }
-  };
-
-  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
-  class EuclidianGenerator
-  {
-  public:
-    static size_t GeneratePattern(const TimeSignature &ts, int bars,
-                                  float density, NoteValue granularity,
-                                  PatternEventSet<MAX_EVENTS> &pattern)
-    {
-      if (pattern.Capacity() == 0 || bars == 0 || ts.beatValue == NoteValue::None || granularity == NoteValue::None)
-        return 0; // Sanity check
-
-      int n = (ts.beats * bars) *
-              (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
-      int k = n * density;
-      return BuildEuclid(k, n, 1, pattern);
-    }
-  };
-
   ////////////////////////////////////////////////////////////////////////////////
   // Misc. Functions
   ////////////////////////////////////////////////////////////////////////////////

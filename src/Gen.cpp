@@ -256,9 +256,9 @@ namespace Music
           Note n = scale.GetWeightedNote(unitRandom, periodOffset, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY, ArrayLen(SCALE_WEIGHTS_7_CHORD_TONE_HEAVY));
 
           // If our last event was the same note then (for now) just add to the original duraton
-          // If our last event was also a rest then just add to its value
+					// Or just a random occurance
           // Unless the new event is at the start of a bar
-          if (pulses % ppb != 0 && events.Count() > 1 && events[events.Count() - 1].note == n)
+          if ((pulses % ppb != 0) && (events.Count() > 1) && ((events[events.Count() - 1].note == n) || (randomRange(0.0f, 1.0f) < 0.2f)))
           {
             events[events.Count() - 1].value += granularity;
           }

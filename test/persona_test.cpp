@@ -8,7 +8,8 @@ using Music::Persona;
 using Music::TimeSignature;
 using Music::Temperament;
 using Music::ScaleMap;
-using Music::EuclidianGenerator;
+using Music::EuclidianPatternGenerator;
+using Music::NullPatternGenerator;
 
 using FRange = Range<float>;
 
@@ -17,8 +18,19 @@ struct Role1 {
   const int octaveOffset;
   const FRange density;
   const NoteValue granularity = NoteValue::Quarter;
+  template <size_t MAX_EVENTS>
+  using PatternGenerator = EuclidianPatternGenerator<MAX_EVENTS>;
 
   Role1(int o, float dl, float dh) : octaveOffset(o), density(dl, dh) {};
+};
+
+struct Role2 {
+  static constexpr const char Name[] = "Role2";
+  const int octaveOffset;
+  const FRange density;
+  const NoteValue granularity = NoteValue::Quarter;
+
+  Role2(int o, float dl, float dh) : octaveOffset(o), density(dl, dh) {};
 };
 
 TimeSignature ts(4, NoteValue::Quarter);
@@ -28,6 +40,7 @@ ScaleMap s;
 const float dLow = 0.0f;
 const float dHigh = 0.9f;
 Role1 role(-1, dLow, dHigh);
+Role2 roleWithoutPatternGenerator(0, dLow, dHigh);
 
 TEST_CASE("Name Test") {
   Persona<Role1> p(ts, t, s, role);  
@@ -43,7 +56,26 @@ TEST_CASE("Generator Injection Syntax Test") {
   Persona<Role1> p(ts, t, s, role);
   Music::ChordEventSet<> chords;
   Music::NoteEventSet<> events;
-  CHECK_EQ(p.GenerateNoteEvents<EuclidianGenerator>(chords, events), 0UL);
+  CHECK_EQ(p.GenerateNoteEvents<EuclidianPatternGenerator>(chords, events), 0UL);
 }
+
+TEST_CASE("Role Default Generator Syntax Test") {
+  Persona<Role1> p(ts, t, s, role);
+  Music::ChordEventSet<> chords;
+  Music::NoteEventSet<> events;
+  CHECK_EQ(p.GenerateNoteEvents(chords, events), 0UL);
+}
+
+TEST_CASE("Default Fallback Generator Syntax Test") {
+  Persona<Role2> p(ts, t, s, roleWithoutPatternGenerator);
+  Music::ChordEventSet<> chords;
+  Music::NoteEventSet<> events;
+  CHECK_EQ(p.GenerateNoteEvents(chords, events), 0UL);
+}
+
+static_assert(std::is_same_v<typename Persona<Role1>::DefaultPatternGenerator,
+                             EuclidianPatternGenerator<Music::DEFAULT_MAX_EVENTS>>);
+static_assert(std::is_same_v<typename Persona<Role2>::DefaultPatternGenerator,
+                             NullPatternGenerator<Music::DEFAULT_MAX_EVENTS>>);
 
 TEST_MAIN();

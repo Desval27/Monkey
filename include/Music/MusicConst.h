@@ -21,6 +21,8 @@ namespace Music
 // number of pulses for it will still be PPQN / 2.
 #define PPQN 24
 
+constexpr float     C4FREQ = 261.6256f;
+
 // for convience for now.
 constexpr Note REST    = -1;
 constexpr Note Note_P1 = 0;
@@ -36,6 +38,5 @@ constexpr Note Note_M6 = 9;
 constexpr Note Note_m7 = 10;
 constexpr Note Note_M7 = 11;
 
-constexpr float C4FREQ = 261.6256f;
 
 } // namespace Music

@@ -6,6 +6,7 @@
 #include <string>
 #include <iostream>
 
+#include <TTY.h>
 #include <Music/Music.h>
 
 #define DO_DEBUG
@@ -37,22 +38,22 @@ void testThing()
     NoteEventSet<> noteEvents;
 
     GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
-    std::cout << "Chord Events" << std::endl;
+    std::cout << TTY_FG_GREEN << "Chord Events" << TTY_RESET << std::endl;
     DebugChordEvents(t, ts, chords);
     std::cout << std::endl;
 
     GeneratePattern(ts, bars, density, g, pattern);
-    std::cout << "Pattern Events" << std::endl;
+    std::cout << TTY_FG_YELLOW << "Pattern Events" << TTY_RESET << std::endl;
     DebugPattern(ts, g, pattern);
     std::cout << std::endl;
 
     size_t eventSize = GenerateEventsFromPattern2(pattern, chords, ts, scale, bars, g, noteEvents);
-    std::cout << "Note Events" << std::endl;
+    std::cout << TTY_FG_CYAN << "Note Events" << TTY_RESET << std::endl;
     DebugNoteEvents(t, ts, noteEvents);
     std::cout << std::endl;
 
     NoteEventScore score = ScoreNoteEvents(t, noteEvents);
-    std::cout << "Event Score: Overall    " << score.overall << std::endl;
+    std::cout << TTY_FG_MAGENTA << "Event Score" << TTY_RESET << ": Overall    " << score.overall << std::endl;
     std::cout << "           : Density    " << score.density << std::endl;
     std::cout << "           : Rests      " << score.rests << std::endl;
     std::cout << "           : Cadence    " << score.cadence << std::endl;
@@ -60,6 +61,7 @@ void testThing()
     std::cout << "           : Contour    " << score.contour << std::endl;
     std::cout << "           : Phrase     " << score.phrase << std::endl;
     std::cout << "           : Rhythm     " << score.rhythm << std::endl;
+		std::cout << std::endl;
     
 }
 

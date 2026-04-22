@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 
     std::cout << "plot '-' using 1:2 with points" << std::endl;
 
-    for (int i = 0; i < 100; i++)
+    for (int i = 0; i < 1000; i++)
     {
         DoThing();
     }

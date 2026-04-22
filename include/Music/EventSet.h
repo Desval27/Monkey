@@ -3,15 +3,13 @@
 #include <cstddef>
 #include <utility>
 
+#include <Music/MusicConfig.h>
 #include <Music/TimeSignature.h>
 #include <Music/Chord.h>
 #include <Music/Note.h>
 
 namespace Music
 {
-
-  constexpr size_t DEFAULT_MAX_EVENTS = 128;
-
   template <typename T>
   struct EventTraits;
 

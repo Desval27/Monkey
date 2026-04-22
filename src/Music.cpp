@@ -97,25 +97,24 @@ namespace Music
       return 0; // Sanity check
 
     int n = (ts.beats * bars) * (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
-	int maxLen = min(n, static_cast<int>(pattern.Capacity()));
-	for (int i = 0; i < maxLen; i++)
-	{
-	  pattern.Emplace(randomRange(0.0f, 1.0f) < density);
-	}
-	return pattern.Count();
+    int maxLen = min(n, static_cast<int>(pattern.Capacity()));
+    for (int i = 0; i < maxLen; i++)
+    {
+      pattern.Emplace(randomRange(0.0f, 1.0f) < density);
+    }
+    return pattern.Count();
 
-    
-    //int n = (ts.beats * bars) *
-            //(static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
-    //int k = n * density;
-    //return BuildEuclid(k, n, 1, pattern);
+    // int n = (ts.beats * bars) *
+    //(static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
+    // int k = n * density;
+    // return BuildEuclid(k, n, 1, pattern);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @param events
   /// @return
-  NoteEventScore ScoreNoteEvents(const Temperament& t, const NoteEventSet<> &events)
+  NoteEventScore ScoreNoteEvents(const Temperament &t, const NoteEventSet<> &events)
   {
     NoteEventScore score;
     if (events.Count() == 0)
@@ -283,8 +282,14 @@ namespace Music
     char noteLabel[6];
     for (size_t i = 0; i < events.Count(); i++)
     {
+      if (!events[i].IsPitched())
+        DPRINTF("\033[90m");
+
       t.GetNoteLabel(events[i].note, noteLabel, sizeof(noteLabel));
       DPRINTF("%s(%d) ", noteLabel, static_cast<int>(events[i].value));
+
+      if (!events[i].IsPitched())
+        DPRINTF("\033[0m");
 
       v = events[i].value + v;
       if (v % vPerBar == 0)
