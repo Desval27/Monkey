@@ -96,10 +96,19 @@ namespace Music
     if (pattern.Capacity() == 0 || bars == 0 || ts.beatValue == NoteValue::None || granularity == NoteValue::None)
       return 0; // Sanity check
 
-    int n = (ts.beats * bars) *
-            (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
-    int k = n * density;
-    return BuildEuclid(k, n, 1, pattern);
+    int n = (ts.beats * bars) * (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
+	int maxLen = min(n, static_cast<int>(pattern.Capacity()));
+	for (int i = 0; i < maxLen; i++)
+	{
+	  pattern.Emplace(randomRange(0.0f, 1.0f) < density);
+	}
+	return pattern.Count();
+
+    
+    //int n = (ts.beats * bars) *
+            //(static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
+    //int k = n * density;
+    //return BuildEuclid(k, n, 1, pattern);
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
