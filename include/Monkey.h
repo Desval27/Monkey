@@ -17,6 +17,8 @@
 #include <cstdint>
 #endif
 
+#include <random>
+
 #ifdef USE_DEBUG
 #include <cstdarg>
 using DebugFunc = void (*)(const char* format, va_list args);
@@ -130,17 +132,35 @@ struct RangeWithDefault
     T def;
 };
 
-
+#ifdef DAISY_PLATFORM
 template <typename T>
 constexpr const T randomRange(const T& low, const T& high)
 {
     return low + static_cast<T>(rand()) / (static_cast<T>(RAND_MAX/(high - low)));
 }
+#else
+template <typename T>
+T randomRange(T low, T high)
+{
+    static thread_local std::mt19937 gen{std::random_device{}()};
+
+    if constexpr (std::is_integral_v<T>)
+    {
+        std::uniform_int_distribution<T> dist(low, high);
+        return dist(gen);
+    }
+    else
+    {
+        std::uniform_real_distribution<T> dist(low, high);
+        return dist(gen);
+    }
+}
+#endif
 
 template <typename T>
-constexpr const T randomRange(const Range<T>& range)
+T randomRange(const Range<T>& range)
 {
-    return randomRange<T>(range.low, range.high);
+    return randomRange(range.low, range.high);
 }
 
 template <typename T, size_t N>
@@ -148,6 +168,3 @@ constexpr size_t ArrayLen(const T (&)[N])
 {
     return N;
 }
-
-
-

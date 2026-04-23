@@ -34,6 +34,30 @@
 
 namespace Music
 {
+    // Standard Note Values
+    static const char *v_SixtyFourthNote = "64th";
+    static const char *v_DSixtyFourthNote = "64th.";
+    static const char *v_DDSixtyFourthNote = "64th..";
+    static const char *v_ThirtySecondNote = "32nd";
+    static const char *v_DThirtySecondNote = "32nd.";
+    static const char *v_DDThirtySecondNote = "32nd..";
+    static const char *v_SixteenthNote = "16th";
+    static const char *v_DSixteenthNote = "16th.";
+    static const char *v_DDSixteenthNote = "16th..";
+    static const char *v_EighthNote = "8th";
+    static const char *v_DEighthNote = "8th.";
+    static const char *v_DDEighthNote = "8th..";
+    static const char *v_QuarterNote = "Q";
+    static const char *v_DQuarterNote = "Q.";
+    static const char *v_DDQuarterNote = "Q..";
+    static const char *v_HalfNote = "H";
+    static const char *v_DHalfNote = "H.";
+    static const char *v_DDHalfNote = "H..";
+    static const char *v_WholeNote = "W";
+    static const char *v_DWholeNote = "W.";
+    static const char *v_DDWholeNote = "W..";
+    static const char *v_Undefined = "UNDEFINED";
+
     // Note Names
     static const char *n_C = "C";
     static const char *n_Cs = "C#";
@@ -86,46 +110,46 @@ namespace Music
     static const char *i_M7 = "M7";
     static const char *i_A7 = "A7";
 
-    // clang-format on                        1234567890 
-    static const char *s_IONIAN            = "IONIAN";
-    static const char *s_DORIAN            = "DORIAN";
-    static const char *s_PHRYGIAN          = "PHRYGIAN";
-    static const char *s_LYDIAN            = "LYDIAN";
-    static const char *s_MIXOLYDIAN        = "MIXOLYDIAN";
-    static const char *s_AEOLIAN           = "AEOLIAN";
-    static const char *s_LOCRIAN           = "LOCRIAN";
+    // clang-format on                        1234567890
+    static const char *s_IONIAN = "IONIAN";
+    static const char *s_DORIAN = "DORIAN";
+    static const char *s_PHRYGIAN = "PHRYGIAN";
+    static const char *s_LYDIAN = "LYDIAN";
+    static const char *s_MIXOLYDIAN = "MIXOLYDIAN";
+    static const char *s_AEOLIAN = "AEOLIAN";
+    static const char *s_LOCRIAN = "LOCRIAN";
 
-    static const char *s_HARMONIC_MINOR    = "HARMONIC MINOR";
-    static const char *s_LOCRIAN_s6        = "LOCRIAN #6";
-    static const char *s_IONIAN_s5         = "IONIAN #5";
-    static const char *s_DORIAN_s4         = "DORIAN #4";
+    static const char *s_HARMONIC_MINOR = "HARMONIC MINOR";
+    static const char *s_LOCRIAN_s6 = "LOCRIAN #6";
+    static const char *s_IONIAN_s5 = "IONIAN #5";
+    static const char *s_DORIAN_s4 = "DORIAN #4";
     static const char *s_PHYRGIAN_DOMINANT = "PHYR DOMINANT";
-    static const char *s_LYDIAN_s2         = "LYDIAN #2";
-    static const char *s_ULTRALOCRIAN      = "ULTRALOCRIAN";
+    static const char *s_LYDIAN_s2 = "LYDIAN #2";
+    static const char *s_ULTRALOCRIAN = "ULTRALOCRIAN";
 
-    static const char *s_MELODIC_MINOR     = "MELODIC MINOR";
-    static const char *s_DORIAN_b2         = "DORIAN b2";
-    static const char *s_LYDIAN_AUG        = "LYDIAN AUGMENTED";
-    static const char *s_LYDIAN_DOMINANT   = "LYDIAN DOMINANT";
-    static const char *s_MIXOLYDIAN_b6     = "MIXOLYD b6";
-    static const char *s_LOCRIAN_s2        = "LOCRIAN #2";
-    static const char *s_SUPER_LOCRIAN     = "SUPER LOCRIAN";
+    static const char *s_MELODIC_MINOR = "MELODIC MINOR";
+    static const char *s_DORIAN_b2 = "DORIAN b2";
+    static const char *s_LYDIAN_AUG = "LYDIAN AUGMENTED";
+    static const char *s_LYDIAN_DOMINANT = "LYDIAN DOMINANT";
+    static const char *s_MIXOLYDIAN_b6 = "MIXOLYD b6";
+    static const char *s_LOCRIAN_s2 = "LOCRIAN #2";
+    static const char *s_SUPER_LOCRIAN = "SUPER LOCRIAN";
 
-    static const char *s_HARMONIC_MAJOR    = "HARMONIC MAJOR";
-    static const char *s_DORIAN_b5         = "DORIAN b5";
-    static const char *s_PHRYGIAN_b4       = "PHRYGIAN b4";
-    static const char *s_LYDIAN_b3         = "LYDIAN b3";
-    static const char *s_MIXOLYDIAN_b2     = "MIXOLYDIAN b2";
-    static const char *s_LYDIAN_AUG_s2     = "LYDIAN AUG #2";
-    static const char *s_LOCRIAN_b7        = "LOCRIAN b7";
+    static const char *s_HARMONIC_MAJOR = "HARMONIC MAJOR";
+    static const char *s_DORIAN_b5 = "DORIAN b5";
+    static const char *s_PHRYGIAN_b4 = "PHRYGIAN b4";
+    static const char *s_LYDIAN_b3 = "LYDIAN b3";
+    static const char *s_MIXOLYDIAN_b2 = "MIXOLYDIAN b2";
+    static const char *s_LYDIAN_AUG_s2 = "LYDIAN AUG #2";
+    static const char *s_LOCRIAN_b7 = "LOCRIAN b7";
 
-    static const char *s_DOUBLE_HARMONIC   = "DBL HARMONIC MAJOR";
-    static const char *s_LYDIAN_b6_b7      = "LYDIAN b6b7";
-    static const char *s_ULTRAPHRYGIAN     = "ULTRAPHRYGIAN";
-    static const char *s_HUNGARIAN_MINOR   = "HUNGARIAN MINOR";
-    static const char *s_ORIENTAL          = "ORIENTAL";
-    static const char *s_IONIAN_s2_s5      = "IONIAN #2#5";
-    static const char *s_LOCRIAN_bb3_bb7   = "LOCRIAN bb3bb7";
+    static const char *s_DOUBLE_HARMONIC = "DBL HARMONIC MAJOR";
+    static const char *s_LYDIAN_b6_b7 = "LYDIAN b6b7";
+    static const char *s_ULTRAPHRYGIAN = "ULTRAPHRYGIAN";
+    static const char *s_HUNGARIAN_MINOR = "HUNGARIAN MINOR";
+    static const char *s_ORIENTAL = "ORIENTAL";
+    static const char *s_IONIAN_s2_s5 = "IONIAN #2#5";
+    static const char *s_LOCRIAN_bb3_bb7 = "LOCRIAN bb3bb7";
 
     // clang-format on
 
@@ -136,14 +160,14 @@ namespace Music
         n_C,
         n_Db, // n_Cs_Db,
         n_D,
-        n_Eb, //n_Ds_Eb,
+        n_Eb, // n_Ds_Eb,
         n_E,
         n_F,
-        n_Fs, //n_Fs_Gb,
+        n_Fs, // n_Fs_Gb,
         n_G,
-        n_Ab, //n_Gs_Ab,
+        n_Ab, // n_Gs_Ab,
         n_A,
-        n_Bb, //n_As_Bb,
+        n_Bb, // n_As_Bb,
         n_B};
 
     static const char *const INTERVAL_NAMES_12[] = {
@@ -287,7 +311,7 @@ namespace Music
 
     // For temporary rigging
     constexpr int D12StartIndex = 0;
-    constexpr int D12Count      = 5*7;
+    constexpr int D12Count = 5 * 7;
     static const ScaleTable SCALE_TABLES[] = {
         // 12 Tone
         {12, 7, s_IONIAN, HarmonicMode::Major, IONIAN_D12, ArrayLen(IONIAN_D12)},

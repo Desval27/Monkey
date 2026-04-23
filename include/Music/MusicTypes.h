@@ -12,6 +12,7 @@
 #pragma once
 
 #include <cstdint>
+#include <Music/MusicConfig.h>
 
 namespace Music
 {

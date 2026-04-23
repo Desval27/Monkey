@@ -19,30 +19,25 @@ ScaleMap scale;
 PitchEngine pe;
 const HarmonicMode mode = HarmonicMode::Major;
 
+const int bars = 8;
+ChordEventSet<> chords;
+
 void DoThing()
 {
-    const int bars = 8;
     const float density = randomRange(0.0f, 1.0f); // 0.50f;
-    const NoteValue g = NoteValue::Eighth;
-    ChordEventSet<> chords;
+    const NoteValue g = GetRandomGranularity(NoteValue::Sixteenth, NoteValue::Whole);
     PatternEventSet<> pattern;
     NoteEventSet<> noteEvents;
-    GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
-    GeneratePattern(ts, bars, density, g, pattern);
-    size_t eventSize = GenerateEventsFromPattern2(pattern, chords, ts, scale, bars, g, noteEvents);
+
+    EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
+
+    size_t eventSize = GenerateEventsFromPattern2(pattern, chords, ts, t, scale, bars, g, noteEvents);  
     NoteEventScore score = ScoreNoteEvents(t, noteEvents);
 
-    std::cout << density << " " << score.overall << std::endl;
+    float v1 = density;
+    float v2 = static_cast<float>(g) / static_cast<float>(NoteValue::Whole);
 
-
-    // std::cout << "Event Score: Overall    " << score.overall << std::endl;
-    // std::cout << "           : Density    " << score.density << std::endl;
-    // std::cout << "           : Rests      " << score.rests << std::endl;
-    // std::cout << "           : Cadence    " << score.cadence << std::endl;
-    // std::cout << "           : Repetition " << score.repetition << std::endl;
-    // std::cout << "           : Contour    " << score.contour << std::endl;
-    // std::cout << "           : Phrase     " << score.phrase << std::endl;
-    // std::cout << "           : Rhythm     " << score.rhythm << std::endl;
+    std::cout << score.overall << '\t' << v1 << '\t' << v2 << std::endl;
 }
 
 int main(int argc, char *argv[])
@@ -68,14 +63,18 @@ int main(int argc, char *argv[])
     std::cout << "set ylabel 'Score'" << std::endl;
     std::cout << "set grid" << std::endl;
 
-    std::cout << "plot '-' using 1:2 with points" << std::endl;
+    std::cout << "$MyData << EOD" << std::endl;
+    //std::cout << "plot '-' using 2:1 with points" << std::endl;
 
+    GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
     for (int i = 0; i < 1000; i++)
     {
         DoThing();
     }
-
-    std::cout << "e" << std::endl;
+    std::cout << "EOD" << std::endl;
+    std::cout << "plot $MyData using 2:1 with points title 'Density', "
+              << "$MyData using 3:1 with points title 'Granularity'" << std::endl;
+    //std::cout << "e" << std::endl;
 
     return 0;
 }

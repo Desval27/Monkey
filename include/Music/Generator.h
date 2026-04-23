@@ -11,6 +11,10 @@
  */
 #pragma once
 
+#ifndef DAISY_PLATFORM
+#include <iostream>
+#endif
+
 #include <Music/MusicConfig.h>
 #include <Music/NoteValue.h>
 #include <Music/TimeSignature.h>
@@ -43,9 +47,14 @@ namespace Music
       if (pattern.Capacity() == 0 || bars == 0 || ts.beatValue == NoteValue::None || granularity == NoteValue::None)
         return 0; // Sanity check
 
-      int n = (ts.beats * bars) * (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
-      int maxLen = min(n, static_cast<int>(pattern.Capacity()));
-      for (int i = 0; i < maxLen; i++)
+      
+      size_t t = bars * ts.beats * ts.beatValue;
+      size_t n = t / granularity;
+      size_t r = t % granularity;
+      std::cout << "Simple Pattern: " << t << "/" << granularity << " slots/granularity = " << n <<  " events with " << r << " slots remaining" << std::endl;
+
+      size_t eventsToEmit = min(n, pattern.Capacity());
+      for (size_t i = 0; i < eventsToEmit; i++)
       {
         pattern.Emplace(randomRange(0.0f, 1.0f) < density);
       }
@@ -64,9 +73,12 @@ namespace Music
       if (pattern.Capacity() == 0 || bars == 0 || ts.beatValue == NoteValue::None || granularity == NoteValue::None)
         return 0; // Sanity check
 
-      int n = (ts.beats * bars) *
-              (static_cast<int>(ts.beatValue) / static_cast<int>(granularity));
+      int t = bars * ts.beats * ts.beatValue;
+      int n = t / granularity;
+      int r = t % granularity;
       int k = n * density;
+      std::cout << "Eulclidian Pattern: " << t << "/" << granularity << " slots/granularity = " << k <<  " events out of " << n << " with " << r << " slots remaining" << std::endl;
+      
       return BuildEuclid(k, n, 1, pattern);
     }
   };

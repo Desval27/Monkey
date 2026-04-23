@@ -19,47 +19,17 @@
 
 namespace Music
 {
-  // ============================================================
-  // -------------------- EUCLIDEAN BUILDER ----------------------
-  // Bucket method + rotation
-  // ============================================================
-  bool _buffer[128];
-  size_t BuildEuclid(int k, int n, int r, bool *out, size_t outSize)
-  {
-    n = clamp(n, 1, static_cast<int>(std::min(outSize, ArrayLen(_buffer))));
-    k = clamp(k, 0, n);
-
-    for (uint8_t i = 0; i < n; i++)
-      out[i] = false;
-
-    uint16_t bucket = 0;
-    for (uint8_t i = 0; i < n; i++)
-    {
-      bucket += k;
-      if (bucket >= n)
-      {
-        bucket -= n;
-        out[i] = true;
-      }
-    }
-
-    r = (n == 0) ? 0 : (r % n);
-    if (r)
-    {
-      for (uint8_t i = 0; i < n; i++)
-        _buffer[i] = out[i];
-      for (uint8_t i = 0; i < n; i++)
-      {
-        uint8_t src = (i + (n - r)) % n; // right rotate
-        out[i] = _buffer[src];
-      }
-    }
-    return n;
-  }
-
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief 
+  /// @param k 
+  /// @param n 
+  /// @param r 
+  /// @param pattern 
+  /// @return 
   size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern)
   {
-    n = clamp(n, 1, static_cast<int>(std::min(pattern.Capacity(), ArrayLen(_buffer))));
+    bool buffer[DEFAULT_MAX_EVENTS];
+    n = clamp(n, 1, static_cast<int>(std::min(pattern.Capacity(), ArrayLen(buffer))));
     k = clamp(k, 0, n);
 
     // Start with a clear pattern
@@ -81,11 +51,11 @@ namespace Music
     if (r)
     {
       for (uint8_t i = 0; i < n; i++)
-        _buffer[i] = pattern[i];
+        buffer[i] = pattern[i];
       for (uint8_t i = 0; i < n; i++)
       {
         uint8_t src = (i + (n - r)) % n; // right rotate
-        pattern[i] = _buffer[src];
+        pattern[i] = buffer[src];
       }
     }
     return pattern.Count();

@@ -43,12 +43,14 @@ namespace Music
     if (chords.Capacity() == 0 || bars <= 0 || value == NoteValue::None)
       return 0;
 
-    const size_t barsToEmit = min(static_cast<size_t>(bars), chords.Capacity());
+    const size_t totalEvents = 
+      (static_cast<size_t>(bars) * static_cast<size_t>(ts.beats) * static_cast<size_t>(ts.beatValue)) / static_cast<size_t>(value);
+    const size_t chordsToEmit = min(totalEvents, chords.Capacity());
     ScaleDegree degree = GetWeightedStartingChord(mode);
     const bool hasScale = (scale.Count() >= SCALE_CHORD_COUNT);
 
     chords.Clear();
-    for (size_t i = 0; i < barsToEmit; ++i)
+    for (size_t i = 0; i < chordsToEmit; ++i)
     {
       const int degreeIndex = ScaleDegreeIndex(degree, mode);
       Note rootOffset = ScaleDegreeToSemitone(degree);
@@ -63,7 +65,7 @@ namespace Music
       degree = GetWeightedNextChord(degree, mode);
     }
 
-    return barsToEmit;
+    return chords.Count();
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -148,6 +150,7 @@ namespace Music
   size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,
                                    const ChordEventSet<> &chords,
                                    const TimeSignature &ts,
+                                   const Temperament &temperament,
                                    const ScaleMap &scale,
                                    int bars,
                                    NoteValue granularity,
@@ -164,7 +167,9 @@ namespace Music
     size_t chordIdx = 0;
 
     Note tones[20];
-    size_t toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
+    size_t toneCount = chords[chordIdx].GetChordTones(
+        scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
+        ArrayLen(tones));
 
     for (size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
     {
@@ -173,7 +178,9 @@ namespace Music
         chordIdx++;
         chordPulses = 0;
 
-        toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
+        toneCount = chords[chordIdx].GetChordTones(
+            scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
+            ArrayLen(tones));
       }
 
       if (pattern[i])
@@ -183,7 +190,7 @@ namespace Music
           events.Emplace(tones[0], 0, granularity);
         else
         {
-          size_t idx = randomRange((size_t)0, toneCount);
+          int idx = randomRange(0, static_cast<int>(toneCount)-1);
           events.Emplace(tones[idx], 0, granularity);
         }
       }
@@ -212,6 +219,7 @@ namespace Music
   size_t GenerateEventsFromPattern2(const PatternEventSet<> &pattern,
                                     const ChordEventSet<> &chords,
                                     const TimeSignature &ts,
+                                    const Temperament &temperament,
                                     const ScaleMap &scale,
                                     int bars,
                                     NoteValue granularity,
@@ -221,14 +229,15 @@ namespace Music
     if (chords.Count() == 0)
       return 0;
 
-    // Direct one-to-one copy of events to notes
     int pulses = 0;
     int chordPulses = 0;
     int ppb = ts.GetPulsesPerBar();
     size_t chordIdx = 0;
 
     Note tones[20];
-    size_t toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
+    size_t toneCount = chords[chordIdx].GetChordTones(
+        scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
+        ArrayLen(tones));
 
     for (size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
     {
@@ -237,7 +246,9 @@ namespace Music
         chordIdx++;
         chordPulses = 0;
 
-        toneCount = chords[chordIdx].GetChordTones(scale, tones, sizeof(tones));
+        toneCount = chords[chordIdx].GetChordTones(
+            scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
+            ArrayLen(tones));
       }
 
       if (pattern[i])
@@ -246,7 +257,7 @@ namespace Music
         if (pulses % ppb == 0)
         {
           // Start with a random chord tone.
-          size_t idx = randomRange((size_t)0, toneCount);
+          int idx = randomRange(0, static_cast<int>(toneCount)-1);
           events.Emplace(tones[0], 0, granularity);
         }
         else
@@ -278,6 +289,22 @@ namespace Music
           events.Emplace(REST, 0, granularity);
       }
     }
+
+    // Do we have any remainders?  If so then create a single rest 
+    // of that value if we have any additional event capacity.
+    int t = bars * ts.GetPulsesPerBar();
+    int r = t - events.GetTotalEventPulses();
+    if (r > 0)
+    {
+      // Do we need to add a new event or just tack on to the last one 
+      // if it is already a rest?
+      if (events.Count() > 0 && events[events.Count()-1].note == REST)
+        events[events.Count()-1].value += r;
+      else if (!events.AtCapacity())
+        events.Emplace(REST, 0, static_cast<NoteValue>(r));
+      // Otherwise we're just goint to lose it for now.
+    }
+
     return events.Count();
   }
 
