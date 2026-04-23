@@ -1,5 +1,5 @@
 # Monkey Music
-General purpose library focusing on music on embedded systems.
+General purpose library focusing on music for embedded systems.
 
 ## Testing
 
