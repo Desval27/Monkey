@@ -33,7 +33,7 @@ void testThing()
     std::cout << std::string(80, '-') << std::endl;
     const int bars = 8;
     const float density = randomRange(0.6f, 0.9f); // 0.50f;
-    const NoteValue g = GetRandomGranularity(NoteValue::Quarter, NoteValue::Whole);
+    const NoteValue g = GetRandomGranularity(NoteValue::Eighth, NoteValue::Whole);
     std::cout << "Granularity: " << static_cast<int>(g) << " " << GetNoteValueText(g) << std::endl;
     ChordEventSet<> chords;
     PatternEventSet<> pattern;
@@ -54,16 +54,16 @@ void testThing()
     DebugNoteEvents(t, ts, noteEvents);
     std::cout << std::endl;
 
-    // NoteEventScore score = ScoreNoteEvents(t, noteEvents);
-    // std::cout << TTY_FG_MAGENTA << "Event Score" << TTY_RESET << ": Overall    " << score.overall << std::endl;
-    // std::cout << "           : Density    " << score.density << std::endl;
-    // std::cout << "           : Rests      " << score.rests << std::endl;
-    // std::cout << "           : Cadence    " << score.cadence << std::endl;
-    // std::cout << "           : Repetition " << score.repetition << std::endl;
-    // std::cout << "           : Contour    " << score.contour << std::endl;
-    // std::cout << "           : Phrase     " << score.phrase << std::endl;
-    // std::cout << "           : Rhythm     " << score.rhythm << std::endl;
-	// 	std::cout << std::endl;
+    NoteEventScore score = ScoreNoteEvents(t, noteEvents);
+    std::cout << TTY_FG_MAGENTA << "Event Score" << TTY_RESET << ": Overall    " << score.overall << std::endl;
+    std::cout << "           : Density    " << score.density << std::endl;
+    std::cout << "           : Rests      " << score.rests << std::endl;
+    std::cout << "           : Cadence    " << score.cadence << std::endl;
+    std::cout << "           : Repetition " << score.repetition << std::endl;
+    std::cout << "           : Contour    " << score.contour << std::endl;
+    std::cout << "           : Phrase     " << score.phrase << std::endl;
+    std::cout << "           : Rhythm     " << score.rhythm << std::endl;
+	std::cout << std::endl;
     
 }
 

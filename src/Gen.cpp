@@ -269,7 +269,7 @@ namespace Music
           // If our last event was the same note then (for now) just add to the original duraton
 					// Or just a random occurance
           // Unless the new event is at the start of a bar
-          if ((pulses % ppb != 0) && (events.Count() > 1) && ((events[events.Count() - 1].note == n) || (randomRange(0.0f, 1.0f) < 0.2f)))
+          if ((pulses % ppb != 0) && (events.Count() > 1) && ((events[events.Count() - 1].note == n) || (randomRange(0.0f, 1.0f) < 0.4f)))
           {
             events[events.Count() - 1].value += granularity;
           }

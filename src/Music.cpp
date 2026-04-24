@@ -402,7 +402,7 @@ namespace Music
     for (size_t i = 0; i < events.Count(); i++)
     {
       if (!events[i].IsPitched())
-        std::cout << TTY_FG_BLACK << TTY_BOLD;
+        std::cout << TTY_FAINT;
 
       t.GetNoteLabel(events[i].note, noteLabel, sizeof(noteLabel));
 
