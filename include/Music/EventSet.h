@@ -20,6 +20,7 @@ namespace Music
     static const Note &Pitch(const NoteEvent &event) { return event.note; }
     static NoteValue &Value(NoteEvent &event) { return event.value; }
     static const NoteValue &Value(const NoteEvent &event) { return event.value; }
+    static bool IsHit(const NoteEvent &event) { return event.note != REST; }
   };
 
   template <>
@@ -29,6 +30,13 @@ namespace Music
     static const Note &Pitch(const ChordEvent &event) { return event.root; }
     static NoteValue &Value(ChordEvent &event) { return event.value; }
     static const NoteValue &Value(const ChordEvent &event) { return event.value; }
+    static bool IsHit(const ChordEvent &event) { return event.root != REST; }
+  };
+
+  template <>
+  struct EventTraits<bool>
+  {
+    static bool IsHit(const bool &event) { return event; }
   };
 
   template <typename T, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
@@ -133,6 +141,15 @@ namespace Music
       return true;
     }
 
+    float GetDensity() const 
+    {
+      int hitCount = 0;
+      for (size_t i = 0; i < Count(); i++)
+        if (IsHit(i))
+          hitCount++;
+      return (float)hitCount/(float)Count();
+    }
+
     Note &Pitch(size_t index) { return EventTraits<T>::Pitch(events_[index]); }
     const Note &Pitch(size_t index) const
     {
@@ -144,6 +161,8 @@ namespace Music
     {
       return EventTraits<T>::Value(events_[index]);
     }
+
+    bool IsHit(size_t index) const { return EventTraits<T>::IsHit(events_[index]); }
 
   private:
     T emptyEvent_;

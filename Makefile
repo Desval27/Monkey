@@ -31,7 +31,7 @@ LIB_OUT := $(LIB_DIR)/$(LIB_NAME)
 ###############################################################################
 # Build Options
 ###############################################################################
-USE_DEBUG = -DUSE_DEBUG
+USE_DEBUG = -DUSE_DEBUG -DDEBUG_COUT
 DEBUGFLAGS = -g
 OPTIMIZEFLAGS = -O2
 CXXSTANDARD = -std=c++17
@@ -48,14 +48,16 @@ EXTRA_WARNINGS = -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-
 ###############################################################################
 # Compilers and Flags
 ###############################################################################
-CXX := g++
+#CXX := g++
 CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS)
 TEST_CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(TEST_INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS)
 LDFLAGS = -L$(LIB_DIR)
 LDLIBS = -lMonkey
 
-AR := ar
+#AR := ar
 ARFLAGS = rcs
+
+NM := gcc-nm
 
 ###############################################################################
 # Files and Targets
@@ -100,6 +102,11 @@ $(BIN_DIR)/%: $(EXAMPLES_DIR)/%.cpp $(LIB_OUT)
 
 clean:
 	rm -rf $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR)
+
+size: $(LIB_OUT)
+	@echo "Size of $(LIB_OUT)"
+	$(NM) --print-size --size-sort --reverse-sort $^
+	
 
 echo: 
 	@echo $(LIB_SRCS)

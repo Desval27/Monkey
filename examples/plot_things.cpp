@@ -31,11 +31,11 @@ void DoThing()
 
     EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
 
-    size_t eventSize = GenerateEventsFromPattern2(pattern, chords, ts, t, scale, bars, g, noteEvents);  
+    StyleANoteGenerator<>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
     NoteEventScore score = ScoreNoteEvents(t, noteEvents);
 
     float v1 = density;
-    float v2 = static_cast<float>(g) / static_cast<float>(NoteValue::Whole);
+    float v2 = score.rests / 100.0;
 
     std::cout << score.overall << '\t' << v1 << '\t' << v2 << std::endl;
 }

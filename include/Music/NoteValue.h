@@ -158,7 +158,34 @@ namespace Music
     //     os << static_cast<int>(value);
     //     return os;
     // }
-#endif  
+#endif
+
+    inline bool IsNoteValueWeird(const NoteValue v)
+    {
+        // Crude but workable for now.
+        switch (v)
+        {
+#if PPQN >= 32
+        case NoteValue::SixtyFourth:
+        case NoteValue::DottedSixtyFourth:
+#endif
+        case NoteValue::ThirtySecond:
+        case NoteValue::DottedThirtySecond:
+        case NoteValue::Sixteenth:
+        case NoteValue::DottedSixteenth:
+        case NoteValue::Eighth:
+        case NoteValue::DottedEighth:
+        case NoteValue::Quarter:
+        case NoteValue::DottedQuarter:
+        case NoteValue::Half:
+        case NoteValue::DottedHalf:
+        case NoteValue::Whole:
+            // case NoteValue::DottedWhole:
+            return false;
+        default:
+            return true;
+        }
+    }
 
     inline NoteValue &operator+=(NoteValue &lhs, const NoteValue &rhs)
     {
@@ -201,6 +228,5 @@ namespace Music
         lhs = static_cast<NoteValue>(static_cast<int>(lhs) % rhs);
         return lhs;
     }
-
 
 } // namespace Music

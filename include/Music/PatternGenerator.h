@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#ifndef DAISY_PLATFORM
+#ifdef DEBUG_COUT
 #include <iostream>
 #endif
 
@@ -51,7 +51,9 @@ namespace Music
       size_t t = bars * ts.beats * ts.beatValue;
       size_t n = t / granularity;
       size_t r = t % granularity;
+      #ifdef DEBUG_COUT
       std::cout << "Simple Pattern: " << t << "/" << granularity << " slots/granularity = " << n <<  " events with " << r << " slots remaining" << std::endl;
+      #endif
 
       size_t eventsToEmit = min(n, pattern.Capacity());
       for (size_t i = 0; i < eventsToEmit; i++)
@@ -77,7 +79,9 @@ namespace Music
       int n = t / granularity;
       int r = t % granularity;
       int k = n * density;
+      #ifdef DEBUG_COUT
       std::cout << "Eulclidian Pattern: " << t << "/" << granularity << " slots/granularity = " << k <<  " events out of " << n << " with " << r << " slots remaining" << std::endl;
+      #endif
       
       return BuildEuclid(k, n, 1, pattern);
     }

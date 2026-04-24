@@ -13,15 +13,15 @@
 
 using namespace Music;
 
-#define PALETTE IONIAN_D12
+#define PALETTE PHRYGIAN_D12
 #define PALETTE_LEN ArrayLen(PALETTE)
 #define TEMPERAMENT_DEGREES 12
+const HarmonicMode mode = HarmonicMode::Minor;
 
 TimeSignature ts;
 Temperament t;
 ScaleMap scale;
 PitchEngine pe;
-const HarmonicMode mode = HarmonicMode::Major;
 
 void doDebug(const char *format, va_list args)
 {
@@ -39,10 +39,12 @@ void testThing()
     PatternEventSet<> pattern;
     NoteEventSet<> noteEvents;
 
+    // Make Chord Progression
     GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
     DebugChordEvents(ts, t, scale, chords);
     std::cout << std::endl;
 
+    // Make "Hit" Pattern
     if (randomRange(0.0f, 1.0f) < 0.5f)
         EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
     else
@@ -50,7 +52,8 @@ void testThing()
     DebugPattern(ts, g, pattern);
     std::cout << std::endl;
 
-    size_t eventSize = GenerateEventsFromPattern2(pattern, chords, ts, t, scale, bars, g, noteEvents);
+    // Make Notes from "Hit" Pattern
+    StyleANoteGenerator<>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
     DebugNoteEvents(t, ts, noteEvents);
     std::cout << std::endl;
 
@@ -63,7 +66,7 @@ void testThing()
     std::cout << "           : Contour    " << score.contour << std::endl;
     std::cout << "           : Phrase     " << score.phrase << std::endl;
     std::cout << "           : Rhythm     " << score.rhythm << std::endl;
-	std::cout << std::endl;
+  std::cout << std::endl;
     
 }
 

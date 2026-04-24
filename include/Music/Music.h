@@ -19,7 +19,8 @@
 #include <Music/Note.h>
 #include <Music/NoteValue.h>
 #include <Music/EventSet.h>
-#include <Music/Generator.h>
+#include <Music/PatternGenerator.h>
+#include <Music/NoteGenerator.h>
 #include <Music/Persona.h>
 #include <Music/PitchEngine.h>
 #include <Music/ScaleMap.h>
@@ -53,13 +54,6 @@ namespace Music
                                    const ScaleMap &scale, int bars,
                                    NoteValue granularity,
                                    NoteEventSet<> &events);
-  size_t GenerateEventsFromPattern2(const PatternEventSet<> &pattern,
-                                    const ChordEventSet<> &chords,
-                                    const TimeSignature &ts,
-                                    const Temperament &temperament,
-                                    const ScaleMap &scale, int bars,
-                                    NoteValue granularity,
-                                    NoteEventSet<> &events);
 
   ScaleDegree GetWeightedStartingChord(HarmonicMode mode = HarmonicMode::Major);
   ScaleDegree GetWeightedNextChord(ScaleDegree fromDegree,
@@ -69,7 +63,9 @@ namespace Music
 
   NoteEventScore ScoreNoteEvents(const Temperament &t, const NoteEventSet<> &events);
   NoteValue GetRandomGranularity(NoteValue low, NoteValue high);
+
   const char *GetNoteValueText(NoteValue v);
+
 
 #ifndef DAISY_PLATFORM
   void DebugPattern(const TimeSignature &ts, NoteValue granularity,

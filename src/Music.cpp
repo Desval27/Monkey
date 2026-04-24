@@ -13,11 +13,6 @@
  */
 #include <Music/Music.h>
 
-#ifndef DAISY_PLATFORM
-#include <TTY.h>
-#include <iostream>
-#endif
-
 namespace Music
 {
   // C  C#  D  D#  E   F  F#  G  G#   A   A#   B
@@ -66,13 +61,28 @@ namespace Music
   /// @return
   NoteValue GetRandomGranularity(NoteValue low, NoteValue high)
   {
+    // This is really weird but it will be addressed later with some sort of table.
     if (low == NoteValue::None)
       return NoteValue::None;
+
     int div = static_cast<int>(high) / static_cast<int>(low);
-    int cnt = randomRange(1, div);
-    return static_cast<NoteValue>(low * cnt);
+    int tries = 0;
+    NoteValue v;
+    do 
+    {
+      int cnt = randomRange(1, div);
+      v = static_cast<NoteValue>(low * cnt);
+      tries++;
+    } while (IsNoteValueWeird(v) && tries <= 100);
+
+#ifdef DEBUG_COUT
+    std::cout << "Got Random G = " << v << " tried " << tries << " times." << std::endl;
+#endif
+
+    return v;
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   std::string ChordEvent::GetChordName(const ScaleMap &scale,
                                        const Temperament &temperament) const
   {
@@ -137,6 +147,7 @@ namespace Music
     return BuildChordNameFromQuality(rootIdx, quality);
   }
 
+  //////////////////////////////////////////////////////////////////////////////////////////////////
   const char *GetNoteValueText(NoteValue v)
   {
     // Crude but workable for now.
@@ -190,7 +201,9 @@ namespace Music
     case NoteValue::DottedDottedWhole:
       return v_DDWholeNote;
     default:
+      #ifdef DEBUG_COUT
       std::cout << " (Undefined = " << v << ") ";
+      #endif
       return v_Undefined;
     }
   }
@@ -248,8 +261,8 @@ namespace Music
     int hugeLeaps = 0;
     int transitionCount = 0;
 
-    const int quarterPulses = static_cast<int>(NoteValue::Quarter);
-    const int longThreshold = quarterPulses;
+    //const int quarterPulses = static_cast<int>(NoteValue::Quarter);
+    const int longThreshold = static_cast<int>(NoteValue::Half); //quarterPulses;
     const int shortThreshold = static_cast<int>(NoteValue::Eighth);
 
     Note previousPitchedNote = REST;
@@ -355,101 +368,4 @@ namespace Music
     return score;
   }
 
-#ifndef DAISY_PLATFORM
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief
-  /// @param ts
-  /// @param granularity
-  /// @param pattern
-  void DebugPattern(const TimeSignature &ts, NoteValue granularity, PatternEventSet<> pattern)
-  {
-    std::cout << TTY_FG_YELLOW << "PATTERN EVENTS" << TTY_RESET << std::endl;
-    if (pattern.Count() == 0 || granularity == NoteValue::None)
-      return;
-
-    const int g = static_cast<int>(granularity);
-    const int kPerBar = (ts.beats * static_cast<int>(ts.beatValue)) / g;
-    if (kPerBar > 0) 
-    {
-      for (size_t i = 0; i < pattern.Count(); i++)
-      {      
-        if (i % kPerBar == 0)
-          std::cout << "|";
-        if (pattern[i])
-          std::cout << "*";
-        else
-          std::cout << "-";
-      }
-    }
-    std::cout << "|" << std::endl;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief
-  /// @param t
-  /// @param ts
-  /// @param events
-  void DebugNoteEvents(const Temperament &t,
-                       const TimeSignature &ts,
-                       const NoteEventSet<> &events)
-  {
-    std::cout << TTY_FG_CYAN << "NOTE EVENTS" << TTY_RESET << std::endl;
-
-    int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
-    int v = 0;
-    char noteLabel[6];
-    for (size_t i = 0; i < events.Count(); i++)
-    {
-      if (!events[i].IsPitched())
-        std::cout << TTY_FAINT;
-
-      t.GetNoteLabel(events[i].note, noteLabel, sizeof(noteLabel));
-
-      std::cout << noteLabel << "-" << GetNoteValueText(events[i].value) << " ";
-
-      if (!events[i].IsPitched())
-        std::cout << TTY_RESET;
-
-      v = events[i].value + v;
-      if (v % vPerBar == 0)
-        std::cout << std::endl;
-    }
-  }
-
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief
-  /// @param t
-  /// @param ts
-  /// @param chords
-  void DebugChordEvents(const TimeSignature &ts, const Temperament &t, const ScaleMap &s, const ChordEventSet<> chords)
-  {
-    int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
-    int v = 0;
-    char noteLabel[8];
-    std::cout << TTY_FG_GREEN << "CHORD EVENTS" << TTY_RESET << std::endl;
-    for (size_t i = 0; i < chords.Count(); i++)
-    {
-      Note tones[8];
-      size_t toneCount = chords[i].GetChordTones(
-          s, static_cast<int>(t.DegreesPerPeriod()), tones, ArrayLen(tones));
-
-      if (v % vPerBar == 0)
-        std::cout << "| ";
-      std::cout << chords[i].GetChordName(s, t) << " (";
-
-      for (size_t j = 0; j < toneCount; j++)
-      {
-        t.GetNoteLabel(tones[j], noteLabel, sizeof(noteLabel));
-        std::cout << noteLabel;
-      }
-
-      std::cout << ")-" << GetNoteValueText(chords[i].value) << " ";
-
-      v = chords[i].value + v;
-    }
-    std::cout << "|" << std::endl;
-  }
-
-#endif
 } // namespace Music

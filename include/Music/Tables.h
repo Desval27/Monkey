@@ -47,15 +47,15 @@ namespace Music
     static const char *v_EighthNote = "8th";
     static const char *v_DEighthNote = "8th.";
     static const char *v_DDEighthNote = "8th..";
-    static const char *v_QuarterNote = "Q";
-    static const char *v_DQuarterNote = "Q.";
-    static const char *v_DDQuarterNote = "Q..";
-    static const char *v_HalfNote = "H";
-    static const char *v_DHalfNote = "H.";
-    static const char *v_DDHalfNote = "H..";
-    static const char *v_WholeNote = "W";
-    static const char *v_DWholeNote = "W.";
-    static const char *v_DDWholeNote = "W..";
+    static const char *v_QuarterNote = "Qrt";
+    static const char *v_DQuarterNote = "Qrt.";
+    static const char *v_DDQuarterNote = "Qrt..";
+    static const char *v_HalfNote = "Hlf";
+    static const char *v_DHalfNote = "Hlf.";
+    static const char *v_DDHalfNote = "Hlf..";
+    static const char *v_WholeNote = "Whl";
+    static const char *v_DWholeNote = "Whl.";
+    static const char *v_DDWholeNote = "Whl..";
     static const char *v_Undefined = "UNDEFINED";
 
     // Note Names
