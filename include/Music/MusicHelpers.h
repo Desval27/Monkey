@@ -89,4 +89,20 @@ namespace Music
         return powf(2.0f, cents / 1200.0f);
     }
 
+    /**
+     * @brief
+     *
+     * @param centbpm
+     * @return float
+     */
+    static inline float BpmToFreq(float bpm, int ppqn)
+    {
+        return (bpm * (float)ppqn) / 60.0f;
+    }
+
+    static inline float BpmToFreq(float bpm)
+    {
+        return BpmToFreq(bpm, 1);
+    }
+
 } // namespace Music

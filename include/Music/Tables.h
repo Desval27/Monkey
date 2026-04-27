@@ -25,6 +25,8 @@
 #endif
 #endif
 
+#include <array>
+
 #include <Music/Music.h>
 
 #include <Music/Tone12.h>
@@ -156,130 +158,40 @@ namespace Music
     //
     // 12 Tone Temperaments
     //
-    static const char *const NOTE_NAMES_12[] = {
-        n_C,
-        n_Db, // n_Cs_Db,
-        n_D,
-        n_Eb, // n_Ds_Eb,
-        n_E,
-        n_F,
-        n_Fs, // n_Fs_Gb,
-        n_G,
-        n_Ab, // n_Gs_Ab,
-        n_A,
-        n_Bb, // n_As_Bb,
-        n_B};
+    static const std::array<const char *, 12> NOTE_NAMES_12 =
+        {n_C, n_Cs_Db, n_D, n_Ds_Eb, n_E, n_F, n_Fs_Gb, n_G, n_Gs_Ab, n_A, n_As_Bb, n_B};
 
-    static const char *const INTERVAL_NAMES_12[] = {
-        i_P1,
-        i_m2,
-        i_M2,
-        i_m3,
-        i_M3,
-        i_P4,
-        i_TT,
-        i_P5,
-        i_m6,
-        i_M6,
-        i_m7,
-        i_M7};
+    static const std::array<const char *, 12> INTERVAL_NAMES_12 =
+        {i_P1, i_m2, i_M2, i_m3, i_M3, i_P4, i_TT, i_P5, i_m6, i_M6, i_m7, i_M7};
 
     //
     // 15 Tone Temperaments
     //
-    static const char *const NOTE_NAMES_15[] = {
+    static const std::array<const char *, 15> NOTE_NAMES_15 =
         // 0        1    2     3     4     5     6         7    8     9    10   11    12    13   14
-        n_C, n_Cs_Db, n_D, n_Ds, n_Eb, n_E, n_F, n_Fs_Gb, n_G, n_Gs, n_Ab, n_A, n_As, n_Bb, n_B};
+        {n_C, n_Cs_Db, n_D, n_Ds, n_Eb, n_E, n_F, n_Fs_Gb, n_G, n_Gs, n_Ab, n_A, n_As, n_Bb, n_B};
 
-    static const char *const INTERVAL_NAMES_15[] = {
+    static const std::array<const char *, 15> INTERVAL_NAMES_15 =
         // 0     1     2     3     4     5     6     7     8     9    10    11    12    13    14
-        i_P1, i_m2, i_M2, i_A2, i_m3, i_M3, i_P4, i_TT, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7};
+        {i_P1, i_m2, i_M2, i_A2, i_m3, i_M3, i_P4, i_TT, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7};
 
     //
     // 17 Tone Temperaments
     //
-    static const char *const NOTE_NAMES_17[] = {
-        n_C,
-        n_Cs,
-        n_Db,
-        n_D,
-        n_Ds,
-        n_Eb,
-        n_E,
-        n_F,
-        n_Fs,
-        n_Gb,
-        n_G,
-        n_Gs,
-        n_Ab,
-        n_A,
-        n_As,
-        n_Bb,
-        n_B};
+    static const std::array<const char *, 17> NOTE_NAMES_17 =
+        {n_C, n_Cs, n_Db, n_D, n_Ds, n_Eb, n_E, n_F, n_Fs, n_Gb, n_G, n_Gs, n_Ab, n_A, n_As, n_Bb, n_B};
 
-    static const char *const INTERVAL_NAMES_17[] = {
-        i_P1,
-        i_A1,
-        i_m2,
-        i_M2,
-        i_A2,
-        i_m3,
-        i_M3,
-        i_P4,
-        i_A4,
-        i_d5,
-        i_P5,
-        i_A5,
-        i_m6,
-        i_M6,
-        i_A6,
-        i_m7,
-        i_M7};
+    static const std::array<const char *, 17> INTERVAL_NAMES_17 =
+        {i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_P4, i_A4, i_d5, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7};
 
     //
     // 19 Tone Temperaments
     //
-    static const char *const NOTE_NAMES_19[] = {
-        n_C,
-        n_Cs,
-        n_Db,
-        n_D,
-        n_Ds,
-        n_Eb,
-        n_E,
-        n_Es_Fb,
-        n_F,
-        n_Fs,
-        n_Gb,
-        n_G,
-        n_Gs,
-        n_Ab,
-        n_A,
-        n_As,
-        n_Bb,
-        n_B,
-        n_Bs_Cb};
+    static const std::array<const char *, 19> NOTE_NAMES_19 =
+        {n_C, n_Cs, n_Db, n_D, n_Ds, n_Eb, n_E, n_Es_Fb, n_F, n_Fs, n_Gb, n_G, n_Gs, n_Ab, n_A, n_As, n_Bb, n_B, n_Bs_Cb};
 
-    static const char *const INTERVAL_NAMES_19[] = {
-        i_P1,
-        i_A1,
-        i_m2,
-        i_M2,
-        i_A2,
-        i_m3,
-        i_M3,
-        i_A3,
-        i_P4,
-        i_A4,
-        i_d5,
-        i_P5,
-        i_A5,
-        i_m6,
-        i_M6,
-        i_A6,
-        i_m7,
-        i_M7,
-        i_A7};
+    static const std::array<const char *, 19> INTERVAL_NAMES_19 =
+        {i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4, i_d5, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7, i_A7};
 
     // Reusable 7-note scale weight presets.
     // Index 0 maps to the first degree in the selected scale degree map.
@@ -303,10 +215,10 @@ namespace Music
     static const float SCALE_WEIGHTS_5_CHORD_TONE_HEAVY[] = {4.0f, 1.0f, 3.0f, 3.5f, 1.5f};
 
     static const TemperamentTable TEMPERAMENT_TABLES[] = {
-        {12, NOTE_NAMES_12, INTERVAL_NAMES_12},
-        {15, NOTE_NAMES_15, INTERVAL_NAMES_15},
-        {17, NOTE_NAMES_17, INTERVAL_NAMES_17},
-        {19, NOTE_NAMES_19, INTERVAL_NAMES_19}};
+        {12, NOTE_NAMES_12.data(), INTERVAL_NAMES_12.data()},
+        {15, NOTE_NAMES_15.data(), INTERVAL_NAMES_15.data()},
+        {17, NOTE_NAMES_17.data(), INTERVAL_NAMES_17.data()},
+        {19, NOTE_NAMES_19.data(), INTERVAL_NAMES_19.data()}};
     constexpr size_t NUM_TEMPERAMENTS = ArrayLen(TEMPERAMENT_TABLES);
 
     // For temporary rigging
@@ -396,17 +308,5 @@ namespace Music
         {5, s_Tonic_Heavy, SCALE_WEIGHTS_5_TONIC_HEAVY},
         {5, s_Chord_Tone_Heavy, SCALE_WEIGHTS_5_CHORD_TONE_HEAVY}};
     constexpr size_t NUM_WEIGHTS = ArrayLen(WEIGHT_TABLES);
-
-    //
-    // Validation
-    //
-    static_assert(ArrayLen(NOTE_NAMES_12) == 12, "NOTE_NAMES_12 array length mismatch");
-    static_assert(ArrayLen(INTERVAL_NAMES_12) == 12, "INTERVAL_NAMES_12 array length mismatch");
-    static_assert(ArrayLen(NOTE_NAMES_15) == 15, "NOTE_NAMES_15 array length mismatch");
-    static_assert(ArrayLen(INTERVAL_NAMES_15) == 15, "INTERVAL_NAMES_15 array length mismatch");
-    static_assert(ArrayLen(NOTE_NAMES_17) == 17, "NOTE_NAMES_17 array length mismatch");
-    static_assert(ArrayLen(INTERVAL_NAMES_17) == 17, "INTERVAL_NAMES_17 array length mismatch");
-    static_assert(ArrayLen(NOTE_NAMES_19) == 19, "NOTE_NAMES_19 array length mismatch");
-    static_assert(ArrayLen(INTERVAL_NAMES_19) == 19, "INTERVAL_NAMES_19 array length mismatch");
 
 }; // namespace Music

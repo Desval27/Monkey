@@ -199,6 +199,12 @@ namespace Music
       return noteLabels_.Attach(labels, count);
     }
 
+    template <typename T, std::size_t N>
+    bool AttachNoteLabels(const std::array<T, N>& labels)
+    {
+      return noteLabels_.Attach(labels.data(), labels.size());
+    }
+
     /**
      * @brief
      *
@@ -210,6 +216,12 @@ namespace Music
     bool AttachIntervalLabels(const char *const *labels, uint16_t count)
     {
       return intervalLabels_.Attach(labels, count);
+    }
+
+    template <typename T, std::size_t N>
+    bool AttachIntervalLabels(const std::array<T, N>& labels)
+    {
+      return intervalLabels_.Attach(labels.data(), labels.size());
     }
 
     /**

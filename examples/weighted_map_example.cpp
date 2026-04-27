@@ -17,8 +17,7 @@ int main()
 
     TempT temperament;
     temperament.MakeEqualDivision(12, 2.0f);
-    temperament.AttachNoteLabels(Music::NOTE_NAMES_12,
-                                 ArrayLen(Music::NOTE_NAMES_12));
+    temperament.AttachNoteLabels(Music::NOTE_NAMES_12);
 
     ScaleT scale;
     scale.SetDegrees(Music::MAJOR_PENTATONIC_D12, ArrayLen(Music::MAJOR_PENTATONIC_D12));

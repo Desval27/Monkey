@@ -81,8 +81,8 @@ namespace Music
 
                 if (pattern[i])
                 {
-                    // Is this at the start of a bar?  Then start with a chord
-                    if (pulses % ppb == 0)
+                    // Is this at the start of a bar?  Then start with a chord tone
+                    if ((pulses % ppb == 0) && (randomRange(0.0f, 1.0f) < 0.6f))
                     {
                         // Start with a random chord tone.
                         int idx = randomRange(0, static_cast<int>(toneCount) - 1);

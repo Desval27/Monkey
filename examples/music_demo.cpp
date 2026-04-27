@@ -13,9 +13,9 @@
 
 using namespace Music;
 
-#define PALETTE PHRYGIAN_D12
+#define PALETTE PHRYGIAN_D19
 #define PALETTE_LEN ArrayLen(PALETTE)
-#define TEMPERAMENT_DEGREES 12
+#define TEMPERAMENT_DEGREES 19
 const HarmonicMode mode = HarmonicMode::Minor;
 
 TimeSignature ts;
@@ -89,21 +89,17 @@ int main(int argc, char *argv[])
 
     t.MakeEqualDivision(TEMPERAMENT_DEGREES, 2.0f);
 #if TEMPERAMENT_DEGREES == 12
-    t.AttachNoteLabels(Music::NOTE_NAMES_12, ArrayLen(Music::NOTE_NAMES_12));
-    t.AttachIntervalLabels(Music::INTERVAL_NAMES_12,
-                           ArrayLen(Music::INTERVAL_NAMES_12));
+    t.AttachNoteLabels(Music::NOTE_NAMES_12);
+    t.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
 #elif TEMPERAMENT_DEGREES == 15
-    t.AttachNoteLabels(Music::NOTE_NAMES_15, ArrayLen(Music::NOTE_NAMES_15));
-    t.AttachIntervalLabels(Music::INTERVAL_NAMES_15,
-                           ArrayLen(Music::INTERVAL_NAMES_15));
+    t.AttachNoteLabels(Music::NOTE_NAMES_15);
+    t.AttachIntervalLabels(Music::INTERVAL_NAMES_15);
 #elif TEMPERAMENT_DEGREES == 17
-    t.AttachNoteLabels(Music::NOTE_NAMES_17, ArrayLen(Music::NOTE_NAMES_17));
-    t.AttachIntervalLabels(Music::INTERVAL_NAMES_17,
-                           ArrayLen(Music::INTERVAL_NAMES_17));
+    t.AttachNoteLabels(Music::NOTE_NAMES_17);
+    t.AttachIntervalLabels(Music::INTERVAL_NAMES_17);
 #elif TEMPERAMENT_DEGREES == 19
-    t.AttachNoteLabels(Music::NOTE_NAMES_19, ArrayLen(Music::NOTE_NAMES_19));
-    t.AttachIntervalLabels(Music::INTERVAL_NAMES_19,
-                           ArrayLen(Music::INTERVAL_NAMES_19));
+    t.AttachNoteLabels(Music::NOTE_NAMES_19);
+    t.AttachIntervalLabels(Music::INTERVAL_NAMES_19);
 #else
 #error Unsupported TEMPERAMENT_DEGREES for music_demo
 #endif

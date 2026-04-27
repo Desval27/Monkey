@@ -42,17 +42,11 @@ void DoThing()
 
 int main(int argc, char *argv[])
 {
-    // Random number seed
-    std::srand(std::time(nullptr));
-
     t.MakeEqualDivision(12, 2.0f);
-    t.AttachNoteLabels(Music::NOTE_NAMES_12, ArrayLen(Music::NOTE_NAMES_12));
-    t.AttachIntervalLabels(Music::INTERVAL_NAMES_12,
-                           ArrayLen(Music::INTERVAL_NAMES_12));
+    t.AttachNoteLabels(Music::NOTE_NAMES_12); 
+    t.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
 
     scale.SetDegrees(PALETTE, PALETTE_LEN);
-
-    std::srand(std::time(nullptr));
 
     pe.SetTemperament(&t);
     pe.SetScaleMap(&scale);
