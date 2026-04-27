@@ -11,12 +11,13 @@ namespace Music
   /// @param granularity
   /// @param chords
   /// @return
+  template <std::size_t SCALE_MAP_DEGREES, std::size_t MAX_EVENTS>
   size_t GenerateStandardChordEvents(const TimeSignature &ts,
-                                     const ScaleMap &scale,
+                                     const ScaleMap<SCALE_MAP_DEGREES> &scale,
                                      int bars,
                                      HarmonicMode mode,
                                      NoteValue granularity,
-                                     ChordEventSet<> &chords)
+                                     ChordEventSet<SCALE_MAP_DEGREES, MAX_EVENTS> &chords)
   {
     return GenerateWeightedChordEvents(ts, scale, bars, mode, 0, granularity, chords);
   }
@@ -31,13 +32,14 @@ namespace Music
   /// @param value
   /// @param chords
   /// @return
+  template <std::size_t SCALE_MAP_DEGREES>
   size_t GenerateWeightedChordEvents(const TimeSignature &ts,
-                                     const ScaleMap &scale,
+                                     const ScaleMap<SCALE_MAP_DEGREES> &scale,
                                      int bars,
                                      HarmonicMode mode,
                                      Note tonic,
                                      NoteValue value,
-                                     ChordEventSet<> &chords)
+                                     ChordEventSet<SCALE_MAP_DEGREES> &chords)
   {
     (void)ts;
     if (chords.Capacity() == 0 || bars <= 0 || value == NoteValue::None)
@@ -77,11 +79,12 @@ namespace Music
   /// @param granularity
   /// @param events
   /// @return
+  template <std::size_t SCALE_MAP_DEGREES>
   size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,
-                                   const ChordEventSet<> &chords,
+                                   const ChordEventSet<SCALE_MAP_DEGREES> &chords,
                                    const TimeSignature &ts,
                                    const Temperament &temperament,
-                                   const ScaleMap &scale,
+                                   const ScaleMap<SCALE_MAP_DEGREES> &scale,
                                    int bars,
                                    NoteValue granularity,
                                    NoteEventSet<> &events)
@@ -136,5 +139,13 @@ namespace Music
     }
     return events.Count();
   }
+
+  template size_t GenerateStandardChordEvents<HEPATONIC, DEFAULT_MAX_EVENTS>(
+      const TimeSignature &ts,
+      const ScaleMap<HEPATONIC> &scale,
+      int bars,
+      HarmonicMode mode,
+      NoteValue granularity,
+      ChordEventSet<HEPATONIC, DEFAULT_MAX_EVENTS> &chords);
   
 } // namespace Music

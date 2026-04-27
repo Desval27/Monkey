@@ -16,13 +16,15 @@
 #pragma once
 
 #include <cstring>
+#include <array>
+
 #include <Music/Music.h>
 
 namespace Music
 {
 
   /**
-   * @brief
+   * @brief A set of string labels for degrees, notes, or intervals in a temperament.
    *
    */
   class LabelSet
@@ -56,7 +58,7 @@ namespace Music
   };
 
   /**
-   * @brief
+   * @brief Represents a musical temperament system with ratios and labels for pitches.
    *
    */
   class Temperament
@@ -69,18 +71,20 @@ namespace Music
     };
 
     /**
-     * @brief Construct a new Temperament object
+     * @brief Construct a new Temperament object with equal division of the octave.
      *
+     * @param degreesPerPeriod Number of degrees per period (e.g., 12 for 12-EDO).
+     * @param periodRatio The ratio of the period (e.g., 2.0 for octave).
      */
-    Temperament()
+    Temperament(uint16_t degreesPerPeriod = 12, float periodRatio = 2.0f)
     {
       Clear();
-      // Default to 12-EDO with octaves at each frequency doubling.
-      MakeEqualDivision();
+      MakeEqualDivision(degreesPerPeriod, periodRatio);
     }
 
+
     /**
-     * @brief
+     * @brief Reset the temperament to default state with no ratios.
      *
      */
     void Clear()
@@ -97,15 +101,14 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Create an equal division temperament (e.g., 12-EDO).
      *
-     * @param degreesPerPeriod
-     * @param periodRatio
-     * @return true
+     * @param degreesPerPeriod Number of equal steps per period.
+     * @param periodRatio The ratio of the period (e.g., 2.0 for octave).
+     * @return true if successful, false if parameters are invalid.
      * @return false
      */
-    bool MakeEqualDivision(uint16_t degreesPerPeriod = 12,
-                           float periodRatio = 2.0f)
+    bool MakeEqualDivision(uint16_t degreesPerPeriod, float periodRatio)
     {
       if (degreesPerPeriod == 0 || degreesPerPeriod > MAX_DEGREES ||
           periodRatio <= 0.0f)
@@ -123,25 +126,27 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Create a temperament from a table of ratios.
      *
-     * @param ratios
-     * @param count
-     * @param periodRatio
-     * @return true
+     * @param ratios Array of frequency ratios for each degree.
+     * @param count Number of ratios in the array.
+     * @param periodRatio The ratio of the period (e.g., 2.0 for octave).
+     * @return true if successful, false if parameters are invalid.
      * @return false
      */
-    bool MakeRatioTable(const float *ratios, uint16_t count,
-                        float periodRatio = 2.0f)
+    template <typename T, std::size_t N>
+    bool MakeRatioTable(const std::array<T, N>& ratios, float periodRatio = 2.0f)
     {
-      if (!ratios || count == 0 || count > MAX_DEGREES || periodRatio <= 0.0f)
+      static_assert(std::is_floating_point<T>::value, "T must be a floating-point type");      
+
+      if (!ratios || ratios.size() == 0 || ratios.size() > MAX_DEGREES || periodRatio <= 0.0f)
         return false;
 
       kind_ = Kind::RatioTable;
-      degreesPerPeriod_ = count;
+      degreesPerPeriod_ = ratios.size();
       periodRatio_ = periodRatio;
 
-      for (uint16_t i = 0; i < count; ++i)
+      for (uint16_t i = 0; i < ratios.size(); ++i)
         ratios_[i] = ratios[i];
 
       RebuildPeriodMultipliers();
@@ -149,25 +154,25 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Create a temperament from normalized ratios, automatically sorting and normalizing.
      *
-     * @param ratios
-     * @param count
-     * @param periodRatio
-     * @return true
+     * @param ratios Array of frequency ratios to be normalized.
+     * @param count Number of ratios in the array.
+     * @param periodRatio The ratio of the period (e.g., 2.0 for octave).
+     * @return true if successful, false if parameters are invalid.
      * @return false
      */
-    bool MakeNormalizedRatioTable(const float *ratios, uint16_t count,
-                                  float periodRatio = 2.0f)
+    template <typename T, std::size_t N>
+    bool MakeNormalizedRatioTable(const std::array<T, N>& ratios, float periodRatio = 2.0f)
     {
-      if (!ratios || count == 0 || count > MAX_DEGREES || periodRatio <= 1.0f)
+      if (!ratios || ratios.size() == 0 || ratios.size() > MAX_DEGREES || periodRatio <= 1.0f)
         return false;
 
       kind_ = Kind::RatioTable;
-      degreesPerPeriod_ = count;
+      degreesPerPeriod_ = ratios.size();
       periodRatio_ = periodRatio;
 
-      for (uint16_t i = 0; i < count; ++i)
+      for (uint16_t i = 0; i < ratios.size(); ++i)
       {
         float r = ratios[i];
         if (r <= 0.0f)
@@ -187,11 +192,11 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Attach labels for note names (e.g., "C", "C#", "D").
      *
-     * @param labels
-     * @param count
-     * @return true
+     * @param labels Array of string pointers for note labels.
+     * @param count Number of labels.
+     * @return true if successful, false if parameters are invalid.
      * @return false
      */
     bool AttachNoteLabels(const char *const *labels, uint16_t count)
@@ -206,11 +211,11 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Attach labels for interval names (e.g., "unison", "major third").
      *
-     * @param labels
-     * @param count
-     * @return true
+     * @param labels Array of string pointers for interval labels.
+     * @param count Number of labels.
+     * @return true if successful, false if parameters are invalid.
      * @return false
      */
     bool AttachIntervalLabels(const char *const *labels, uint16_t count)
@@ -225,12 +230,12 @@ namespace Music
     }
 
     /**
-     * @brief Get the Note Label object
+     * @brief Get the string label for a given degree (note).
      *
-     * @param degree
-     * @param out
-     * @param maxOut
-     * @return true
+     * @param degree The degree to get the label for.
+     * @param out Buffer to write the label to.
+     * @param maxOut Maximum size of the output buffer.
+     * @return true if successful, false if degree is invalid or no labels attached.
      * @return false
      */
     bool GetNoteLabel(Degree degree, char *out, size_t maxOut) const
@@ -248,12 +253,12 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Get the string label for a given interval degree.
      *
-     * @param degree
-     * @param out
-     * @param maxOut
-     * @return true
+     * @param degree The interval degree to get the label for.
+     * @param out Buffer to write the label to.
+     * @param maxOut Maximum size of the output buffer.
+     * @return true if successful, false if degree is invalid or no labels attached.
      * @return false
      */
     bool GetIntervalLabel(Degree degree, char *out, size_t maxOut) const
@@ -268,24 +273,24 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Get the number of degrees per period in this temperament.
      *
-     * @return uint16_t
+     * @return uint16_t Number of degrees per period.
      */
     uint16_t DegreesPerPeriod() const { return degreesPerPeriod_; }
 
     /**
-     * @brief
+     * @brief Get the ratio of the period (e.g., 2.0 for octave).
      *
-     * @return float
+     * @return float The period ratio.
      */
     float PeriodRatio() const { return periodRatio_; }
 
     /**
-     * @brief
+     * @brief Get the frequency ratio for a given degree within one period.
      *
-     * @param degree
-     * @return float
+     * @param degree The degree to get the ratio for.
+     * @return float The frequency ratio (1.0 for unison).
      */
     float RatioAt(Degree degree) const
     {
@@ -298,10 +303,10 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Get the multiplier for a given period offset.
      *
-     * @param period
-     * @return float
+     * @param period The period offset (e.g., 1 for one octave up).
+     * @return float The period multiplier.
      */
     float PeriodMultiplier(Period period) const
     {
@@ -312,11 +317,11 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Get the combined ratio for a degree and period offset.
      *
-     * @param degree
-     * @param period
-     * @return float
+     * @param degree The degree within the period.
+     * @param period The period offset.
+     * @return float The combined frequency ratio.
      */
     float RatioAt(int degree, Period period) const
     {
@@ -324,13 +329,13 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Calculate frequency from a root frequency, degree, and period.
      *
-     * @param rootHz
-     * @param degree
-     * @param period
-     * @param fineCents
-     * @return float
+     * @param rootHz The root frequency in Hz.
+     * @param degree The degree within the period.
+     * @param period The period offset.
+     * @param fineCents Fine tuning adjustment in cents.
+     * @return float The calculated frequency in Hz.
      */
     float FrequencyFromRoot(float rootHz, Degree degree, Period period = 0,
                             float fineCents = 0.0f) const
@@ -342,12 +347,12 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Calculate frequency from C0 (16.35 Hz), degree, and period.
      *
-     * @param degree
-     * @param period
-     * @param fineCents
-     * @return float
+     * @param degree The degree within the period.
+     * @param period The period offset.
+     * @param fineCents Fine tuning adjustment in cents.
+     * @return float The calculated frequency in Hz.
      */
     float FrequencyFromC0(Degree degree, Period period = 0,
                           float fineCents = 0.0F) const
@@ -356,11 +361,11 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Calculate frequency from a tuning reference pitch.
      *
-     * @param pitch
-     * @param ref
-     * @return float
+     * @param pitch The tempered pitch to calculate.
+     * @param ref The tuning reference (root frequency and degree).
+     * @return float The calculated frequency in Hz.
      */
     float FrequencyFromReference(const TemperedPitch &pitch,
                                  const TuningReference &ref) const
@@ -377,12 +382,12 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Find the nearest degree for a given frequency ratio.
      *
-     * @param targetRatio
-     * @param outDegree
-     * @param outErrorCents
-     * @return true
+     * @param targetRatio The target frequency ratio.
+     * @param outDegree Output parameter for the nearest degree.
+     * @param outErrorCents Output parameter for the error in cents.
+     * @return true if successful, false if no valid degree found.
      * @return false
      */
     bool FindNearestDegreeForRatio(float targetRatio, Degree &outDegree,
@@ -416,7 +421,11 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Calculate the minimum distance between two notes in degrees.
+     *
+     * @param a First note.
+     * @param b Second note.
+     * @return int The distance in degrees (always positive).
      */
     int GetNoteDistance(Note a, Note b) const
     {
@@ -424,9 +433,11 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Check if an interval is considered consonant in this temperament.
      *
      * TODO: This does not support anything but 12EDO
+     * @param interval The interval degree to check.
+     * @return true if consonant, false otherwise.
      */
     bool IsConsonant(Degree interval) const
     {
@@ -457,7 +468,7 @@ namespace Music
     LabelSet intervalLabels_;
 
     /**
-     * @brief
+     * @brief Rebuild the cached period multipliers array.
      *
      */
     void RebuildPeriodMultipliers()
@@ -467,7 +478,7 @@ namespace Music
     }
 
     /**
-     * @brief
+     * @brief Sort the ratios array in ascending order using insertion sort.
      *
      */
     void SortRatios()

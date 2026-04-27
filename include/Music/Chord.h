@@ -39,6 +39,7 @@ namespace Music
      * @brief Represents a chord event in the musical context.
      * Includes the chord's root note, duration, extensions, alterations, and inversion.
      */
+    template <std::size_t SCALE_MAP_INDEX>
     struct ChordEvent
     {
         ChordEvent()
@@ -66,12 +67,12 @@ namespace Music
         ChordAlteration alterations;
         int inversion;
 
-        size_t GetChordTones(const ScaleMap &scale, Note note[], size_t noteLen) const
+        size_t GetChordTones(const ScaleMap<SCALE_MAP_INDEX> &scale, Note note[], size_t noteLen) const
         {
             return GetChordTones(scale, 12, note, noteLen);
         }
 
-        size_t GetChordTones(const ScaleMap &scale,
+        size_t GetChordTones(const ScaleMap<SCALE_MAP_INDEX> &scale,
                              int degreesPerPeriod,
                              Note note[],
                              size_t noteLen) const
@@ -79,7 +80,7 @@ namespace Music
             if (!note || noteLen == 0 || scale.Count() == 0 || degreesPerPeriod <= 0)
                 return 0;
 
-            const int rootIdx = scale.GetIndexOfDegree(root);
+            const size_t rootIdx = scale.GetIndexOfDegree(root);
             if (rootIdx >= scale.Count())
                 return 0;
 
@@ -103,10 +104,10 @@ namespace Music
             return toneCount;
         }
 
-        std::string GetChordName(const ScaleMap &scale,
+        std::string GetChordName(const ScaleMap<SCALE_MAP_INDEX> &scale,
                                  int degreesPerPeriod = 12) const
         {
-            const int rootIdx = scale.GetIndexOfDegree(root);
+            const size_t rootIdx = scale.GetIndexOfDegree(root);
             if (scale.Count() == 0 || rootIdx >= scale.Count())
                 return "?";
 
@@ -121,7 +122,7 @@ namespace Music
                                            degreesPerPeriod);
         }
 
-        std::string GetChordName(const ScaleMap &scale,
+        std::string GetChordName(const ScaleMap<SCALE_MAP_INDEX> &scale,
                                  const Temperament &temperament) const;
 
     private:
@@ -137,7 +138,7 @@ namespace Music
             PowerChord,
         };
 
-        static std::string BuildChordNameFromTones(const ScaleMap &scale,
+        static std::string BuildChordNameFromTones(const ScaleMap<SCALE_MAP_INDEX> &scale,
                                                    int scaleIndex,
                                                    Note chordRoot,
                                                    const Note tones[],
@@ -156,7 +157,7 @@ namespace Music
             }
         }
 
-        static ChordQuality ClassifyChordQuality(const ScaleMap &scale,
+        static ChordQuality ClassifyChordQuality(const ScaleMap<SCALE_MAP_INDEX> &scale,
                                                  int scaleIndex,
                                                  Note chordRoot,
                                                  const Note tones[],
@@ -171,7 +172,7 @@ namespace Music
             size_t thirdCount = 0;
             size_t fifthCount = 0;
 
-            for (int i = 0; i < scale.Count() && i < SCALE_CHORD_COUNT; ++i)
+            for (size_t i = 0; i < scale.Count() && i < SCALE_CHORD_COUNT; ++i)
             {
                 thirdIntervals[thirdCount++] =
                     GetScaleSpanInterval(scale, i, 2, degreesPerPeriod);
@@ -292,7 +293,7 @@ namespace Music
             }
         }
 
-        static int GetScaleSpanInterval(const ScaleMap &scale,
+        static int GetScaleSpanInterval(const ScaleMap<SCALE_MAP_INDEX> &scale,
                                         int rootIdx,
                                         int scaleSpan,
                                         int degreesPerPeriod)

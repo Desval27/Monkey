@@ -21,6 +21,7 @@ namespace Music {
  * When a scale map is present, incoming scale indices are first mapped to scale
  * degrees and period offsets before the temperament converts them to Hz.
  */
+template <std::size_t SCALE_MAP_DEGREES>
 class PitchEngine {
  public:
   /**
@@ -29,11 +30,11 @@ class PitchEngine {
   enum class RandomShape : uint8_t { Uniform = 0, BiasedLow, BiasedHigh };
 
   PitchEngine() : _t(nullptr), _s(nullptr), _rootHz(BASE_HZ) {}
-  PitchEngine(const Temperament *t, const ScaleMap *s, float rootHz)
+  PitchEngine(const Temperament *t, const ScaleMap<SCALE_MAP_DEGREES> *s, float rootHz)
       : _t(t), _s(s), _rootHz(rootHz) {}
 
   void SetTemperament(const Temperament *t) { _t = t; }
-  void SetScaleMap(const ScaleMap *s) { _s = s; }
+  void SetScaleMap(const ScaleMap<SCALE_MAP_DEGREES> *s) { _s = s; }
   void SetRootHz(float rootHz) { _rootHz = rootHz; }
 
   /**
@@ -75,8 +76,9 @@ class PitchEngine {
    * @param fineCents Fine tuning offset in cents.
    * @return Frequency in Hz.
    */
-  float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,
-                                        const float weights[], int weightCount,
+  template <std::size_t N>
+  float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,                                      
+                                        const WeightMap<N>& weights,
                                         int extraPeriod = 0,
                                         float fineCents = 0.0f) const {
     if (!_t) return _rootHz;
@@ -85,8 +87,7 @@ class PitchEngine {
       return _t->FrequencyFromRoot(_rootHz, scaleIndex, extraPeriod, fineCents);
 
     int scalePeriod;
-    Degree degree = _s->GetWeightedMappedDegree(
-        scaleIndex, unitRandom, scalePeriod, weights, weightCount);
+    Degree degree = _s->GetWeightedMappedDegree(scaleIndex, unitRandom, scalePeriod, weights);
     return _t->FrequencyFromRoot(_rootHz, degree, scalePeriod + extraPeriod,
                                  fineCents);
   }
@@ -103,14 +104,14 @@ class PitchEngine {
    * @param fineCents Fine tuning offset in cents.
    * @return Frequency in Hz.
    */
+  template <std::size_t N>
   float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,
                                         RandomShape shape,
-                                        const float weights[], int weightCount,
+                                        const WeightMap<N>& weights,
                                         int extraPeriod = 0,
                                         float fineCents = 0.0f) const {
     return FrequencyFromWeightedScaleIndex(
-        scaleIndex, ShapeUnitRandom(unitRandom, shape), weights, weightCount,
-        extraPeriod, fineCents);
+        scaleIndex, ShapeUnitRandom(unitRandom, shape), weights, extraPeriod, fineCents);
   }
 
   /**
@@ -150,7 +151,7 @@ class PitchEngine {
 
  private:
   const Temperament *_t;
-  const ScaleMap *_s;
+  const ScaleMap<SCALE_MAP_DEGREES> *_s;
   float _rootHz;
 
   /**

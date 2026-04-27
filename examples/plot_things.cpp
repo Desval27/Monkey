@@ -10,17 +10,19 @@
 
 using namespace Music;
 
+constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
+
 #define PALETTE IONIAN_D15
 #define PALETTE_LEN ArrayLen(PALETTE)
 
 TimeSignature ts;
 Temperament t;
-ScaleMap scale;
-PitchEngine pe;
+ScaleMap<SCALE_TYPE> scale;
+PitchEngine<SCALE_TYPE> pe;
 const HarmonicMode mode = HarmonicMode::Major;
 
 const int bars = 8;
-ChordEventSet<> chords;
+ChordEventSet<SCALE_TYPE> chords;
 
 void DoThing()
 {
@@ -31,7 +33,7 @@ void DoThing()
 
     EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
 
-    StyleANoteGenerator<>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
+    StyleANoteGenerator<SCALE_TYPE, DEFAULT_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
     NoteEventScore score = ScoreNoteEvents(t, noteEvents);
 
     float v1 = density;
@@ -46,7 +48,7 @@ int main(int argc, char *argv[])
     t.AttachNoteLabels(Music::NOTE_NAMES_12); 
     t.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
 
-    scale.SetDegrees(PALETTE, PALETTE_LEN);
+    scale.SetDegrees(Music::IONIAN_D12);
 
     pe.SetTemperament(&t);
     pe.SetScaleMap(&scale);

@@ -36,22 +36,26 @@ namespace Music
   ////////////////////////////////////////////////////////////////////////////////
   // Misc. Functions
   ////////////////////////////////////////////////////////////////////////////////
+  template <std::size_t SCALE_MAP_DEGREES = HEPATONIC>
   size_t GenerateChordEventsFromPattern(const PatternEventSet<> &pattern,
                                         NoteValue granularity,
-                                        ChordEventSet<> &events);
+                                        ChordEventSet<SCALE_MAP_DEGREES> &events);
+  template <std::size_t SCALE_MAP_DEGREES = HEPATONIC, std::size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
   size_t GenerateStandardChordEvents(const TimeSignature &ts,
-                                     const ScaleMap &scale, int bars,
+                                     const ScaleMap<SCALE_MAP_DEGREES> &scale, int bars,
                                      HarmonicMode mode, NoteValue granularity,
-                                     ChordEventSet<> &chords);
+                                     ChordEventSet<SCALE_MAP_DEGREES, MAX_EVENTS> &chords);
+  template <std::size_t SCALE_MAP_DEGREES = HEPATONIC>
   size_t GenerateWeightedChordEvents(const TimeSignature &ts,
-                                     const ScaleMap &scale, int bars,
+                                     const ScaleMap<SCALE_MAP_DEGREES> &scale, int bars,
                                      HarmonicMode mode, Note tonic,
-                                     NoteValue value, ChordEventSet<> &chords);
+                                     NoteValue value, ChordEventSet<SCALE_MAP_DEGREES> &chords);
+  template <std::size_t SCALE_MAP_DEGREES = HEPATONIC>
   size_t GenerateEventsFromPattern(const PatternEventSet<> &pattern,
-                                   const ChordEventSet<> &chords,
+                                   const ChordEventSet<SCALE_MAP_DEGREES> &chords,
                                    const TimeSignature &ts,
                                    const Temperament &temperament,
-                                   const ScaleMap &scale, int bars,
+                                   const ScaleMap<SCALE_MAP_DEGREES> &scale, int bars,
                                    NoteValue granularity,
                                    NoteEventSet<> &events);
 
@@ -72,7 +76,8 @@ namespace Music
                     PatternEventSet<> pattern);
   void DebugNoteEvents(const Temperament &t, const TimeSignature &ts,
                        const NoteEventSet<> &events);
-  void DebugChordEvents(const TimeSignature &ts, const Temperament &t, const ScaleMap &s, const ChordEventSet<> chords);
+  template <std::size_t SCALE_MAP_DEGREES = HEPATONIC, std::size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  void DebugChordEvents(const TimeSignature &ts, const Temperament &t, const ScaleMap<SCALE_MAP_DEGREES> &s, const ChordEventSet<SCALE_MAP_DEGREES, MAX_EVENTS> chords);
 #endif
 
 } // namespace Music

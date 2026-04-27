@@ -43,7 +43,7 @@ namespace Music
   /// @brief 
   /// @tparam TRole 
   /// @tparam MAX_EVENTS 
-  template <typename TRole, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  template <typename TRole, size_t DEGREES, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
   class Persona
   {
   public:
@@ -56,7 +56,7 @@ namespace Music
     /// @param t 
     /// @param s 
     /// @param role 
-    Persona(const TimeSignature &ts, const Temperament &t, const ScaleMap &s,
+    Persona(const TimeSignature &ts, const Temperament &t, const ScaleMap<DEGREES> &s,
             const TRole &role)
         : ts_(&ts), t_(&t), s_(&s), role_(role) {};
 
@@ -127,7 +127,7 @@ namespace Music
   private:
     const TimeSignature *ts_;
     const Temperament *t_;
-    const ScaleMap *s_;
+    const ScaleMap<DEGREES> *s_;
     const TRole &role_;
   };
 

@@ -13,15 +13,16 @@
 
 using namespace Music;
 
+constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
+
 #define PALETTE PHRYGIAN_D19
-#define PALETTE_LEN ArrayLen(PALETTE)
 #define TEMPERAMENT_DEGREES 19
 const HarmonicMode mode = HarmonicMode::Minor;
 
 TimeSignature ts;
 Temperament t;
-ScaleMap scale;
-PitchEngine pe;
+ScaleMap<SCALE_TYPE> scale;
+PitchEngine<SCALE_TYPE> pe;
 
 void doDebug(const char *format, va_list args)
 {
@@ -35,7 +36,7 @@ void testThing()
     const float density = randomRange(0.6f, 0.9f); // 0.50f;
     const NoteValue g = GetRandomGranularity(NoteValue::Eighth, NoteValue::Whole);
     std::cout << "Granularity: " << static_cast<int>(g) << " " << GetNoteValueText(g) << std::endl;
-    ChordEventSet<> chords;
+    ChordEventSet<SCALE_TYPE> chords;
     PatternEventSet<> pattern;
     NoteEventSet<> noteEvents;
 
@@ -53,7 +54,7 @@ void testThing()
     std::cout << std::endl;
 
     // Make Notes from "Hit" Pattern
-    StyleANoteGenerator<>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
+    StyleANoteGenerator<SCALE_TYPE, DEFAULT_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
     DebugNoteEvents(t, ts, noteEvents);
     std::cout << std::endl;
 
@@ -77,16 +78,6 @@ int main(int argc, char *argv[])
 
     SET_DEBUG(doDebug);
 
-    // for (size_t i = 0; i < NUM_SCALES; i++)
-    // {
-    //     const auto& scaleTable = Music::SCALE_TABLES[i];
-    //     std::cout << "Scale: " << scaleTable.name
-    //               << " (Degrees in Period: " << scaleTable.degreesInPeriod
-    //               << " (Degrees in Scale: " << scaleTable.degreesInScale
-    //               << " (Minor: " << (scaleTable.isMinor() ? "Yes" : "No") << ")"
-    //               << std::endl;
-    // }
-
     t.MakeEqualDivision(TEMPERAMENT_DEGREES, 2.0f);
 #if TEMPERAMENT_DEGREES == 12
     t.AttachNoteLabels(Music::NOTE_NAMES_12);
@@ -100,13 +91,14 @@ int main(int argc, char *argv[])
 #elif TEMPERAMENT_DEGREES == 19
     t.AttachNoteLabels(Music::NOTE_NAMES_19);
     t.AttachIntervalLabels(Music::INTERVAL_NAMES_19);
+#elif TEMPERAMENT_DEGREES == 22
+    t.AttachNoteLabels(Music::NOTE_NAMES_22);
+    t.AttachIntervalLabels(Music::INTERVAL_NAMES_22);
 #else
 #error Unsupported TEMPERAMENT_DEGREES for music_demo
 #endif
 
-    scale.SetDegrees(PALETTE, PALETTE_LEN);
-
-    std::srand(std::time(nullptr));
+    scale.SetDegrees(PALETTE);
 
     pe.SetTemperament(&t);
     pe.SetScaleMap(&scale);

@@ -23,14 +23,14 @@ namespace Music
     static bool IsHit(const NoteEvent &event) { return event.note != REST; }
   };
 
-  template <>
-  struct EventTraits<ChordEvent>
+  template <std::size_t DEGREES>
+  struct EventTraits<ChordEvent<DEGREES>>
   {
-    static Note &Pitch(ChordEvent &event) { return event.root; }
-    static const Note &Pitch(const ChordEvent &event) { return event.root; }
-    static NoteValue &Value(ChordEvent &event) { return event.value; }
-    static const NoteValue &Value(const ChordEvent &event) { return event.value; }
-    static bool IsHit(const ChordEvent &event) { return event.root != REST; }
+    static Note &Pitch(ChordEvent<DEGREES> &event) { return event.root; }
+    static const Note &Pitch(const ChordEvent<DEGREES> &event) { return event.root; }
+    static NoteValue &Value(ChordEvent<DEGREES> &event) { return event.value; }
+    static const NoteValue &Value(const ChordEvent<DEGREES> &event) { return event.value; }
+    static bool IsHit(const ChordEvent<DEGREES> &event) { return event.root != REST; }
   };
 
   template <>
@@ -176,7 +176,7 @@ namespace Music
   template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
   using NoteEventSet = EventSet<NoteEvent, MAX_EVENTS>;
 
-  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
-  using ChordEventSet = EventSet<ChordEvent, MAX_EVENTS>;
+  template <size_t DEGREES, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  using ChordEventSet = EventSet<ChordEvent<DEGREES>, MAX_EVENTS>;
 
 } // namespace Music

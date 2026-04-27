@@ -68,7 +68,7 @@ namespace Music
     int div = static_cast<int>(high) / static_cast<int>(low);
     int tries = 0;
     NoteValue v;
-    do 
+    do
     {
       int cnt = randomRange(1, div);
       v = static_cast<NoteValue>(low * cnt);
@@ -83,10 +83,11 @@ namespace Music
   }
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  std::string ChordEvent::GetChordName(const ScaleMap &scale,
-                                       const Temperament &temperament) const
+  template <std::size_t SCALE_MAP_DEGREES>
+  std::string ChordEvent<SCALE_MAP_DEGREES>::GetChordName(const ScaleMap<SCALE_MAP_DEGREES> &scale,
+                                                          const Temperament &temperament) const
   {
-    const int rootIdx = scale.GetIndexOfDegree(root);
+    const size_t rootIdx = scale.GetIndexOfDegree(root);
     if (scale.Count() == 0 || rootIdx >= scale.Count())
       return "?";
 
@@ -128,7 +129,7 @@ namespace Music
 
       int allThirds[SCALE_CHORD_COUNT] = {};
       size_t thirdCount = 0;
-      for (int i = 0; i < scale.Count() && i < SCALE_CHORD_COUNT; ++i)
+      for (size_t i = 0; i < scale.Count() && i < SCALE_CHORD_COUNT; ++i)
       {
         int firstPeriod = 0;
         int thirdPeriod = 0;
@@ -146,6 +147,10 @@ namespace Music
 
     return BuildChordNameFromQuality(rootIdx, quality);
   }
+
+  template std::string ChordEvent<HEPATONIC>::GetChordName(
+      const ScaleMap<HEPATONIC> &scale,
+      const Temperament &temperament) const;
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   const char *GetNoteValueText(NoteValue v)
@@ -201,9 +206,9 @@ namespace Music
     case NoteValue::DottedDottedWhole:
       return v_DDWholeNote;
     default:
-      #ifdef DEBUG_COUT
+#ifdef DEBUG_COUT
       std::cout << " (Undefined = " << v << ") ";
-      #endif
+#endif
       return v_Undefined;
     }
   }
@@ -261,8 +266,8 @@ namespace Music
     int hugeLeaps = 0;
     int transitionCount = 0;
 
-    //const int quarterPulses = static_cast<int>(NoteValue::Quarter);
-    const int longThreshold = static_cast<int>(NoteValue::Half); //quarterPulses;
+    // const int quarterPulses = static_cast<int>(NoteValue::Quarter);
+    const int longThreshold = static_cast<int>(NoteValue::Half); // quarterPulses;
     const int shortThreshold = static_cast<int>(NoteValue::Eighth);
 
     Note previousPitchedNote = REST;

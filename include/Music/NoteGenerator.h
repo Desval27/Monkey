@@ -22,7 +22,7 @@
 
 namespace Music
 {
-    template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+    template <size_t DEGREES, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
     class NullNoteGenerator
     {
     public:
@@ -30,7 +30,7 @@ namespace Music
                                       const ChordEventSet<MAX_EVENTS> &chords,
                                       const TimeSignature &ts,
                                       const Temperament &temperament,
-                                      const ScaleMap &scale,
+                                      const ScaleMap<DEGREES> &scale,
                                       int bars,
                                       NoteValue granularity,
                                       NoteEventSet<MAX_EVENTS> &events)
@@ -40,15 +40,15 @@ namespace Music
         }
     };
 
-    template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+    template <size_t SCALE_MAP_DEGREES, size_t MAX_EVENTS>
     class StyleANoteGenerator
     {
     public:
         static size_t GenerateEvents(const PatternEventSet<MAX_EVENTS> &pattern,
-                                          const ChordEventSet<MAX_EVENTS> &chords,
+                                          const ChordEventSet<SCALE_MAP_DEGREES, MAX_EVENTS> &chords,
                                           const TimeSignature &ts,
                                           const Temperament &temperament,
-                                          const ScaleMap &scale,
+                                          const ScaleMap<SCALE_MAP_DEGREES> &scale,
                                           int bars,
                                           NoteValue granularity,
                                           NoteEventSet<MAX_EVENTS> &events)
@@ -95,7 +95,7 @@ namespace Music
                         //
                         // Our weights need to be injected at some point.
                         //
-                        Note n = scale.GetWeightedNote(unitRandom, periodOffset, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY, ArrayLen(SCALE_WEIGHTS_7_CHORD_TONE_HEAVY));
+                        Note n = scale.GetWeightedNote(unitRandom, periodOffset, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
 
                         // If our last event was the same note then (for now) just add to the original duraton
                         // Or just a random occurance

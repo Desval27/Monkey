@@ -62,7 +62,7 @@ namespace Music
 
     int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
     int v = 0;
-    char noteLabel[6];
+    char noteLabel[8];
     for (size_t i = 0; i < events.Count(); i++)
     {
       if (!events[i].IsPitched())
@@ -86,7 +86,8 @@ namespace Music
   /// @param t
   /// @param ts
   /// @param chords
-  void DebugChordEvents(const TimeSignature &ts, const Temperament &t, const ScaleMap &s, const ChordEventSet<> chords)
+  template <std::size_t SCALE_MAP_DEGREES, std::size_t MAX_EVENTS>
+  void DebugChordEvents(const TimeSignature &ts, const Temperament &t, const ScaleMap<SCALE_MAP_DEGREES> &s, const ChordEventSet<SCALE_MAP_DEGREES, MAX_EVENTS> chords)
   {
     int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
     int v = 0;
@@ -106,6 +107,8 @@ namespace Music
       {
         t.GetNoteLabel(tones[j], noteLabel, sizeof(noteLabel));
         std::cout << noteLabel;
+        if (j < toneCount - 1)
+          std::cout << "|";
       }
 
       std::cout << ")-" << GetNoteValueText(chords[i].value) << " ";
@@ -114,6 +117,12 @@ namespace Music
     }
     std::cout << "|" << std::endl;
   }
+
+  template void DebugChordEvents<HEPATONIC, DEFAULT_MAX_EVENTS>(
+      const TimeSignature &ts,
+      const Temperament &t,
+      const ScaleMap<HEPATONIC> &s,
+      const ChordEventSet<HEPATONIC, DEFAULT_MAX_EVENTS> chords);
 
 #endif
 } // namespace Music

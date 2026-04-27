@@ -11,6 +11,7 @@
  */
 #pragma once
 
+#include <array>
 #include <cstdint>
 #include <Music/MusicConfig.h>
 
@@ -22,7 +23,7 @@ namespace Music
     ///////////////////////////////////////////////////////////////////////////////
     constexpr float BASE_HZ = 440.0f; // A4 = 440Hz
 
-    constexpr int MAX_DEGREES = 64;
+    constexpr size_t MAX_DEGREES = 64;
     constexpr int MIN_PERIOD = -8;
     constexpr int MAX_PERIOD = 8;
 
@@ -31,7 +32,7 @@ namespace Music
     ///////////////////////////////////////////////////////////////////////////////
     using Note = int8_t;
     using Degree = int8_t;
-    using Period = int8_t;
+    using Period = int8_t;        
 
     /**
      * @brief Represents a scale degree within the musical context.
@@ -73,6 +74,34 @@ namespace Music
         Legato,
     };
 
+    //
+    // Scale types identified by the number of scale degrees in the period.
+    //
+    enum ScaleType {
+        MONOTONIC = 1,
+        DITONIC = 2,
+        TRITONIC = 3,
+        TETRATONIC = 4,
+        PENTATONIC = 5,
+        HEXATONIC = 6,
+        HEPATONIC = 7,
+        OCTATONIC = 8,
+        NONATONIC = 9,
+        DECATONIC = 11,
+        UNDECATONIC = 11,
+        DUODECATONIC = 12,
+    };
+
+    ///////////////////////////////////////////////////////////////////////////////
+    // Convenient Type Aliases
+    ///////////////////////////////////////////////////////////////////////////////
+    template <std::size_t N> using DegreeMap = std::array<Degree, N>;
+    template <std::size_t N> using WeightMap = std::array<float, N>;
+
+    ///////////////////////////////////////////////////////////////////////////////
+    // Common Music Data Structures
+    ///////////////////////////////////////////////////////////////////////////////
+
     ///////////////////////////////////////////////////////////////////////////////
     struct PitchRef
     {
@@ -82,8 +111,8 @@ namespace Music
     };
 
     /**
-     * @brief 
-     * 
+     * @brief
+     *
      */
     struct TemperedPitch
     {
@@ -132,9 +161,10 @@ namespace Music
     };
 
     ////////////////////////////////////////////////////////////////////////////////
-    struct TemperamentTable
+    struct EqualTemperamentTable
     {
         int degreesInPeriod;
+        const char *name;
         const char *const *noteLabels;
         const char *const *intervalLabels;
     };
@@ -143,7 +173,7 @@ namespace Music
     struct ScaleTable
     {
         int degreesInPeriod;
-        int degreesInScale;
+        ScaleType scaleType;
         const char *name;
         HarmonicMode harmonicMode;
         const Degree *degrees;
@@ -155,12 +185,13 @@ namespace Music
         }
     };
 
+
     ////////////////////////////////////////////////////////////////////////////////
+    template <std::size_t N>
     struct WeightTable
     {
-        int degreesInScale;
         const char *name;
-        const float *weights;
+        const WeightMap<N> weights;
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -175,5 +206,5 @@ namespace Music
         int phrase = 0;
         int rhythm = 0;
     };
-    
+
 } // namespace Music
