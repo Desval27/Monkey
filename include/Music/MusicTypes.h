@@ -95,8 +95,8 @@ namespace Music
     ///////////////////////////////////////////////////////////////////////////////
     // Convenient Type Aliases
     ///////////////////////////////////////////////////////////////////////////////
-    template <std::size_t N> using DegreeMap = std::array<Degree, N>;
-    template <std::size_t N> using WeightMap = std::array<float, N>;
+    template <std::size_t N = HEPATONIC> using DegreeMap = std::array<Degree, N>;
+    template <std::size_t N = HEPATONIC> using WeightMap = std::array<float, N>;
 
     ///////////////////////////////////////////////////////////////////////////////
     // Common Music Data Structures

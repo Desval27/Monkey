@@ -19,7 +19,7 @@ constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
 #define TEMPERAMENT_DEGREES 19
 const HarmonicMode mode = HarmonicMode::Minor;
 
-TimeSignature ts;
+TimeSignature ts(4,NoteValue::Quarter);
 Temperament t;
 ScaleMap<SCALE_TYPE> scale;
 PitchEngine<SCALE_TYPE> pe;

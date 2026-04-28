@@ -54,8 +54,8 @@ int main(int argc, char *argv[])
     pe.SetScaleMap(&scale);
     pe.SetRootHz(C4FREQ);
 
-    std::cout << "set title 'Density vs Score'" << std::endl;
-    std::cout << "set xlabel 'Density'" << std::endl;
+    std::cout << "set title 'Density/Granularity vs Score'" << std::endl;
+    std::cout << "set xlabel 'Density/Granularity'" << std::endl;
     std::cout << "set ylabel 'Score'" << std::endl;
     std::cout << "set grid" << std::endl;
 
@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     //std::cout << "plot '-' using 2:1 with points" << std::endl;
 
     GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
-    for (int i = 0; i < 1000; i++)
+    for (int i = 0; i < 5000; i++)
     {
         DoThing();
     }

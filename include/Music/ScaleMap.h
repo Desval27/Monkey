@@ -11,6 +11,9 @@
  */
 #pragma once
 
+#include <algorithm>
+#include <array>
+
 #include <Music/Music.h>
 
 namespace Music
@@ -31,26 +34,14 @@ namespace Music
     /**
      * @brief Constructs an empty scale map.
      */
-    ScaleMap() : count_(0)
+    ScaleMap()
     {
-      // Start with everything initialized to zeros.
-      for (size_t i = 0; i < DEGREES; ++i)
-      {
-        degrees_[i] = 0;
-      }
+      degrees_.fill(0);
     }
 
-    bool SetDegrees(const DegreeMap<DEGREES>& degrees)
+    void SetDegrees(const DegreeMap<DEGREES>& degrees)
     {
-      if (degrees.size() == 0)
-        return false;
-
-      count_ = std::min(degrees.size(), DEGREES);
-      for (size_t i = 0; i < count_; ++i)
-      {
-        degrees_[i] = degrees[i];
-      }
-      return true;
+      degrees_ = degrees;
     }
 
     /**
@@ -58,7 +49,7 @@ namespace Music
      *
      * @return Number of mapped degrees.
      */
-    size_t Count() const { return count_; }
+    size_t Count() const { return degrees_.size(); }
 
     /**
      * @brief Resolves an index into a mapped degree and period offset.
@@ -72,14 +63,8 @@ namespace Music
      */
     Degree GetMappedDegree(size_t index, int &outPeriodOffset) const
     {
-      if (count_ == 0)
-      {
-        outPeriodOffset = 0;
-        return 0;
-      }
-
-      int wrapped = wrap(index, count_);
-      int cycles = (index - wrapped) / count_;
+      int wrapped = wrap(index, Count());
+      int cycles = (index - wrapped) / Count();
       outPeriodOffset = cycles;
       return degrees_[wrapped];
     }
@@ -92,12 +77,17 @@ namespace Music
      */
     size_t GetIndexOfDegree(Degree degree) const
     {
-      for (size_t i = 0; i < count_; i++)
+      for (size_t i = 0; i < degrees_.size(); i++)
       {
         if (degrees_[i] == degree)
           return i;
       }
       return 0;
+
+      // auto it = std::find(degrees_.begin(), degrees_.end(), degree);
+      // if (it != degrees_.end()) 
+      //   return *it;
+      // return 0;
     }
 
     /**
@@ -113,14 +103,16 @@ namespace Music
      */
     Degree GetWeightedDegree(float unitRandom, int &outPeriodOffset, const WeightMap<DEGREES>& weights) const
     {
-      if (count_ == 0)
+      if (Count() == 0)
       {
         outPeriodOffset = 0;
         return 0;
       }
-
       outPeriodOffset = 0;
-      return degrees_[GetWeightedIndex(unitRandom, weights)];
+      size_t idx = GetWeightedIndex(unitRandom, weights);
+      if (idx < Count())
+        return degrees_[idx];
+      return 0;
     }
 
     /**
@@ -152,17 +144,14 @@ namespace Music
      */
     Degree GetWeightedMappedDegree(size_t index, float unitRandom, int &outPeriodOffset, const WeightMap<DEGREES>& weights) const
     {
-      if (count_ == 0)
-      {
-        outPeriodOffset = 0;
-        return 0;
-      }
-
-      int wrapped = wrap(index, count_);
-      int cycles = (index - wrapped) / count_;
+      int wrapped = wrap(index, Count());
+      int cycles = (index - wrapped) / Count();
       outPeriodOffset = cycles;
 
-      return degrees_[GetWeightedIndex(unitRandom, weights)];
+      size_t idx = GetWeightedIndex(unitRandom, weights);
+      if (idx < Count())
+        return degrees_[idx];
+      return 0;
     }
 
     /**
@@ -181,8 +170,7 @@ namespace Music
     }
 
   private:
-    size_t count_;
-    Degree degrees_[DEGREES];
+    DegreeMap<DEGREES> degrees_;
 
     /**
      * @brief Chooses a degree slot from the weight table.
@@ -198,7 +186,7 @@ namespace Music
     size_t GetWeightedIndex(float unitRandom, const WeightMap<DEGREES>& weights) const
     {
       float sum = 0.0f;
-      int thisCount = min(count_, weights.size());
+      int thisCount = min(Count(), weights.size());
       if (thisCount <= 0)
         return 0;
 

@@ -39,7 +39,7 @@ namespace Music
      * @brief Represents a chord event in the musical context.
      * Includes the chord's root note, duration, extensions, alterations, and inversion.
      */
-    template <std::size_t SCALE_MAP_INDEX>
+    template <std::size_t SCALE_MAP_INDEX = HEPATONIC>
     struct ChordEvent
     {
         ChordEvent()

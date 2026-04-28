@@ -21,7 +21,7 @@ namespace Music {
  * When a scale map is present, incoming scale indices are first mapped to scale
  * degrees and period offsets before the temperament converts them to Hz.
  */
-template <std::size_t SCALE_MAP_DEGREES>
+template <std::size_t SCALE_MAP_DEGREES = HEPATONIC>
 class PitchEngine {
  public:
   /**

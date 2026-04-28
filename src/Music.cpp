@@ -76,7 +76,7 @@ namespace Music
     } while (IsNoteValueWeird(v) && tries <= 100);
 
 #ifdef DEBUG_COUT
-    std::cout << "Got Random G = " << v << " tried " << tries << " times." << std::endl;
+    std::clog << "Got Random G = " << v << " tried " << tries << " times." << std::endl;
 #endif
 
     return v;
@@ -207,7 +207,7 @@ namespace Music
       return v_DDWholeNote;
     default:
 #ifdef DEBUG_COUT
-      std::cout << " (Undefined = " << v << ") ";
+      std::clog << " (Undefined = " << v << ") ";
 #endif
       return v_Undefined;
     }

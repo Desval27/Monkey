@@ -176,7 +176,7 @@ namespace Music
   template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
   using NoteEventSet = EventSet<NoteEvent, MAX_EVENTS>;
 
-  template <size_t DEGREES, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  template <size_t DEGREES = HEPATONIC, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
   using ChordEventSet = EventSet<ChordEvent<DEGREES>, MAX_EVENTS>;
 
 } // namespace Music

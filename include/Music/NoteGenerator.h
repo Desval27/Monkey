@@ -40,7 +40,7 @@ namespace Music
         }
     };
 
-    template <size_t SCALE_MAP_DEGREES, size_t MAX_EVENTS>
+    template <size_t SCALE_MAP_DEGREES = HEPATONIC, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
     class StyleANoteGenerator
     {
     public:
