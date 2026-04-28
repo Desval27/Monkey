@@ -15,30 +15,48 @@
 #include <Music/MusicConst.h>
 #include <Music/NoteValue.h>
 
-namespace Music {
-
-struct NoteEvent {
-  NoteEvent() {
-    note = REST;
-    period = 0;
-    value = NoteValue::None;
-  }
-
-  NoteEvent(Note n, Period p, NoteValue v) {
-    note = n;
-    period = p;
-    value = v;
-  }
-
-  Note note;
-  Period period;
-  NoteValue value;
+namespace Music
+{
 
   /**
-   * @brief
+   * @brief Represents a single note event with pitch and value.  
+   * Note events are used for both active pitched notes and rests, which are
+   * indicated by the special REST note value.
    */
-  bool IsPitched() const
-  { return note != REST; }
-};
+  struct NoteEvent
+  {
+    NoteEvent()
+    {
+      note = REST;
+      period = 0;
+      value = NoteValue::None;
+    }
 
-}  // namespace Music
+    NoteEvent(Note n, Period p, NoteValue v)
+    {
+      note = n;
+      period = p;
+      value = v;
+    }
+
+    NoteEvent(Note n)
+    {
+      note = n;
+      period = 0;
+      value = NoteValue::None;
+    }
+
+    Note note;        ///< The note inverval within a period, where 0 is the tonic note. REST indicates a rest event with no pitch.
+    Period period;    ///< Period offset from the root note, used for scale mapping and temperament frequency calculations.
+    NoteValue value;  ///< Duration of the note event, or NoteValue::None for an event with no value.
+
+    /**
+     * @brief
+     */
+    bool IsPitched() const
+    {
+      return note != REST;
+    }
+  };
+
+} // namespace Music

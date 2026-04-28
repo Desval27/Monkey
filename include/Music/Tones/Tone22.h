@@ -10,7 +10,11 @@
  */
 #pragma once
 
-#include <Music/Music.h>
+#include <array>
+
+#include <Music/Labels/IntervalNameLabels.h>
+#include <Music/Labels/NoteNameLabels.h>
+#include <Music/MusicTypes.h>
 
 namespace Music
 {

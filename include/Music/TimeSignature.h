@@ -11,7 +11,8 @@
  */
 #pragma once
 
-#include <Music/Music.h>
+#include <Music/MusicConst.h>
+#include <Music/NoteValue.h>
 
 namespace Music
 {
@@ -33,8 +34,8 @@ namespace Music
     };
 
     /**
-     * @brief
-     *
+     * @brief Represents a musical time signature, which defines the rhythmic structure of a piece of music. It consists of two main components: the number of beats per bar and the note value that receives one beat. The time signature determines how music is counted and organized into measures, influencing the feel and flow of the music.
+     * The `TimeSignature` struct provides methods to classify the time signature type, calculate the denominator based on the beat value, and determine the total number of pulses in a bar. This allows for flexible handling of various time signatures, including common, simple, compound, and irregular meters.
      */
     struct TimeSignature
     {
@@ -45,7 +46,7 @@ namespace Music
         /**
          * @brief Note value that counts as one beat.
          */
-        NoteValue beatValue; // e.g., Duration::Quarter for 4/4 time
+        NoteValue beatValue; // e.g., Quarter for 4/4 time, Eighth for 6/8 time
 
         /**
          * @brief Constructs a time signature from beats per bar and beat unit.
@@ -58,12 +59,11 @@ namespace Music
         /**
          * @brief Constructs a common 4/4 time signature.
          */
-
         TimeSignature() : TimeSignature(4, NoteValue::Quarter) {}
+
         /**
          * @brief Copy Constructor
          */
-
         TimeSignature(const TimeSignature &other)
             : beats(other.beats), beatValue(other.beatValue)
         {
@@ -86,6 +86,12 @@ namespace Music
                 return TimeSignatureType::Irregular;
         }
 
+        /**
+         * @brief Calculates the denominator of the time signature.
+         * The denominator is derived from the beat value and represents the note value that receives one beat.
+         * For example, if the beat value is a quarter note, the denominator would be 4 (as in 4/4 time).
+         * @return int The denominator of the time signature, or 0 if the beat value is invalid.
+         */
         int GetDenominator() const
         {
             if (static_cast<int>(beatValue) != 0)
@@ -96,7 +102,6 @@ namespace Music
 
         /**
          * @brief Calculates the total number of pulses in one bar.
-         *
          * @return int Pulses contained in a full bar.
          */
         int GetPulsesPerBar() const { return (beats * static_cast<int>(beatValue)); }

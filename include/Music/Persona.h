@@ -21,16 +21,16 @@
 
 namespace Music
 {
-  template <size_t MAX_EVENTS>
+  template <std::size_t MAX_EVENTS>
   class NullPatternGenerator;
 
-  template <typename TRole, size_t MAX_EVENTS, typename = void>
+  template <typename TRole, std::size_t MAX_EVENTS, typename = void>
   struct PersonaPatternGeneratorSelector
   {
     using Type = NullPatternGenerator<MAX_EVENTS>;
   };
 
-  template <typename TRole, size_t MAX_EVENTS>
+  template <typename TRole, std::size_t MAX_EVENTS>
   struct PersonaPatternGeneratorSelector<
       TRole,
       MAX_EVENTS,
@@ -40,10 +40,10 @@ namespace Music
   };
 
   //////////////////////////////////////////////////////////////////////////
-  /// @brief 
-  /// @tparam TRole 
-  /// @tparam MAX_EVENTS 
-  template <typename TRole, size_t DEGREES, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  /// @brief
+  /// @tparam TRole
+  /// @tparam MAX_EVENTS
+  template <typename TRole, std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   class Persona
   {
   public:
@@ -51,54 +51,54 @@ namespace Music
         typename PersonaPatternGeneratorSelector<TRole, MAX_EVENTS>::Type;
 
     //////////////////////////////////////////////////////////////////////////
-    /// @brief 
-    /// @param ts 
-    /// @param t 
-    /// @param s 
-    /// @param role 
-    Persona(const TimeSignature &ts, const Temperament &t, const ScaleMap<DEGREES> &s,
+    /// @brief
+    /// @param ts
+    /// @param t
+    /// @param s
+    /// @param role
+    Persona(const TimeSignature &ts, const Temperament<MAX_DEGREES> &t, const ScaleMap<SCALE_DEGREES> &s,
             const TRole &role)
         : ts_(&ts), t_(&t), s_(&s), role_(role) {};
 
     //////////////////////////////////////////////////////////////////////////
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     const char *GetName() { return role_.Name; }
 
     //////////////////////////////////////////////////////////////////////////
-    /// @brief 
-    /// @param chords 
-    /// @param events 
-    /// @return 
-    size_t GenerateNoteEvents(const ChordEventSet<MAX_EVENTS> &chords,
-                              NoteEventSet<MAX_EVENTS> &events)
+    /// @brief
+    /// @param chords
+    /// @param events
+    /// @return
+    std::size_t GenerateNoteEvents(const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords,
+                                   NoteEventSet<MAX_EVENTS> &events)
     {
       return GenerateNoteEventsWithGenerator<DefaultPatternGenerator>(chords,
                                                                       events);
     }
 
     //////////////////////////////////////////////////////////////////////////
-    /// @brief 
-    /// @param chords 
-    /// @param events 
-    /// @return 
-    template <template <size_t> class TPatternGenerator>
-    size_t GenerateNoteEvents(const ChordEventSet<MAX_EVENTS> &chords,
-                              NoteEventSet<MAX_EVENTS> &events)
+    /// @brief
+    /// @param chords
+    /// @param events
+    /// @return
+    template <template <std::size_t> class TPatternGenerator>
+    std::size_t GenerateNoteEvents(const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords,
+                                   NoteEventSet<MAX_EVENTS> &events)
     {
       return GenerateNoteEventsWithGenerator<TPatternGenerator<MAX_EVENTS>>(
           chords, events);
     }
 
     //////////////////////////////////////////////////////////////////////////
-    /// @brief 
-    /// @tparam TPatternGenerator 
-    /// @param chords 
-    /// @param events 
-    /// @return 
+    /// @brief
+    /// @tparam TPatternGenerator
+    /// @param chords
+    /// @param events
+    /// @return
     template <typename TPatternGenerator>
-    size_t GenerateNoteEventsWithGenerator(
-        const ChordEventSet<MAX_EVENTS> &chords,
+    std::size_t GenerateNoteEventsWithGenerator(
+        const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords,
         NoteEventSet<MAX_EVENTS> &events)
     {
       PatternEventSet<MAX_EVENTS> pattern;
@@ -111,23 +111,23 @@ namespace Music
                                          granularity,
                                          pattern);
       events.Clear();
-      return events.Count();                                                        
+      return events.Count();
     }
 
     //////////////////////////////////////////////////////////////////////////
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     float GetDensity() { return randomRange(role_.density); }
 
     //////////////////////////////////////////////////////////////////////////
-    /// @brief 
-    /// @return 
+    /// @brief
+    /// @return
     NoteValue GetGranularity() { return role_.granularity; }
 
   private:
     const TimeSignature *ts_;
-    const Temperament *t_;
-    const ScaleMap<DEGREES> *s_;
+    const Temperament<MAX_DEGREES> *t_;
+    const ScaleMap<SCALE_DEGREES> *s_;
     const TRole &role_;
   };
 

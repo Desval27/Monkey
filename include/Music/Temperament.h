@@ -15,10 +15,18 @@
  */
 #pragma once
 
-#include <cstring>
 #include <array>
+#include <cmath>
+#include <cstddef>
+#include <cstdint>
+#include <cstdlib>
+#include <cstring>
+#include <type_traits>
 
-#include <Music/Music.h>
+#include <Monkey.h>
+#include <Music/MusicConst.h>
+#include <Music/MusicHelpers.h>
+#include <Music/MusicTypes.h>
 
 namespace Music
 {
@@ -27,6 +35,7 @@ namespace Music
    * @brief A set of string labels for degrees, notes, or intervals in a temperament.
    *
    */
+  template <std::size_t MAX_DEGREES = 64>
   class LabelSet
   {
   public:
@@ -42,7 +51,17 @@ namespace Music
       return true;
     }
 
-    bool Get(Degree index, char *out, size_t maxOut) const
+    template <std::size_t N>
+    bool Get(Degree index, MString<N> &out) const
+    {
+      if (!_labels || index < 0 || index >= _count)
+        return false;
+
+      const char *src = TUNING_PGM_READ_PTR(&_labels[index]);
+      return out.set(src);
+    }
+
+    bool Get(Degree index, char *out, std::size_t maxOut) const
     {
       if (!_labels || index >= _count || !out || maxOut == 0)
         return false;
@@ -61,6 +80,7 @@ namespace Music
    * @brief Represents a musical temperament system with ratios and labels for pitches.
    *
    */
+  template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, int MIN_PERIOD = -4, int MAX_PERIOD = 4>
   class Temperament
   {
   public:
@@ -82,7 +102,6 @@ namespace Music
       MakeEqualDivision(degreesPerPeriod, periodRatio);
     }
 
-
     /**
      * @brief Reset the temperament to default state with no ratios.
      *
@@ -94,7 +113,7 @@ namespace Music
       periodRatio_ = 2.0f;
 
       // Defaults to no ratios
-      for (size_t i = 0; i < MAX_DEGREES; ++i)
+      for (std::size_t i = 0; i < MAX_DEGREES; ++i)
         ratios_[i] = 1.0f;
 
       RebuildPeriodMultipliers();
@@ -135,11 +154,11 @@ namespace Music
      * @return false
      */
     template <typename T, std::size_t N>
-    bool MakeRatioTable(const std::array<T, N>& ratios, float periodRatio = 2.0f)
+    bool MakeRatioTable(const std::array<T, N> &ratios, float periodRatio = 2.0f)
     {
-      static_assert(std::is_floating_point<T>::value, "T must be a floating-point type");      
+      static_assert(std::is_floating_point<T>::value, "T must be a floating-point type");
 
-      if (!ratios || ratios.size() == 0 || ratios.size() > MAX_DEGREES || periodRatio <= 0.0f)
+      if (ratios.size() == 0 || ratios.size() > MAX_DEGREES || periodRatio <= 0.0f)
         return false;
 
       kind_ = Kind::RatioTable;
@@ -163,9 +182,9 @@ namespace Music
      * @return false
      */
     template <typename T, std::size_t N>
-    bool MakeNormalizedRatioTable(const std::array<T, N>& ratios, float periodRatio = 2.0f)
+    bool MakeNormalizedRatioTable(const std::array<T, N> &ratios, float periodRatio = 2.0f)
     {
-      if (!ratios || ratios.size() == 0 || ratios.size() > MAX_DEGREES || periodRatio <= 1.0f)
+      if (ratios.size() == 0 || ratios.size() > MAX_DEGREES || periodRatio <= 1.0f)
         return false;
 
       kind_ = Kind::RatioTable;
@@ -205,7 +224,7 @@ namespace Music
     }
 
     template <typename T, std::size_t N>
-    bool AttachNoteLabels(const std::array<T, N>& labels)
+    bool AttachNoteLabels(const std::array<T, N> &labels)
     {
       return noteLabels_.Attach(labels.data(), labels.size());
     }
@@ -224,7 +243,7 @@ namespace Music
     }
 
     template <typename T, std::size_t N>
-    bool AttachIntervalLabels(const std::array<T, N>& labels)
+    bool AttachIntervalLabels(const std::array<T, N> &labels)
     {
       return intervalLabels_.Attach(labels.data(), labels.size());
     }
@@ -238,7 +257,7 @@ namespace Music
      * @return true if successful, false if degree is invalid or no labels attached.
      * @return false
      */
-    bool GetNoteLabel(Degree degree, char *out, size_t maxOut) const
+    bool GetNoteLabel(Degree degree, char *out, std::size_t maxOut) const
     {
       if (degreesPerPeriod_ == 0)
         return false;
@@ -253,6 +272,29 @@ namespace Music
     }
 
     /**
+     * @brief Get the string label for a given degree (note).
+     *
+     * @param degree The degree to get the label for.
+     * @param out Buffer to write the label to.
+     * @return true if successful, false if degree is invalid or no labels attached.
+     * @return false
+     */
+    template <std::size_t N>
+    bool GetNoteLabel(Degree degree, MString<N> &out) const
+    {
+      if (degreesPerPeriod_ == 0)
+        return false;
+
+      if (degree == REST)
+        return out.set("REST");
+      else
+        return noteLabels_.Get(
+            static_cast<Degree>(wrap(static_cast<int>(degree),
+                                     static_cast<int>(degreesPerPeriod_))),
+            out);
+    }
+
+    /**
      * @brief Get the string label for a given interval degree.
      *
      * @param degree The interval degree to get the label for.
@@ -261,7 +303,7 @@ namespace Music
      * @return true if successful, false if degree is invalid or no labels attached.
      * @return false
      */
-    bool GetIntervalLabel(Degree degree, char *out, size_t maxOut) const
+    bool GetIntervalLabel(Degree degree, char *out, std::size_t maxOut) const
     {
       if (degreesPerPeriod_ == 0)
         return false;
@@ -270,6 +312,26 @@ namespace Music
           static_cast<Degree>(wrap(static_cast<int>(degree),
                                    static_cast<int>(degreesPerPeriod_))),
           out, maxOut);
+    }
+
+    /**
+     * @brief Get the string label for a given interval degree.
+     *
+     * @param degree The interval degree to get the label for.
+     * @param out Buffer to write the label to.
+     * @return true if successful, false if degree is invalid or no labels attached.
+     * @return false
+     */
+    template <std::size_t N>
+    bool GetIntervalLabel(Degree degree, MString<N> &out) const
+    {
+      if (degreesPerPeriod_ == 0)
+        return false;
+
+      return intervalLabels_.Get(
+          static_cast<Degree>(wrap(static_cast<int>(degree),
+                                   static_cast<int>(degreesPerPeriod_))),
+          out);
     }
 
     /**
@@ -464,8 +526,8 @@ namespace Music
     float periodRatio_;
     float ratios_[MAX_DEGREES];
     float periodMultipliers_[(MAX_PERIOD - MIN_PERIOD) + 1];
-    LabelSet noteLabels_;
-    LabelSet intervalLabels_;
+    LabelSet<MAX_DEGREES> noteLabels_;
+    LabelSet<MAX_DEGREES> intervalLabels_;
 
     /**
      * @brief Rebuild the cached period multipliers array.

@@ -6,25 +6,19 @@
 #include <Monkey.h>
 #include <Music/Music.h>
 #include <Music/Tables.h>
-#include <Music/ScaleMaps.h>
 
 int main()
 {
-    using TempT = Music::Temperament;
-    using ScaleT = Music::ScaleMap<Music::PENTATONIC>;
-    using PitchT = Music::PitchEngine<Music::PENTATONIC>;
-
-    std::srand(static_cast<unsigned>(std::time(nullptr)));
+    using TempT = Music::Temperament<Music::DEF_MAX_DEGREES>;
+    using ScaleT = Music::ScaleMap<Music::HEPATONIC>;
+    using PitchT = Music::PitchEngine<Music::DEF_MAX_DEGREES, Music::HEPATONIC>;
 
     TempT temperament;
     temperament.MakeEqualDivision(12, 2.0f);
     temperament.AttachNoteLabels(Music::NOTE_NAMES_12);
 
     ScaleT scale;
-    scale.SetDegrees(Music::MAJOR_PENTATONIC_D12);
-    // scale.setWeightedDegrees(Music::MAJOR_PENTATONIC_DEGREES_12,
-    //                         //  Music::SCALE_WEIGHTS_5_CHORD_TONE_HEAVY,
-    //                          ArrayLen(Music::MAJOR_PENTATONIC_DEGREES_12));
+    scale.SetDegrees(Music::IONIAN_D12);
 
     // A4 = 440 Hz in 12-EDO where C is degree 0 and A is degree 9.
     const Music::TuningReference refA4(Music::BASE_HZ, 9, 0);
@@ -45,11 +39,11 @@ int main()
             step,
             unitRandom,
             period,
-            Music::SCALE_WEIGHTS_5_CHORD_TONE_HEAVY);
+            Music::SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
         const float freq = engine.FrequencyFromWeightedScaleIndex(
             step,
             unitRandom,
-            Music::SCALE_WEIGHTS_5_CHORD_TONE_HEAVY);
+            Music::SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
 
         char note[8];
         note[0] = '\0';

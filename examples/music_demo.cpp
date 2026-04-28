@@ -15,14 +15,14 @@ using namespace Music;
 
 constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
 
-#define PALETTE PHRYGIAN_D19
-#define TEMPERAMENT_DEGREES 19
+#define PALETTE AEOLIAN_D12
+#define TEMPERAMENT_DEGREES 12
 const HarmonicMode mode = HarmonicMode::Minor;
 
 TimeSignature ts(4,NoteValue::Quarter);
-Temperament t;
+Temperament<> t;
 ScaleMap<SCALE_TYPE> scale;
-PitchEngine<SCALE_TYPE> pe;
+PitchEngine<DEF_MAX_DEGREES, SCALE_TYPE> pe;
 
 void doDebug(const char *format, va_list args)
 {
@@ -36,9 +36,9 @@ void testThing()
     const float density = randomRange(0.6f, 0.9f); // 0.50f;
     const NoteValue g = GetRandomGranularity(NoteValue::Eighth, NoteValue::Whole);
     std::cout << "Granularity: " << static_cast<int>(g) << " " << GetNoteValueText(g) << std::endl;
-    ChordEventSet<SCALE_TYPE> chords;
-    PatternEventSet<> pattern;
-    NoteEventSet<> noteEvents;
+    ChordEventSet<SCALE_TYPE, DEF_MAX_EVENTS> chords;
+    PatternEventSet<DEF_MAX_EVENTS> pattern;
+    NoteEventSet<DEF_MAX_EVENTS> noteEvents;
 
     // Make Chord Progression
     GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
@@ -54,7 +54,7 @@ void testThing()
     std::cout << std::endl;
 
     // Make Notes from "Hit" Pattern
-    StyleANoteGenerator<SCALE_TYPE, DEFAULT_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
+    StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
     DebugNoteEvents(t, ts, noteEvents);
     std::cout << std::endl;
 

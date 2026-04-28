@@ -12,120 +12,146 @@
  */
 #pragma once
 
-#include <Music/Music.h>
+#include <cstddef>
+#include <cstdint>
 
-namespace Music {
-/**
- * @brief Converts scale or tempered pitch inputs into frequencies.
- *
- * When a scale map is present, incoming scale indices are first mapped to scale
- * degrees and period offsets before the temperament converts them to Hz.
- */
-template <std::size_t SCALE_MAP_DEGREES = HEPATONIC>
-class PitchEngine {
- public:
+#include <Music/MusicConfig.h>
+#include <Music/MusicTypes.h>
+#include <Music/ScaleMap.h>
+#include <Music/Temperament.h>
+
+namespace Music
+{
   /**
-   * @brief Shapes a unit random value before weighted note selection.
+   * @brief Converts scale or tempered pitch inputs into frequencies.
+   *
+   * When a scale map is present, incoming scale indices are first mapped to scale
+   * degrees and period offsets before the temperament converts them to Hz.
+   * 
+   * @tparam MAX_DEGREES Maximum number of degrees supported by the temperament.
+   * @tparam SCALE_DEGREES Number of degrees supported by the scale map.  
    */
-  enum class RandomShape : uint8_t { Uniform = 0, BiasedLow, BiasedHigh };
+  template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES>
+  class PitchEngine
+  {
+  public:
+    /**
+     * @brief Shapes a unit random value before weighted note selection.
+     */
+    enum class RandomShape : uint8_t
+    {
+      Uniform = 0,
+      BiasedLow,
+      BiasedHigh
+    };
 
-  PitchEngine() : _t(nullptr), _s(nullptr), _rootHz(BASE_HZ) {}
-  PitchEngine(const Temperament *t, const ScaleMap<SCALE_MAP_DEGREES> *s, float rootHz)
-      : _t(t), _s(s), _rootHz(rootHz) {}
+    PitchEngine() : temperament_(nullptr), scaleMap_(nullptr), rootHz_(BASE_HZ) {}
+    PitchEngine(const Temperament<MAX_DEGREES> *temperament, const ScaleMap<SCALE_DEGREES> *scaleMap, float rootHz)
+        : temperament_(temperament), scaleMap_(scaleMap), rootHz_(rootHz) {}
 
-  void SetTemperament(const Temperament *t) { _t = t; }
-  void SetScaleMap(const ScaleMap<SCALE_MAP_DEGREES> *s) { _s = s; }
-  void SetRootHz(float rootHz) { _rootHz = rootHz; }
+    /**
+     * @brief Setters for the temperament, scale map, and root frequency.
+     * These allow dynamic reconfiguration of the pitch engine without reconstructing it.
+     * The temperament and scale map pointers are not owned by the pitch engine, so the caller must ensure they remain valid while in use.
+     */
+    void SetTemperament(const Temperament<MAX_DEGREES> *value) { temperament_ = value; }
+    void SetScaleMap(const ScaleMap<SCALE_DEGREES> *value) { scaleMap_ = value; }
+    void SetRootHz(float value) { rootHz_ = value; }
 
-  /**
-   * @brief Converts a scale index to a frequency in Hz.
-   *
-   * If no scale map is configured, the scale index is treated as a direct
-   * temperament degree. Otherwise it is mapped through the active scale map,
-   * and the mapped period offset is added to @p extraPeriod.
-   *
-   * @param scaleIndex Index within the current scale map.
-   * @param extraPeriod Additional period offset applied after scale mapping.
-   * @param fineCents Fine tuning offset in cents.
-   * @return Frequency in Hz.
-   */
-  float FrequencyFromScaleIndex(int scaleIndex, int extraPeriod = 0,
-                                float fineCents = 0.0f) const {
-    if (!_t) return _rootHz;
+    /**
+     * @brief Converts a scale index to a frequency in Hz.
+     *
+     * If no scale map is configured, the scale index is treated as a direct
+     * temperament degree. Otherwise it is mapped through the active scale map,
+     * and the mapped period offset is added to @p extraPeriod.
+     *
+     * @param scaleIndex Index within the current scale map.
+     * @param extraPeriod Additional period offset applied after scale mapping.
+     * @param fineCents Fine tuning offset in cents.
+     * @return Frequency in Hz.
+     */
+    float FrequencyFromScaleIndex(int scaleIndex, int extraPeriod = 0,
+                                  float fineCents = 0.0f) const
+    {
+      if (!temperament_)
+        return rootHz_;
 
-    if (!_s || _s->Count() == 0)
-      return _t->FrequencyFromRoot(_rootHz, scaleIndex, extraPeriod, fineCents);
+      if (!scaleMap_ || scaleMap_->Count() == 0)
+        return temperament_->FrequencyFromRoot(rootHz_, scaleIndex, extraPeriod, fineCents);
 
-    int scalePeriod = 0;
-    Degree degree = _s->GetMappedDegree(scaleIndex, scalePeriod);
-    return _t->FrequencyFromRoot(_rootHz, degree, scalePeriod + extraPeriod,
-                                 fineCents);
-  }
+      int scalePeriod = 0;
+      Degree degree = scaleMap_->GetMappedDegree(scaleIndex, scalePeriod);
+      return temperament_->FrequencyFromRoot(rootHz_, degree, scalePeriod + extraPeriod,
+                                             fineCents);
+    }
 
-  /**
-   * @brief Picks a weighted mapped degree and converts it to a frequency in Hz.
-   *
-   * The random input is expected in the half-open range [0, 1). If no scale map
-   * is configured, @p scaleIndex is treated as a direct temperament degree.
-   *
-   * @param scaleIndex Base scale index used to determine the period offset.
-   * @param unitRandom Unit random value used for weighted selection.
-   * @param weights Per-degree weights used by the scale map.
-   * @param weightCount Number of entries available in @p weights.
-   * @param extraPeriod Additional period offset applied after scale mapping.
-   * @param fineCents Fine tuning offset in cents.
-   * @return Frequency in Hz.
-   */
-  template <std::size_t N>
-  float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,                                      
-                                        const WeightMap<N>& weights,
-                                        int extraPeriod = 0,
-                                        float fineCents = 0.0f) const {
-    if (!_t) return _rootHz;
+    /**
+     * @brief Picks a weighted mapped degree and converts it to a frequency in Hz.
+     *
+     * The random input is expected in the half-open range [0, 1). If no scale map
+     * is configured, @p scaleIndex is treated as a direct temperament degree.
+     *
+     * @param scaleIndex Base scale index used to determine the period offset.
+     * @param unitRandom Unit random value used for weighted selection.
+     * @param weights Per-degree weights used by the scale map.
+     * @param extraPeriod Additional period offset applied after scale mapping.
+     * @param fineCents Fine tuning offset in cents.
+     * @return Frequency in Hz.
+     */
+    template <std::size_t N>
+    float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,
+                                          const WeightMap<N> &weights,
+                                          int extraPeriod = 0,
+                                          float fineCents = 0.0f) const
+    {
+      if (!temperament_)
+        return rootHz_;
 
-    if (!_s || _s->Count() == 0)
-      return _t->FrequencyFromRoot(_rootHz, scaleIndex, extraPeriod, fineCents);
+      if (!scaleMap_ || scaleMap_->Count() == 0)
+        return temperament_->FrequencyFromRoot(rootHz_, scaleIndex, extraPeriod, fineCents);
 
-    int scalePeriod;
-    Degree degree = _s->GetWeightedMappedDegree(scaleIndex, unitRandom, scalePeriod, weights);
-    return _t->FrequencyFromRoot(_rootHz, degree, scalePeriod + extraPeriod,
-                                 fineCents);
-  }
+      int scalePeriod;
+      Degree degree = scaleMap_->GetWeightedMappedDegree(scaleIndex, unitRandom, scalePeriod, weights);
+      return temperament_->FrequencyFromRoot(rootHz_, degree, scalePeriod + extraPeriod,
+                                             fineCents);
+    }
 
-  /**
-   * @brief Applies a random shaping curve, then performs weighted pitch lookup.
-   *
-   * @param scaleIndex Base scale index used to determine the period offset.
-   * @param unitRandom Unit random value used for weighted selection.
-   * @param shape Curve applied to @p unitRandom before selection.
-   * @param weights Per-degree weights used by the scale map.
-   * @param weightCount Number of entries available in @p weights.
-   * @param extraPeriod Additional period offset applied after scale mapping.
-   * @param fineCents Fine tuning offset in cents.
-   * @return Frequency in Hz.
-   */
-  template <std::size_t N>
-  float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,
-                                        RandomShape shape,
-                                        const WeightMap<N>& weights,
-                                        int extraPeriod = 0,
-                                        float fineCents = 0.0f) const {
-    return FrequencyFromWeightedScaleIndex(
-        scaleIndex, ShapeUnitRandom(unitRandom, shape), weights, extraPeriod, fineCents);
-  }
+    /**
+     * @brief Applies a random shaping curve, then performs weighted pitch lookup.
+     *
+     * @param scaleIndex Base scale index used to determine the period offset.
+     * @param unitRandom Unit random value used for weighted selection.
+     * @param shape Curve applied to @p unitRandom before selection.
+     * @param weights Per-degree weights used by the scale map.
+     * @param extraPeriod Additional period offset applied after scale mapping.
+     * @param fineCents Fine tuning offset in cents.
+     * @return Frequency in Hz.
+     */
+    template <std::size_t N>
+    float FrequencyFromWeightedScaleIndex(int scaleIndex, float unitRandom,
+                                          RandomShape shape,
+                                          const WeightMap<N> &weights,
+                                          int extraPeriod = 0,
+                                          float fineCents = 0.0f) const
+    {
+      return FrequencyFromWeightedScaleIndex(
+          scaleIndex, ShapeUnitRandom(unitRandom, shape), weights, extraPeriod, fineCents);
+    }
 
-  /**
-   * @brief Biases a unit random value toward low or high selections.
-   *
-   * The returned value is clamped to the half-open range [0, 1).
-   *
-   * @param unitRandom Source random value.
-   * @param shape Bias curve to apply.
-   * @return Shaped unit random value.
-   */
-  static float ShapeUnitRandom(float unitRandom, RandomShape shape) {
-    float r = ClampUnit(unitRandom);
-    switch (shape) {
+    /**
+     * @brief Biases a unit random value toward low or high selections.
+     *
+     * The returned value is clamped to the half-open range [0, 1).
+     *
+     * @param unitRandom Source random value.
+     * @param shape Bias curve to apply.
+     * @return Shaped unit random value.
+     */
+    static float ShapeUnitRandom(float unitRandom, RandomShape shape)
+    {
+      float r = ClampUnit(unitRandom);
+      switch (shape)
+      {
       case RandomShape::BiasedLow:
         return r * r;
       case RandomShape::BiasedHigh:
@@ -133,41 +159,46 @@ class PitchEngine {
       case RandomShape::Uniform:
       default:
         return r;
+      }
     }
-  }
 
-  /**
-   * @brief Converts a fully specified tempered pitch to a frequency in Hz.
-   *
-   * @param pitch Tempered pitch expressed as degree, period, and fine cents.
-   * @return Frequency in Hz.
-   */
-  float Frequency(const TemperedPitch &pitch) const {
-    if (!_t) return _rootHz;
+    /**
+     * @brief Converts a fully specified tempered pitch to a frequency in Hz.
+     *
+     * @param pitch Tempered pitch expressed as degree, period, and fine cents.
+     * @return Frequency in Hz.
+     */
+    float Frequency(const TemperedPitch &pitch) const
+    {
+      if (!temperament_)
+        return rootHz_;
 
-    return _t->FrequencyFromRoot(_rootHz, pitch.degree, pitch.period,
-                                 pitch.fineCents);
-  }
+      return temperament_->FrequencyFromRoot(rootHz_, pitch.degree, pitch.period,
+                                             pitch.fineCents);
+    }
 
- private:
-  const Temperament *_t;
-  const ScaleMap<SCALE_MAP_DEGREES> *_s;
-  float _rootHz;
+  private:
+    const Temperament<MAX_DEGREES> *temperament_;
+    const ScaleMap<SCALE_DEGREES> *scaleMap_;
+    float rootHz_;
 
-  /**
-   * @brief Clamps a value to the half-open unit interval [0, 1).
-   *
-   * Keeping the upper bound below 1.0 prevents weighted index calculations from
-   * stepping one element past the end.
-   *
-   * @param v Input value to clamp.
-   * @return Clamped unit interval value.
-   */
-  static float ClampUnit(float v) {
-    if (v < 0.0f) return 0.0f;
-    if (v >= 1.0f) return 0.999999f;
-    return v;
-  }
-};
+    /**
+     * @brief Clamps a value to the half-open unit interval [0, 1).
+     *
+     * Keeping the upper bound below 1.0 prevents weighted index calculations from
+     * stepping one element past the end.
+     *
+     * @param v Input value to clamp.
+     * @return Clamped unit interval value.
+     */
+    static float ClampUnit(float v)
+    {
+      if (v < 0.0f)
+        return 0.0f;
+      if (v >= 1.0f)
+        return 0.999999f;
+      return v;
+    }
+  };
 
-}  // namespace Music
+} // namespace Music

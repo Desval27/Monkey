@@ -15,6 +15,9 @@
 #include <iostream>
 #endif
 
+#include <cstddef>
+
+#include <Monkey.h>
 #include <Music/MusicConfig.h>
 #include <Music/NoteValue.h>
 #include <Music/TimeSignature.h>
@@ -22,12 +25,22 @@
 
 namespace Music
 {
+  template <std::size_t MAX_EVENTS>
+  std::size_t BuildEuclid(int k, int n, int r, PatternEventSet<MAX_EVENTS> &pattern);
+
+  //
   // Different Pattern Generators
-  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  //
+
+  /**
+   * @brief A pattern generator that produces no events. Useful for testing and as a default generator.
+   * The GeneratePattern function simply clears the provided pattern and returns a count of zero, indicating
+   */
+  template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   class NullPatternGenerator
   {
   public:
-    static size_t GeneratePattern(const TimeSignature &ts, int bars,
+    static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
                                   float density, NoteValue granularity,
                                   PatternEventSet<MAX_EVENTS> &pattern)
     {
@@ -36,11 +49,15 @@ namespace Music
     }
   };
 
-  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  /**
+   * @brief A pattern generator that produces random events based on a specified density. Each potential event slot is filled with an event with a probability equal to the density parameter.
+   * The GeneratePattern function calculates the total number of event slots based on the time signature, number of bars, and granularity, and then randomly fills those slots according to the specified density. This generator can produce patterns with varying levels of activity, from sparse to dense, depending on the density value provided.
+   */
+  template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   class SimpleRandomPatternGenerator
   {
   public:
-    static size_t GeneratePattern(const TimeSignature &ts, int bars,
+    static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
                                   float density, NoteValue granularity,
                                   PatternEventSet<MAX_EVENTS> &pattern)
     {
@@ -48,15 +65,15 @@ namespace Music
         return 0; // Sanity check
 
       
-      size_t t = bars * ts.beats * ts.beatValue;
-      size_t n = t / granularity;
-      size_t r = t % granularity;
+      std::size_t t = bars * ts.beats * ts.beatValue;
+      std::size_t n = t / granularity;
+      std::size_t r = t % granularity;
       #ifdef DEBUG_COUT
       std::clog << "Simple Pattern: " << t << "/" << granularity << " slots/granularity = " << n <<  " events with " << r << " slots remaining" << std::endl;
       #endif
 
-      size_t eventsToEmit = min(n, pattern.Capacity());
-      for (size_t i = 0; i < eventsToEmit; i++)
+      std::size_t eventsToEmit = min(n, pattern.Capacity());
+      for (std::size_t i = 0; i < eventsToEmit; i++)
       {
         pattern.Emplace(randomRange(0.0f, 1.0f) < density);
       }
@@ -64,11 +81,15 @@ namespace Music
     }
   };
 
-  template <size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+  /**
+   * @brief A pattern generator that produces Euclidean rhythms based on the specified density. The generator calculates the number of events to emit based on the density and then uses the Euclidean algorithm to distribute those events as evenly as possible across the available slots defined by the time signature and granularity.
+   * The GeneratePattern function first determines the total number of event slots based on the time signature, number of bars, and granularity. It then calculates the number of events to emit based on
+   */
+  template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   class EuclidianPatternGenerator
   {
   public:
-    static size_t GeneratePattern(const TimeSignature &ts, int bars,
+    static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
                                   float density, NoteValue granularity,
                                   PatternEventSet<MAX_EVENTS> &pattern)
     {

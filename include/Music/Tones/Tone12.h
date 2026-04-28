@@ -10,7 +10,11 @@
  */
 #pragma once
 
-#include <Music/Music.h>
+#include <array>
+
+#include <Music/Labels/IntervalNameLabels.h>
+#include <Music/Labels/NoteNameLabels.h>
+#include <Music/MusicTypes.h>
 
 namespace Music
 {
@@ -44,7 +48,7 @@ namespace Music
 // Note & Interval Names
 //
 static const std::array<const char *, 12> NOTE_NAMES_12 =
-    {n_C, n_Cs_Db, n_D, n_Ds_Eb, n_E, n_F, n_Fs_Gb, n_G, n_Gs_Ab, n_A, n_As_Bb, n_B};
+    {n_C, n_Db, n_D, n_Eb, n_E, n_F, n_Fs, n_G, n_Ab, n_A, n_Bb, n_B};
 
 static const std::array<const char *, 12> INTERVAL_NAMES_12 =
     {i_P1, i_m2, i_M2, i_m3, i_M3, i_P4, i_TT, i_P5, i_m6, i_M6, i_m7, i_M7};
@@ -64,53 +68,53 @@ static constexpr DegreeMap<PENTATONIC> MINOR_PENTATONIC_D12       = {P1, m3, P4,
 ///////////////////////////////////////////////////////////////////////////////
 // HEXATONIC MAPS
 ///////////////////////////////////////////////////////////////////////////////
-static constexpr DegreeMap<HEXATONIC> WHOLE_TONE_HEXATONIC_D12[] = {P1, M2, M3, A4, A5, M6};
-static constexpr DegreeMap<HEXATONIC> BLUES_HEXATONIC_D12[]      = {P1, m3, P4, d5, P5, m7};
-static constexpr DegreeMap<HEXATONIC> AUGMENTED_HEXATONIC_D12[]  = {P1, m3, M3, A4, A5, M6};
+static constexpr DegreeMap<HEXATONIC> WHOLE_TONE_HEXATONIC_D12   = {P1, M2, M3, A4, A5, M6};
+static constexpr DegreeMap<HEXATONIC> BLUES_HEXATONIC_D12        = {P1, m3, P4, d5, P5, m7};
+static constexpr DegreeMap<HEXATONIC> AUGMENTED_HEXATONIC_D12    = {P1, m3, M3, A4, A5, M6};
 
 ///////////////////////////////////////////////////////////////////////////////
 // HEPATONIC MAPS
 ///////////////////////////////////////////////////////////////////////////////
 // Modes of the Diatonic Scale in 12 Tone Temperament.
 static constexpr DegreeMap<HEPATONIC> IONIAN_D12                   = {P1, M2, M3, P4, P5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> DORIAN_D12[]                 = {P1, M2, m3, P4, P5, M6, m7};
-static constexpr DegreeMap<HEPATONIC> PHRYGIAN_D12[]               = {P1, m2, m3, P4, P5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> LYDIAN_D12[]                 = {P1, M2, M3, A4, P5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> MIXOLYDIAN_D12[]             = {P1, M2, M3, P4, P5, M6, m7};
-static constexpr DegreeMap<HEPATONIC> AEOLIAN_D12[]                = {P1, M2, m3, P4, P5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> LOCRIAN_D12[]                = {P1, m2, m3, P4, d5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> DORIAN_D12                   = {P1, M2, m3, P4, P5, M6, m7};
+static constexpr DegreeMap<HEPATONIC> PHRYGIAN_D12                 = {P1, m2, m3, P4, P5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> LYDIAN_D12                   = {P1, M2, M3, A4, P5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> MIXOLYDIAN_D12               = {P1, M2, M3, P4, P5, M6, m7};
+static constexpr DegreeMap<HEPATONIC> AEOLIAN_D12                  = {P1, M2, m3, P4, P5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> LOCRIAN_D12                  = {P1, m2, m3, P4, d5, m6, m7};
 // Modes of the Harmonic Minor Scale in 12 Tone Temperament.
-static constexpr DegreeMap<HEPATONIC> HARMONIC_MINOR_D12[]         = {P1, M2, m3, P4, P5, m6, M7};
-static constexpr DegreeMap<HEPATONIC> LOCRIAN_s6_D12[]             = {P1, m2, m3, P4, d5, M6, m7};
-static constexpr DegreeMap<HEPATONIC> IONIAN_s5_D12[]              = {P1, M2, M3, P4, m6, M6, M7};
-static constexpr DegreeMap<HEPATONIC> DORIAN_s4_D12[]              = {P1, M2, m3, A4, P5, M6, m7};
-static constexpr DegreeMap<HEPATONIC> PHRYGIAN_DOMINANT_D12[]      = {P1, m2, M3, P4, P5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> LYDIAN_s2_DEGREES12[]        = {P1, m3, M3, A4, P5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> ULTRALOCRIAN_D12[]           = {P1, m2, m3, M3, d5, m6, M6};
+static constexpr DegreeMap<HEPATONIC> HARMONIC_MINOR_D12           = {P1, M2, m3, P4, P5, m6, M7};
+static constexpr DegreeMap<HEPATONIC> LOCRIAN_s6_D12               = {P1, m2, m3, P4, d5, M6, m7};
+static constexpr DegreeMap<HEPATONIC> IONIAN_s5_D12                = {P1, M2, M3, P4, m6, M6, M7};
+static constexpr DegreeMap<HEPATONIC> DORIAN_s4_D12                = {P1, M2, m3, A4, P5, M6, m7};
+static constexpr DegreeMap<HEPATONIC> PHRYGIAN_DOMINANT_D12        = {P1, m2, M3, P4, P5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> LYDIAN_s2_DEGREES12          = {P1, m3, M3, A4, P5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> ULTRALOCRIAN_D12             = {P1, m2, m3, M3, d5, m6, M6};
 // Modes of the Melodic Minor Scale in 12 Tone Temperament.
-static constexpr DegreeMap<HEPATONIC> MELODIC_MINOR_D12[]          = {P1, M2, m3, P4, P5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> DORIAN_b2_D12[]              = {P1, m2, m3, P4, P5, M6, m7};
-static constexpr DegreeMap<HEPATONIC> LYDIAN_AUG_D12             = {P1, M2, M3, A4, A5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> LYDIAN_DOMINANT_D12        = {P1, M2, M3, A4, P5, M6, m7};
-static constexpr DegreeMap<HEPATONIC> MIXOLYDIAN_b6_D12          = {P1, M2, M3, P4, P5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> LOCRIAN_s2_D12             = {P1, M2, m3, P4, d5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> SUPER_LOCRIAN_D12          = {P1, m2, m3, d4, d5, m6, m7};     
+static constexpr DegreeMap<HEPATONIC> MELODIC_MINOR_D12            = {P1, M2, m3, P4, P5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> DORIAN_b2_D12                = {P1, m2, m3, P4, P5, M6, m7};
+static constexpr DegreeMap<HEPATONIC> LYDIAN_AUG_D12               = {P1, M2, M3, A4, A5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> LYDIAN_DOMINANT_D12          = {P1, M2, M3, A4, P5, M6, m7};
+static constexpr DegreeMap<HEPATONIC> MIXOLYDIAN_b6_D12            = {P1, M2, M3, P4, P5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> LOCRIAN_s2_D12               = {P1, M2, m3, P4, d5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> SUPER_LOCRIAN_D12            = {P1, m2, m3, d4, d5, m6, m7};     
 // Modes of the Harmonic DegreeMap<HEPATONIC> Scale in 12 Tone Temperament.
-static constexpr DegreeMap<HEPATONIC> HARMONIC_MAJOR_D12         = {P1, M2, M3, P4, P5, m6, M7};
-static constexpr DegreeMap<HEPATONIC> DORIAN_b5_D12              = {P1, M2, m3, P4, d5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> PHRYGIAN_b4_D12            = {P1, m2, m3, d4, P5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> LYDIAN_b3_D12              = {P1, M2, m3, A4, P5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> MIXOLYDIAN_b2_D12          = {P1, m2, M3, P4, P5, M6, m7};
-static constexpr DegreeMap<HEPATONIC> LYDIAN_AUG_s2_D12          = {P1, A2, M3, A4, A5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> LOCRIAN_b7_D12             = {P1, m2, m3, P4, d5, m6, d7};
+static constexpr DegreeMap<HEPATONIC> HARMONIC_MAJOR_D12           = {P1, M2, M3, P4, P5, m6, M7};
+static constexpr DegreeMap<HEPATONIC> DORIAN_b5_D12                = {P1, M2, m3, P4, d5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> PHRYGIAN_b4_D12              = {P1, m2, m3, d4, P5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> LYDIAN_b3_D12                = {P1, M2, m3, A4, P5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> MIXOLYDIAN_b2_D12            = {P1, m2, M3, P4, P5, M6, m7};
+static constexpr DegreeMap<HEPATONIC> LYDIAN_AUG_s2_D12            = {P1, A2, M3, A4, A5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> LOCRIAN_b7_D12               = {P1, m2, m3, P4, d5, m6, d7};
 // Modes of the Double Harmonic Scale in 12 Tone Temperament.
-static constexpr DegreeMap<HEPATONIC> DOUBLE_HARMONIC_D12        = {P1, m2, M3, P4, P5, m6, M7};
-static constexpr DegreeMap<HEPATONIC> LYDIAN_b6_b7_D12           = {P1, M2, M3, A4, P5, m6, m7};
-static constexpr DegreeMap<HEPATONIC> ULTRAPHRYGIAN_D12          = {P1, m2, m3, d4, P5, m6, d7};
-static constexpr DegreeMap<HEPATONIC> HUNGARIAN_MINOR_D12        = {P1, M2, m3, A4, P5, m6, M7};
-static constexpr DegreeMap<HEPATONIC> ORIENTAL_D12               = {P1, m2, M3, P4, A5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> IONIAN_s2_s5_D12           = {P1, A2, M3, P4, A5, M6, M7};
-static constexpr DegreeMap<HEPATONIC> LOCRIAN_bb3_bb7_D12        = {P1, m2, d3, P4, d5, m6, d7};
+static constexpr DegreeMap<HEPATONIC> DOUBLE_HARMONIC_D12          = {P1, m2, M3, P4, P5, m6, M7};
+static constexpr DegreeMap<HEPATONIC> LYDIAN_b6_b7_D12             = {P1, M2, M3, A4, P5, m6, m7};
+static constexpr DegreeMap<HEPATONIC> ULTRAPHRYGIAN_D12            = {P1, m2, m3, d4, P5, m6, d7};
+static constexpr DegreeMap<HEPATONIC> HUNGARIAN_MINOR_D12          = {P1, M2, m3, A4, P5, m6, M7};
+static constexpr DegreeMap<HEPATONIC> ORIENTAL_D12                 = {P1, m2, M3, P4, A5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> IONIAN_s2_s5_D12             = {P1, A2, M3, P4, A5, M6, M7};
+static constexpr DegreeMap<HEPATONIC> LOCRIAN_bb3_bb7_D12          = {P1, m2, d3, P4, d5, m6, d7};
 // clang-format on
 
 #undef P1

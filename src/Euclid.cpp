@@ -26,9 +26,10 @@ namespace Music
   /// @param r 
   /// @param pattern 
   /// @return 
-  size_t BuildEuclid(int k, int n, int r, PatternEventSet<> &pattern)
+  template <std::size_t MAX_EVENTS>
+  std::size_t BuildEuclid(int k, int n, int r, PatternEventSet<MAX_EVENTS> &pattern)
   {
-    bool buffer[DEFAULT_MAX_EVENTS];
+    bool buffer[DEF_MAX_EVENTS];
     n = clamp(n, 1, static_cast<int>(std::min(pattern.Capacity(), ArrayLen(buffer))));
     k = clamp(k, 0, n);
 
@@ -60,5 +61,7 @@ namespace Music
     }
     return pattern.Count();
   }
+
+  template std::size_t BuildEuclid<DEF_MAX_EVENTS>(int k, int n, int r, PatternEventSet<DEF_MAX_EVENTS> &pattern);
 
 } // namespace Music

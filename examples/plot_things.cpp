@@ -16,9 +16,9 @@ constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
 #define PALETTE_LEN ArrayLen(PALETTE)
 
 TimeSignature ts;
-Temperament t;
+Temperament<> t;
 ScaleMap<SCALE_TYPE> scale;
-PitchEngine<SCALE_TYPE> pe;
+PitchEngine<DEF_MAX_DEGREES, SCALE_TYPE> pe;
 const HarmonicMode mode = HarmonicMode::Major;
 
 const int bars = 8;
@@ -33,7 +33,7 @@ void DoThing()
 
     EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
 
-    StyleANoteGenerator<SCALE_TYPE, DEFAULT_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
+    StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
     NoteEventScore score = ScoreNoteEvents(t, noteEvents);
 
     float v1 = density;

@@ -14,13 +14,15 @@
 ###############################################################################
 # Directory Definitions
 ###############################################################################
-SRC_DIR := src
-INC_DIR := include
-LIB_DIR := lib
-BIN_DIR := bin
-BUILD_DIR := build
-TEST_DIR := test
-EXAMPLES_DIR := examples
+SRC_DIR := ./src
+INC_DIR := ./include
+LIB_DIR := ./lib
+BIN_DIR := ./bin
+BUILD_DIR := ./build
+TEST_DIR := ./test
+EXAMPLES_DIR := ./examples
+# Sometimes put in by AI using PowerShell
+BAD_DIR := ./-p
 
 ###############################################################################
 # Targets
@@ -101,7 +103,7 @@ $(BIN_DIR)/%: $(EXAMPLES_DIR)/%.cpp $(LIB_OUT)
 	$(CXX) $(CXXFLAGS) $< $(LDFLAGS) $(LDLIBS) -o $@
 
 clean:
-	rm -rf $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR)
+	rm -rf $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR) $(BAD_DIR)
 
 size: $(LIB_OUT)
 	@echo "Size of $(LIB_OUT)"

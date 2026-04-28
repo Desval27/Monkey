@@ -11,6 +11,9 @@
  */
 #pragma once
 
+#include <cstddef>
+
+#include <Monkey.h>
 #include <Music/MusicConfig.h>
 #include <Music/MusicHelpers.h>
 #include <Music/NoteValue.h>
@@ -22,15 +25,15 @@
 
 namespace Music
 {
-    template <size_t DEGREES, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+    template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t MAX_SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
     class NullNoteGenerator
     {
     public:
-        static size_t GeneratePattern(const PatternEventSet<MAX_EVENTS> &pattern,
-                                      const ChordEventSet<MAX_EVENTS> &chords,
+        static std::size_t GeneratePattern(const PatternEventSet<MAX_EVENTS> &pattern,
+                                      const ChordEventSet<MAX_SCALE_DEGREES, MAX_EVENTS> &chords,
                                       const TimeSignature &ts,
-                                      const Temperament &temperament,
-                                      const ScaleMap<DEGREES> &scale,
+                                      const Temperament<MAX_DEGREES> &temperament,
+                                      const ScaleMap<MAX_SCALE_DEGREES> &scale,
                                       int bars,
                                       NoteValue granularity,
                                       NoteEventSet<MAX_EVENTS> &events)
@@ -40,15 +43,15 @@ namespace Music
         }
     };
 
-    template <size_t SCALE_MAP_DEGREES = HEPATONIC, size_t MAX_EVENTS = DEFAULT_MAX_EVENTS>
+    template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t MAX_SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
     class StyleANoteGenerator
     {
     public:
-        static size_t GenerateEvents(const PatternEventSet<MAX_EVENTS> &pattern,
-                                          const ChordEventSet<SCALE_MAP_DEGREES, MAX_EVENTS> &chords,
+        static std::size_t GenerateEvents(const PatternEventSet<MAX_EVENTS> &pattern,
+                                          const ChordEventSet<MAX_SCALE_DEGREES, MAX_EVENTS> &chords,
                                           const TimeSignature &ts,
-                                          const Temperament &temperament,
-                                          const ScaleMap<SCALE_MAP_DEGREES> &scale,
+                                          const Temperament<MAX_DEGREES> &temperament,
+                                          const ScaleMap<MAX_SCALE_DEGREES> &scale,
                                           int bars,
                                           NoteValue granularity,
                                           NoteEventSet<MAX_EVENTS> &events)
@@ -60,14 +63,14 @@ namespace Music
             int pulses = 0;
             int chordPulses = 0;
             int ppb = ts.GetPulsesPerBar();
-            size_t chordIdx = 0;
+            std::size_t chordIdx = 0;
 
             Note tones[20];
-            size_t toneCount = chords[chordIdx].GetChordTones(
+            std::size_t toneCount = chords[chordIdx].GetChordTones(
                 scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
                 ArrayLen(tones));
 
-            for (size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
+            for (std::size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
             {
                 if (chordPulses >= static_cast<int>(chords[chordIdx].value) && chordIdx < chords.Count() - 1)
                 {

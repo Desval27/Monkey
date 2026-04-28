@@ -5,11 +5,11 @@
 
 using Music::TimeSignature;
 using Music::NoteEventSet;
-using MyNotEventSet = NoteEventSet<>;
+using MyNoteEventSet = NoteEventSet<>;
 
 TEST_CASE("Event Count") {
     TimeSignature ts(4, Music::NoteValue::Quarter);
-    MyNotEventSet events;
+    MyNoteEventSet events;
     CHECK_EQ(events.Count(), 0UL);   // Should always start out empty
     CHECK_EQ(events.IsEmpty(), true);
 
@@ -27,7 +27,7 @@ TEST_CASE("Event Count") {
 TEST_CASE("Bars For Events")
 {
     TimeSignature ts(4, Music::NoteValue::Quarter);
-    MyNotEventSet events;
+    MyNoteEventSet events;
     events.Emplace(Music::Note_P1, 0, Music::NoteValue::Whole);
     events.Emplace(Music::Note_P1, 0, Music::NoteValue::Whole);
     events.Emplace(Music::Note_P1, 0, Music::NoteValue::Whole);
@@ -43,7 +43,7 @@ TEST_CASE("Bars For Events")
 
 TEST_CASE("Total Pulse Count") {
     TimeSignature ts(4, Music::NoteValue::Quarter);
-    MyNotEventSet events;
+    MyNoteEventSet events;
     
 }
 

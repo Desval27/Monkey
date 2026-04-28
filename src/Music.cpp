@@ -24,13 +24,13 @@ namespace Music
   /// @param weights
   /// @param count
   /// @return
-  static int WeightedIndexFromRow(const float *weights, size_t count)
+  static int WeightedIndexFromRow(const float *weights, std::size_t count)
   {
     if (!weights || count == 0)
       return 0;
 
     float sum = 0.0f;
-    for (size_t i = 0; i < count; ++i)
+    for (std::size_t i = 0; i < count; ++i)
     {
       if (weights[i] > 0.0f)
         sum += weights[i];
@@ -43,7 +43,7 @@ namespace Music
     const float pick = unitRandom * sum;
     float accum = 0.0f;
 
-    for (size_t i = 0; i < count; ++i)
+    for (std::size_t i = 0; i < count; ++i)
     {
       const float w = (weights[i] > 0.0f) ? weights[i] : 0.0f;
       accum += w;
@@ -82,75 +82,9 @@ namespace Music
     return v;
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  template <std::size_t SCALE_MAP_DEGREES>
-  std::string ChordEvent<SCALE_MAP_DEGREES>::GetChordName(const ScaleMap<SCALE_MAP_DEGREES> &scale,
-                                                          const Temperament &temperament) const
-  {
-    const size_t rootIdx = scale.GetIndexOfDegree(root);
-    if (scale.Count() == 0 || rootIdx >= scale.Count())
-      return "?";
-
-    int periodOffset = 0;
-    if (scale.GetMappedDegree(rootIdx, periodOffset) != root)
-      return "?";
-
-    Note tones[8];
-    const size_t toneCount = GetChordTones(
-        scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
-        ArrayLen(tones));
-    if (toneCount < 3)
-      return "?";
-
-    char thirdLabel[8];
-    char fifthLabel[8];
-    if (!temperament.GetIntervalLabel(
-            static_cast<Degree>(wrap(static_cast<int>(tones[1] - root),
-                                     static_cast<int>(temperament.DegreesPerPeriod()))),
-            thirdLabel, sizeof(thirdLabel)) ||
-        !temperament.GetIntervalLabel(
-            static_cast<Degree>(wrap(static_cast<int>(tones[2] - root),
-                                     static_cast<int>(temperament.DegreesPerPeriod()))),
-            fifthLabel, sizeof(fifthLabel)))
-    {
-      return GetChordName(scale, static_cast<int>(temperament.DegreesPerPeriod()));
-    }
-
-    ChordQuality quality =
-        ClassifyChordQualityFromIntervalLabels(thirdLabel, fifthLabel);
-    if (quality == ChordQuality::Unknown)
-    {
-      const int lowerThird =
-          wrap(static_cast<int>(tones[1] - root),
-               static_cast<int>(temperament.DegreesPerPeriod()));
-      const int upperThird =
-          wrap(static_cast<int>(tones[2] - tones[1]),
-               static_cast<int>(temperament.DegreesPerPeriod()));
-
-      int allThirds[SCALE_CHORD_COUNT] = {};
-      size_t thirdCount = 0;
-      for (size_t i = 0; i < scale.Count() && i < SCALE_CHORD_COUNT; ++i)
-      {
-        int firstPeriod = 0;
-        int thirdPeriod = 0;
-        const int first = scale.GetMappedDegree(i, firstPeriod);
-        const int third = scale.GetMappedDegree(i + 2, thirdPeriod);
-        allThirds[thirdCount++] =
-            (third + thirdPeriod * static_cast<int>(temperament.DegreesPerPeriod())) -
-            (first + firstPeriod * static_cast<int>(temperament.DegreesPerPeriod()));
-      }
-
-      quality = ClassifyChordQualityFromThirdStack(
-          lowerThird, upperThird, MinValue(allThirds, thirdCount),
-          MaxValue(allThirds, thirdCount));
-    }
-
-    return BuildChordNameFromQuality(rootIdx, quality);
-  }
-
-  template std::string ChordEvent<HEPATONIC>::GetChordName(
-      const ScaleMap<HEPATONIC> &scale,
-      const Temperament &temperament) const;
+  template NoteEventScore ScoreNoteEvents<DEF_MAX_DEGREES, DEF_MAX_EVENTS>(
+      const Temperament<DEF_MAX_DEGREES> &t,
+      const NoteEventSet<DEF_MAX_EVENTS> &events);
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   const char *GetNoteValueText(NoteValue v)
@@ -245,7 +179,8 @@ namespace Music
   /// @brief
   /// @param events
   /// @return
-  NoteEventScore ScoreNoteEvents(const Temperament &t, const NoteEventSet<> &events)
+  template <std::size_t MAX_DEGREES, std::size_t MAX_EVENTS>
+  NoteEventScore ScoreNoteEvents(const Temperament<MAX_DEGREES> &t, const NoteEventSet<MAX_EVENTS> &events)
   {
     NoteEventScore score;
     if (events.Count() == 0)
@@ -274,7 +209,7 @@ namespace Music
     NoteValue previousPitchedDuration = NoteValue::None;
     bool inPhrase = false;
 
-    for (size_t i = 0; i < events.Count(); i++)
+    for (std::size_t i = 0; i < events.Count(); i++)
     {
       int eventPulses = static_cast<int>(events[i].value);
 

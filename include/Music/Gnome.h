@@ -10,7 +10,8 @@
  */
 #pragma once
 
-#include <Music/Music.h>
+#include <Music/NoteValue.h>
+#include <Music/TimeSignature.h>
 
 namespace Music
 {
@@ -45,7 +46,7 @@ namespace Music
      * @param ts Time signature that defines the beat size and beat count.
      * @param bars Number of bars before the tracker wraps back to the start.
      */
-    Gnome(const TimeSignature &ts, int bars) : _ts(&ts), _bars(bars), _bar(0)
+    Gnome(const TimeSignature &ts, int bars) : ts_(&ts), bars_(bars), bar_(0)
     {
       Reset();
     }
@@ -61,16 +62,16 @@ namespace Music
       if (!IsValid())
         return;
 
-      _beat++;
-      if (_beat == _ts->beats)
+      beat_++;
+      if (beat_ == ts_->beats)
       {
-        _beat = 0;
-        _bar++;
-        if (_bar == _bars)
-          _bar = 0;
+        beat_ = 0;
+        bar_++;
+        if (bar_ == bars_)
+          bar_ = 0;
       }
 
-      _pulse = (_bar * _ts->GetPulsesPerBar()) + (_beat * PulsesPerBeat());
+      pulse_ = (bar_ * ts_->GetPulsesPerBar()) + (beat_ * PulsesPerBeat());
     }
 
     /**
@@ -87,12 +88,12 @@ namespace Music
       if (!IsValid())
         return -1;
 
-      _pulse++;
+      pulse_++;
       if (RisingBeatEdge())
       {
         DoBeat();
       }
-      return _pulse;
+      return pulse_;
     }
 
     /**
@@ -102,14 +103,14 @@ namespace Music
      *
      * @return Zero-based beat index within the current bar.
      */
-    int GetBeat() const { return _beat; }
+    int GetBeat() const { return beat_; }
 
     /**
      * @brief Returns the current bar index.
      *
      * @return Zero-based bar index within the looped span.
      */
-    int GetBar() const { return _bar; }
+    int GetBar() const { return bar_; }
 
     /**
      * @brief Returns the current pulse index.
@@ -118,7 +119,7 @@ namespace Music
      *
      * @return Zero-based pulse index within the looped span.
      */
-    int GetPulse() const { return _pulse; }
+    int GetPulse() const { return pulse_; }
 
     /**
      * @brief Returns true only on the first pulse of a beat.
@@ -128,8 +129,8 @@ namespace Music
     bool RisingBeatEdge() const
     {
       const int pulsesPerBeat = PulsesPerBeat();
-      return (pulsesPerBeat > 0) && (_pulse >= 0) &&
-             ((_pulse % pulsesPerBeat) == 0);
+      return (pulsesPerBeat > 0) && (pulse_ >= 0) &&
+             ((pulse_ % pulsesPerBeat) == 0);
     }
 
     /**
@@ -142,7 +143,7 @@ namespace Music
      */
     bool RisingBarEdge() const
     {
-      return RisingBeatEdge() && (_beat == 0);
+      return RisingBeatEdge() && (beat_ == 0);
     }
 
     /**
@@ -153,26 +154,26 @@ namespace Music
      */
     void Reset()
     {
-      _beat = -1;
-      _bar = 0;
-      _pulse = -1;
+      beat_ = -1;
+      bar_ = 0;
+      pulse_ = -1;
     }
 
   private:
-    const TimeSignature *_ts;
-    int _bars;
-    int _beat;
-    int _bar;
-    int _pulse;
+    const TimeSignature *ts_;
+    int bars_;
+    int beat_;
+    int bar_;
+    int pulse_;
 
     int PulsesPerBeat() const
     {
-      return static_cast<int>(_ts->beatValue);
+      return static_cast<int>(ts_->beatValue);
     }
 
     bool IsValid() const
     {
-      return _ts && (_ts->beats > 0) && (PulsesPerBeat() > 0) && (_bars > 0);
+      return ts_ && (ts_->beats > 0) && (PulsesPerBeat() > 0) && (bars_ > 0);
     }
   };
 

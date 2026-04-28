@@ -12,8 +12,13 @@
  */
 #pragma once
 
+#include <cstddef>
+
 namespace Music
 {
-    constexpr size_t DEFAULT_MAX_EVENTS = 128;
+    // Default limits for template parameters. These can be overridden by defining them before including this header.
+    constexpr std::size_t DEF_MAX_DEGREES = 64;
+    constexpr std::size_t DEF_MAX_EVENTS = 128;
+    constexpr std::size_t DEF_SCALE_DEGREES = 7;  // HEPATONIC
 
 } // namespace Music

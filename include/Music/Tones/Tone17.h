@@ -10,6 +10,12 @@
  */
 #pragma once
 
+#include <array>
+
+#include <Music/Labels/IntervalNameLabels.h>
+#include <Music/Labels/NoteNameLabels.h>
+#include <Music/MusicTypes.h>
+
 namespace Music
 {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////

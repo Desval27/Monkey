@@ -11,10 +11,11 @@
  */
 #pragma once
 
-#include <algorithm>
 #include <array>
+#include <cstddef>
 
-#include <Music/Music.h>
+#include <Monkey.h>
+#include <Music/MusicTypes.h>
 
 namespace Music
 {
@@ -27,7 +28,7 @@ namespace Music
    * wrapped back into the stored degree list, and the number of wraps is
    * returned as a period offset.
    */
-  template <std::size_t DEGREES=HEPATONIC>
+  template <std::size_t SCALE_DEGREES=DEF_SCALE_DEGREES>
   class ScaleMap
   {
   public:
@@ -39,7 +40,7 @@ namespace Music
       degrees_.fill(0);
     }
 
-    void SetDegrees(const DegreeMap<DEGREES>& degrees)
+    void SetDegrees(const DegreeMap<SCALE_DEGREES>& degrees)
     {
       degrees_ = degrees;
     }
@@ -49,7 +50,7 @@ namespace Music
      *
      * @return Number of mapped degrees.
      */
-    size_t Count() const { return degrees_.size(); }
+    std::size_t Count() const { return degrees_.size(); }
 
     /**
      * @brief Resolves an index into a mapped degree and period offset.
@@ -61,7 +62,7 @@ namespace Music
      * @param outPeriodOffset Receives the wrapped period offset.
      * @return Mapped scale degree, or `0` when the map is empty.
      */
-    Degree GetMappedDegree(size_t index, int &outPeriodOffset) const
+    Degree GetMappedDegree(std::size_t index, int &outPeriodOffset) const
     {
       int wrapped = wrap(index, Count());
       int cycles = (index - wrapped) / Count();
@@ -75,9 +76,9 @@ namespace Music
      * @param degree Degree to search for.
      * @return Matching index, or `0` when the degree is not present.
      */
-    size_t GetIndexOfDegree(Degree degree) const
+    std::size_t GetIndexOfDegree(Degree degree) const
     {
-      for (size_t i = 0; i < degrees_.size(); i++)
+      for (std::size_t i = 0; i < degrees_.size(); i++)
       {
         if (degrees_[i] == degree)
           return i;
@@ -101,7 +102,7 @@ namespace Music
      * @param weightCount Number of entries available in @p weights.
      * @return Selected degree, or `0` when the map is empty.
      */
-    Degree GetWeightedDegree(float unitRandom, int &outPeriodOffset, const WeightMap<DEGREES>& weights) const
+    Degree GetWeightedDegree(float unitRandom, int &outPeriodOffset, const WeightMap<SCALE_DEGREES>& weights) const
     {
       if (Count() == 0)
       {
@@ -109,7 +110,7 @@ namespace Music
         return 0;
       }
       outPeriodOffset = 0;
-      size_t idx = GetWeightedIndex(unitRandom, weights);
+      std::size_t idx = GetWeightedIndex(unitRandom, weights);
       if (idx < Count())
         return degrees_[idx];
       return 0;
@@ -124,7 +125,7 @@ namespace Music
      * @param weightCount Number of entries available in @p weights.
      * @return Selected degree, or `0` when the map is empty.
      */
-    Degree GetWeightedNote(float unitRandom, int &outPeriodOffset, const WeightMap<DEGREES>& weights) const
+    Degree GetWeightedNote(float unitRandom, int &outPeriodOffset, const WeightMap<SCALE_DEGREES>& weights) const
     {
       return GetWeightedDegree(unitRandom, outPeriodOffset, weights);
     }
@@ -142,13 +143,13 @@ namespace Music
      * @param weightCount Number of entries available in @p weights.
      * @return Selected degree, or `0` when the map is empty.
      */
-    Degree GetWeightedMappedDegree(size_t index, float unitRandom, int &outPeriodOffset, const WeightMap<DEGREES>& weights) const
+    Degree GetWeightedMappedDegree(std::size_t index, float unitRandom, int &outPeriodOffset, const WeightMap<SCALE_DEGREES>& weights) const
     {
       int wrapped = wrap(index, Count());
       int cycles = (index - wrapped) / Count();
       outPeriodOffset = cycles;
 
-      size_t idx = GetWeightedIndex(unitRandom, weights);
+      std::size_t idx = GetWeightedIndex(unitRandom, weights);
       if (idx < Count())
         return degrees_[idx];
       return 0;
@@ -164,13 +165,13 @@ namespace Music
      * @param weightCount Number of entries available in @p weights.
      * @return Selected degree, or `0` when the map is empty.
      */
-    Degree GetWeightedNote(int index, float unitRandom, int &outPeriodOffset, const WeightMap<DEGREES>& weights) const
+    Degree GetWeightedNote(int index, float unitRandom, int &outPeriodOffset, const WeightMap<SCALE_DEGREES>& weights) const
     {
       return GetWeightedMappedDegree(index, unitRandom, outPeriodOffset, weights);
     }
 
   private:
-    DegreeMap<DEGREES> degrees_;
+    DegreeMap<SCALE_DEGREES> degrees_;
 
     /**
      * @brief Chooses a degree slot from the weight table.
@@ -183,7 +184,7 @@ namespace Music
      * @param weightCount Number of entries available in @p weights.
      * @return Selected array index.
      */
-    size_t GetWeightedIndex(float unitRandom, const WeightMap<DEGREES>& weights) const
+    std::size_t GetWeightedIndex(float unitRandom, const WeightMap<SCALE_DEGREES>& weights) const
     {
       float sum = 0.0f;
       int thisCount = min(Count(), weights.size());
