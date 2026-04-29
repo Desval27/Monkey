@@ -39,7 +39,6 @@ using MyInversionPatternGenerator = Music::InversionPatternGenerator<MAX_EVENTS>
 using MyEuclidianPatternGenerator = Music::EuclidianPatternGenerator<MAX_EVENTS>;
 using MyStyleANoteGenerator = Music::StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
-
 MyTimeSignature ts(4,NoteValue::Quarter);
 MyTemperament t;
 MyScaleMap scale;

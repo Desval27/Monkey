@@ -13,6 +13,7 @@
 
 #ifdef DEBUG_COUT
 #include <iostream>
+#include <TTY.h>
 #endif
 
 #include <algorithm>
@@ -115,10 +116,12 @@ namespace Music
       std::size_t r = t % granularity;
       #ifdef DEBUG_COUT
       std::clog 
-	  	<< "Simple Pattern: " << t << "/" << granularity 
-		<< " slots/granularity = " << n 
-		<<  " events with " << r 
-		<< " slots remaining" << std::endl;
+        << TTY_FG_RED << "Simple Pattern:" << TTY_RESET << " "
+        << t << "/" << granularity 
+        << " slots/granularity = " << n 
+        <<  " events with " << r 
+        << " slots remaining" 
+        << std::endl;
       #endif
 
       std::size_t eventsToEmit = min(n, pattern.Capacity());
@@ -152,11 +155,13 @@ namespace Music
       std::size_t n = t / granularity;
       std::size_t r = t % granularity;
       #ifdef DEBUG_COUT
-      std::clog << "Inversion Pattern: " 
-	  	<< t << "/" 
-		<< granularity << " slots/granularity = " 
-		<< n <<  " events with " 
-		<< r << " slots remaining" << std::endl;
+      std::clog 
+        << TTY_FG_RED << TTY_INVERSE_ON << "Inversion Pattern:" << TTY_RESET << " "
+        << t << "/" 
+        << granularity << " slots/granularity = " 
+        << n <<  " events with " 
+        << r << " slots remaining" 
+        << std::endl;
       #endif
 
 	  // In case the bars/beats had changed from one version to the other.
@@ -196,10 +201,12 @@ namespace Music
       int k = n * density;
       #ifdef DEBUG_COUT
       std::clog 
-	  	<< "Eulclidian Pattern: " << t << "/" << granularity 
-		<< " slots/granularity = " << k 
-		<<  " events out of " << n 
-		<< " with " << r << " slots remaining" << std::endl;
+        << TTY_FG_RED << "Eulclidian Pattern:" << TTY_RESET << " "
+        << t << "/" << granularity 
+        << " slots/granularity = " << k 
+        <<  " events out of " << n 
+        << " with " << r << " slots remaining" 
+        << std::endl;
       #endif
       
       return BuildEuclid(k, n, 1, pattern);
