@@ -80,7 +80,7 @@ ALL_DEPS := $(LIB_OBJS:.o=.d) $(TEST_OBJS:.o=.d)
 ###############################################################################
 .PHONY: all clean tests examples directories
 
-all: directories $(LIB_OUT) examples
+all: directories $(LIB_OUT) examples 
 
 directories: 
 	@mkdir -p $(BUILD_DIR) $(LIB_DIR) $(BIN_DIR) $(EXAMPLES_DIR)

@@ -70,7 +70,7 @@ namespace Music
     /// @param chords
     /// @param events
     /// @return
-    std::size_t GenerateNoteEvents(const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords,
+    std::size_t GenerateNoteEvents(const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
                                    NoteEventSet<MAX_EVENTS> &events)
     {
       return GenerateNoteEventsWithGenerator<DefaultPatternGenerator>(chords,
@@ -83,7 +83,7 @@ namespace Music
     /// @param events
     /// @return
     template <template <std::size_t> class TPatternGenerator>
-    std::size_t GenerateNoteEvents(const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords,
+    std::size_t GenerateNoteEvents(const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
                                    NoteEventSet<MAX_EVENTS> &events)
     {
       return GenerateNoteEventsWithGenerator<TPatternGenerator<MAX_EVENTS>>(
@@ -98,7 +98,7 @@ namespace Music
     /// @return
     template <typename TPatternGenerator>
     std::size_t GenerateNoteEventsWithGenerator(
-        const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords,
+        const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
         NoteEventSet<MAX_EVENTS> &events)
     {
       PatternEventSet<MAX_EVENTS> pattern;

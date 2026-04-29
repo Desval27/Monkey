@@ -1,6 +1,6 @@
 /* SPDX-License-Identifier: CC0-1.0 */
 /**
- * @file Music.h
+ * @file NoteGenerator.h
  * @brief General Music Definitions.
  * @author pfburdette <paul.f.burdette@gmail.com>
  *
@@ -25,15 +25,15 @@
 
 namespace Music
 {
-    template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t MAX_SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+    template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
     class NullNoteGenerator
     {
     public:
         static std::size_t GeneratePattern(const PatternEventSet<MAX_EVENTS> &pattern,
-                                      const ChordEventSet<MAX_SCALE_DEGREES, MAX_EVENTS> &chords,
+                                      const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
                                       const TimeSignature &ts,
                                       const Temperament<MAX_DEGREES> &temperament,
-                                      const ScaleMap<MAX_SCALE_DEGREES> &scale,
+                                      const ScaleMap<SCALE_DEGREES> &scale,
                                       int bars,
                                       NoteValue granularity,
                                       NoteEventSet<MAX_EVENTS> &events)
@@ -43,17 +43,18 @@ namespace Music
         }
     };
 
-    template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t MAX_SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+    template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
     class StyleANoteGenerator
     {
     public:
         static std::size_t GenerateEvents(const PatternEventSet<MAX_EVENTS> &pattern,
-                                          const ChordEventSet<MAX_SCALE_DEGREES, MAX_EVENTS> &chords,
+                                          const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
                                           const TimeSignature &ts,
                                           const Temperament<MAX_DEGREES> &temperament,
-                                          const ScaleMap<MAX_SCALE_DEGREES> &scale,
+                                          const ScaleMap<SCALE_DEGREES> &scale,
                                           int bars,
                                           NoteValue granularity,
+										  const WeightMap<SCALE_DEGREES> &weightMap,
                                           NoteEventSet<MAX_EVENTS> &events)
         {
             events.Clear();
@@ -95,10 +96,8 @@ namespace Music
                     {
                         int periodOffset = 0;
                         float unitRandom = randomRange(0.0f, 0.999999f);
-                        //
-                        // Our weights need to be injected at some point.
-                        //
-                        Note n = scale.GetWeightedNote(unitRandom, periodOffset, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
+
+						Note n = scale.GetWeightedNote(unitRandom, periodOffset, weightMap);
 
                         // If our last event was the same note then (for now) just add to the original duraton
                         // Or just a random occurance

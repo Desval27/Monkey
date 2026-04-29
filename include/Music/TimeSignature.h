@@ -34,8 +34,17 @@ namespace Music
     };
 
     /**
-     * @brief Represents a musical time signature, which defines the rhythmic structure of a piece of music. It consists of two main components: the number of beats per bar and the note value that receives one beat. The time signature determines how music is counted and organized into measures, influencing the feel and flow of the music.
-     * The `TimeSignature` struct provides methods to classify the time signature type, calculate the denominator based on the beat value, and determine the total number of pulses in a bar. This allows for flexible handling of various time signatures, including common, simple, compound, and irregular meters.
+     * @brief Represents a musical time signature, which defines the rhythmic 
+	 * structure of a piece of music. It consists of two main components: the 
+	 * number of beats per bar and the note value that receives one beat. The 
+	 * time signature determines how music is counted and organized into 
+	 * measures, influencing the feel and flow of the music.
+	 *
+     * The `TimeSignature` struct provides methods to classify the time 
+	 * signature type, calculate the denominator based on the beat value, and 
+	 * determine the total number of pulses in a bar. This allows for flexible 
+	 * handling of various time signatures, including common, simple, 
+	 * compound, and irregular meters.
      */
     struct TimeSignature
     {
@@ -85,6 +94,14 @@ namespace Music
             else
                 return TimeSignatureType::Irregular;
         }
+
+		bool InThrees() const
+		{
+			// Generally considered (for now) to be potentially considered
+			// to be in threes if the number of beats is evenly divisible 
+			// by three and the denominator is evenly divisible by two.
+			return (beats % 3 == 0) && (GetDenominator() % 2 == 0);
+		}
 
         /**
          * @brief Calculates the denominator of the time signature.

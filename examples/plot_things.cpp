@@ -22,7 +22,7 @@ PitchEngine<DEF_MAX_DEGREES, SCALE_TYPE> pe;
 const HarmonicMode mode = HarmonicMode::Major;
 
 const int bars = 8;
-ChordEventSet<SCALE_TYPE> chords;
+ChordEventSet<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS> chords;
 
 void DoThing()
 {
@@ -33,7 +33,7 @@ void DoThing()
 
     EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
 
-    StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
+    StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, SCALE_WEIGHTS_7_UNIFORM, noteEvents);
     NoteEventScore score = ScoreNoteEvents(t, noteEvents);
 
     float v1 = density;

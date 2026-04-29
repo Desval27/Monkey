@@ -13,16 +13,37 @@
 
 using namespace Music;
 
-constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
+constexpr std::size_t MAX_DEGREES = 64;
+constexpr std::size_t MAX_EVENTS = 128;
 
-#define PALETTE AEOLIAN_D12
 #define TEMPERAMENT_DEGREES 12
-const HarmonicMode mode = HarmonicMode::Minor;
 
-TimeSignature ts(4,NoteValue::Quarter);
-Temperament<> t;
-ScaleMap<SCALE_TYPE> scale;
-PitchEngine<DEF_MAX_DEGREES, SCALE_TYPE> pe;
+#define PALETTE IONIAN_D12
+//#define PALETTE MAJOR_PENTATONIC_D12
+
+constexpr std::size_t SCALE_DEGREES = HEPATONIC;
+#define WEIGHT_MAP SCALE_WEIGHTS_7_UNIFORM
+//#define WEIGHT_MAP SCALE_WEIGHTS_5_UNIFORM
+
+constexpr HarmonicMode mode = HarmonicMode::Major;
+
+using MyTimeSignature = Music::TimeSignature;
+using MyTemperament = Music::Temperament<MAX_DEGREES>;
+using MyScaleMap = Music::ScaleMap<SCALE_DEGREES>;
+using MyPitchEngine = Music::PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
+using MyChordEventSet = Music::ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+using MyPatternEventSet = Music::PatternEventSet<MAX_EVENTS>;
+using MyNoteEventSet = Music::NoteEventSet<MAX_EVENTS>;
+using MySimpleRandomPatternGenerator = Music::SimpleRandomPatternGenerator<MAX_EVENTS>;
+using MyInversionPatternGenerator = Music::InversionPatternGenerator<MAX_EVENTS>;
+using MyEuclidianPatternGenerator = Music::EuclidianPatternGenerator<MAX_EVENTS>;
+using MyStyleANoteGenerator = Music::StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+
+
+MyTimeSignature ts(4,NoteValue::Quarter);
+MyTemperament t;
+MyScaleMap scale;
+MyPitchEngine pe;
 
 void doDebug(const char *format, va_list args)
 {
@@ -31,31 +52,53 @@ void doDebug(const char *format, va_list args)
 
 void testThing()
 {
-    std::cout << std::string(80, '-') << std::endl;
     const int bars = 8;
-    const float density = randomRange(0.6f, 0.9f); // 0.50f;
-    const NoteValue g = GetRandomGranularity(NoteValue::Eighth, NoteValue::Whole);
-    std::cout << "Granularity: " << static_cast<int>(g) << " " << GetNoteValueText(g) << std::endl;
-    ChordEventSet<SCALE_TYPE, DEF_MAX_EVENTS> chords;
-    PatternEventSet<DEF_MAX_EVENTS> pattern;
-    NoteEventSet<DEF_MAX_EVENTS> noteEvents;
+
+	static MyChordEventSet chords;
+	static MyPatternEventSet pattern;
+	static MyNoteEventSet noteEvents;
+    static float density;
+    static NoteValue g;
+
+    std::cout << std::string(80, '-') << std::endl;
 
     // Make Chord Progression
-    GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
-    DebugChordEvents(ts, t, scale, chords);
+    GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
+		ts, scale, bars, mode, NoteValue::Whole, chords);
+
+	// We have a 25% chance of simply inverting a prior run
+	// But there will still be chord changes from above
+	// If that's not the case then we will regenerate our parameters
+	if (randomRange(0.0, 1.0) <= 0.25 && pattern.Count() > 0) {
+	  MyInversionPatternGenerator::GeneratePattern(ts, bars, density, g, pattern);
+	} else {
+	  density = randomRange(0.6f, 0.9f); // 0.50f;
+	  g = GetRandomGranularity(NoteValue::Eighth, NoteValue::Whole);
+	  pattern.Clear();
+
+	  if (randomRange(0.0, 1.0) > 0.50)
+	  {
+		  MySimpleRandomPatternGenerator::GeneratePattern(ts, bars, density, g, pattern);
+	  }
+	  else
+	  {
+		  MyEuclidianPatternGenerator::GeneratePattern(ts, bars, density, g, pattern);
+	  }
+	}
+	
+    std::cout 
+		<< "Granularity: " << static_cast<int>(g) 
+		<< " " << GetNoteValueText(g) << std::endl;
+
+    DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>( ts, t, scale, chords);
     std::cout << std::endl;
 
-    // Make "Hit" Pattern
-    if (randomRange(0.0f, 1.0f) < 0.5f)
-        EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
-    else
-        SimpleRandomPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
-    DebugPattern(ts, g, pattern);
+    DebugPattern<MAX_EVENTS>(ts, g, pattern);
     std::cout << std::endl;
 
     // Make Notes from "Hit" Pattern
-    StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, noteEvents);
-    DebugNoteEvents(t, ts, noteEvents);
+    MyStyleANoteGenerator::GenerateEvents(pattern, chords, ts, t, scale, bars, g, WEIGHT_MAP, noteEvents);
+    DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(t, ts, noteEvents);
     std::cout << std::endl;
 
     NoteEventScore score = ScoreNoteEvents(t, noteEvents);
@@ -73,9 +116,6 @@ void testThing()
 
 int main(int argc, char *argv[])
 {
-    // Random number seed
-    // std::srand(std::time(nullptr));
-
     SET_DEBUG(doDebug);
 
     t.MakeEqualDivision(TEMPERAMENT_DEGREES, 2.0f);

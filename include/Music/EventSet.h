@@ -300,7 +300,7 @@ namespace Music
   /**
    * @brief Type aliases for specific event sets, such as PatternEventSet, NoteEventSet, and ChordEventSet, which are defined using the EventSet template with specific event types and maximum capacities. These type aliases provide convenient names for commonly used event sets in musical applications, allowing for easier readability and usage in code that manages musical events. The PatternEventSet is a simple boolean event set that can be used for patterns or rhythms, while the NoteEventSet and ChordEventSet are designed to hold more complex musical events with pitch and value information. The caller should choose the appropriate event set type based on the specific requirements of their musical application. 
    */
-  template <std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
-  using ChordEventSet = EventSet<ChordEvent<DEF_MAX_DEGREES, SCALE_DEGREES>, MAX_EVENTS>;
+  template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+  using ChordEventSet = EventSet<ChordEvent<MAX_DEGREES, SCALE_DEGREES>, MAX_EVENTS>;
 
 } // namespace Music

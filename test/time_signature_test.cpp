@@ -88,4 +88,20 @@ TEST_CASE("TimeSignature pulses per bar reflects invalid inputs without hiding t
   CHECK_EQ(TimeSignature(4, NoteValue::None).GetPulsesPerBar(), 0);
 }
 
+TEST_CASE("TimeSignature is in threes")
+{
+  CHECK_EQ(TimeSignature(2, NoteValue::Half).InThrees(), false);
+  CHECK_EQ(TimeSignature(3, NoteValue::Half).InThrees(), true);
+  CHECK_EQ(TimeSignature(3, NoteValue::Quarter).InThrees(), true);
+  CHECK_EQ(TimeSignature(4, NoteValue::Quarter).InThrees(), false);
+  CHECK_EQ(TimeSignature(5, NoteValue::Quarter).InThrees(), false);
+  CHECK_EQ(TimeSignature(3, NoteValue::Eighth).InThrees(), true);
+  CHECK_EQ(TimeSignature(5, NoteValue::Eighth).InThrees(), false);
+  CHECK_EQ(TimeSignature(6, NoteValue::Eighth).InThrees(), true);
+  CHECK_EQ(TimeSignature(7, NoteValue::Eighth).InThrees(), false);
+  CHECK_EQ(TimeSignature(9, NoteValue::Eighth).InThrees(), true);
+  CHECK_EQ(TimeSignature(12, NoteValue::Eighth).InThrees(), true);
+  CHECK_EQ(TimeSignature(12, NoteValue::Sixteenth).InThrees(), true);
+}
+
 TEST_MAIN()

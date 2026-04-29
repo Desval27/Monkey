@@ -37,26 +37,26 @@ namespace Music
   ////////////////////////////////////////////////////////////////////////////////
   // Misc. Functions
   ////////////////////////////////////////////////////////////////////////////////
-  template <std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+  template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   std::size_t GenerateChordEventsFromPattern(const PatternEventSet<MAX_EVENTS> &pattern,
                                         NoteValue granularity,
-                                        ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &events);
+                                        ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &events);
                                         
-  template <std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+  template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   std::size_t GenerateStandardChordEvents(const TimeSignature &ts,
                                      const ScaleMap<SCALE_DEGREES> &scale, int bars,
                                      HarmonicMode mode, NoteValue granularity,
-                                     ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords);
+                                     ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords);
 
-  template <std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_DEGREES>
+  template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_DEGREES>
   std::size_t GenerateWeightedChordEvents(const TimeSignature &ts,
                                      const ScaleMap<SCALE_DEGREES> &scale, int bars,
                                      HarmonicMode mode, Note tonic,
-                                     NoteValue value, ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords);
+                                     NoteValue value, ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords);
 
   template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   std::size_t GenerateEventsFromPattern(const PatternEventSet<MAX_EVENTS> &pattern,
-                                   const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords,
+                                   const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
                                    const TimeSignature &ts,
                                    const Temperament<MAX_DEGREES> &temperament,
                                    const ScaleMap<SCALE_DEGREES> &scale, int bars,
@@ -81,11 +81,17 @@ namespace Music
   template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   void DebugPattern(const TimeSignature &ts, NoteValue granularity,
                     const PatternEventSet<MAX_EVENTS> &pattern);
+
   template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
   void DebugNoteEvents(const Temperament<MAX_DEGREES> &t, const TimeSignature &ts,
                        const NoteEventSet<MAX_EVENTS> &events);
+
   template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES, std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
-  void DebugChordEvents(const TimeSignature &ts, const Temperament<MAX_DEGREES> &t, const ScaleMap<SCALE_DEGREES> &s, const ChordEventSet<SCALE_DEGREES, MAX_EVENTS> &chords);
+  void DebugChordEvents(const TimeSignature &ts, const Temperament<MAX_DEGREES> &t, 
+  	const ScaleMap<SCALE_DEGREES> &s, 
+  	const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords);
 #endif
 
 } // namespace Music
+
+#include <Music/MusicTemplates.h>
