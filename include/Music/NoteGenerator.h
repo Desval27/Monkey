@@ -22,6 +22,8 @@
 #include <Music/ScaleMap.h>
 #include <Music/EventSet.h>
 #include <Music/Tables.h>
+#include <Music/PitchEngine.h>
+#include <Music/Setup.h>
 
 namespace Music
 {
@@ -29,12 +31,9 @@ namespace Music
     class NullNoteGenerator
     {
     public:
-        static std::size_t GeneratePattern(const PatternEventSet<MAX_EVENTS> &pattern,
+        static std::size_t GeneratePattern(const Setup<MAX_DEGREES, SCALE_DEGREES> &setup,
+                                      const PatternEventSet<MAX_EVENTS> &pattern,
                                       const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
-                                      const TimeSignature &ts,
-                                      const Temperament<MAX_DEGREES> &temperament,
-                                      const ScaleMap<SCALE_DEGREES> &scale,
-                                      int bars,
                                       NoteValue granularity,
                                       NoteEventSet<MAX_EVENTS> &events)
         {
@@ -47,12 +46,9 @@ namespace Music
     class StyleANoteGenerator
     {
     public:
-        static std::size_t GenerateEvents(const PatternEventSet<MAX_EVENTS> &pattern,
+        static std::size_t GenerateEvents(const Setup<MAX_DEGREES, SCALE_DEGREES> &setup,
+                                          const PatternEventSet<MAX_EVENTS> &pattern,
                                           const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
-                                          const TimeSignature &ts,
-                                          const Temperament<MAX_DEGREES> &temperament,
-                                          const ScaleMap<SCALE_DEGREES> &scale,
-                                          int bars,
                                           NoteValue granularity,
 										  const WeightMap<SCALE_DEGREES> &weightMap,
                                           NoteEventSet<MAX_EVENTS> &events)
@@ -63,12 +59,12 @@ namespace Music
 
             int pulses = 0;
             int chordPulses = 0;
-            int ppb = ts.GetPulsesPerBar();
+            int ppb = setup.timeSignature.GetPulsesPerBar();
             std::size_t chordIdx = 0;
 
             Note tones[20];
             std::size_t toneCount = chords[chordIdx].GetChordTones(
-                scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
+                setup.scaleMap, static_cast<int>(setup.temperament.DegreesPerPeriod()), tones,
                 ArrayLen(tones));
 
             for (std::size_t i = 0; i < pattern.Count() && !events.AtCapacity(); i++, pulses = pulses + granularity, chordPulses = chordPulses + granularity)
@@ -79,7 +75,7 @@ namespace Music
                     chordPulses = 0;
 
                     toneCount = chords[chordIdx].GetChordTones(
-                        scale, static_cast<int>(temperament.DegreesPerPeriod()), tones,
+                        setup.scaleMap, static_cast<int>(setup.temperament.DegreesPerPeriod()), tones,
                         ArrayLen(tones));
                 }
 
@@ -97,7 +93,7 @@ namespace Music
                         int periodOffset = 0;
                         float unitRandom = randomRange(0.0f, 0.999999f);
 
-						Note n = scale.GetWeightedNote(unitRandom, periodOffset, weightMap);
+						Note n = setup.scaleMap.GetWeightedNote(unitRandom, periodOffset, weightMap);
 
                         // If our last event was the same note then (for now) just add to the original duraton
                         // Or just a random occurance
@@ -126,7 +122,7 @@ namespace Music
 
             // Do we have any remainders?  If so then create a single rest
             // of that value if we have any additional event capacity.
-            int t = bars * ts.GetPulsesPerBar();
+            int t = setup.bars * setup.timeSignature.GetPulsesPerBar();
             int r = t - events.GetTotalEventPulses();
             if (r > 0)
             {

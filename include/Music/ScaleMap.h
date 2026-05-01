@@ -35,7 +35,7 @@ namespace Music
     /**
      * @brief Constructs an empty scale map.
      */
-    ScaleMap()
+    ScaleMap()    
     {
       degrees_.fill(0);
     }
@@ -51,6 +51,8 @@ namespace Music
      * @return Number of mapped degrees.
      */
     std::size_t Count() const { return degrees_.size(); }
+
+    HarmonicMode GetHarmonicMode() const { return HarmonicMode::Major; }
 
     /**
      * @brief Resolves an index into a mapped degree and period offset.

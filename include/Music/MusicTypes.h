@@ -159,6 +159,49 @@ namespace Music
     };
 
     ////////////////////////////////////////////////////////////////////////////////
+    /// @brief Attack/Decay Envelope Parameters
+    struct ADEnvelope
+    {
+        ADEnvelope()
+        {
+            attack = 0.0f;
+            decay = 0.0f;
+        }
+        float attack;   ///< In Seconds
+        float decay;    ///< In Seconds
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// @brief Attack/Release Envelope Parameters
+    struct AREnvelope
+    {
+        AREnvelope()
+        {
+            attack = 0.0f;
+            release = 0.0f;
+        }
+        float attack;   ///< In Seconds
+        float release;  ///< In Seconds
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////
+    /// @brief Attack/Decay/Sustain/Release Parameters
+    struct ADSREnvelope
+    {
+        ADSREnvelope()
+        {
+            attack = 0.0f;
+            decay = 0.0f;
+            sustain = 0.0f;
+            release = 0.0f;
+        }
+        float attack;   ///< In Seconds
+        float decay;    ///< In Seconds
+        float sustain;  ///< As 0.0 -> 1.0
+        float release;  ///< In Seconds
+    };
+
+    ////////////////////////////////////////////////////////////////////////////////
     struct EqualTemperamentTable
     {
         int degreesInPeriod;

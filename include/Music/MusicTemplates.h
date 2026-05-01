@@ -11,48 +11,49 @@ namespace Music {
 template <std::size_t MAX_DEGREES, std::size_t SCALE_DEGREES,
           std::size_t MAX_EVENTS>
 std::size_t GenerateStandardChordEvents(
-    const TimeSignature &ts, const ScaleMap<SCALE_DEGREES> &scale, int bars,
-    HarmonicMode mode, NoteValue granularity,
+    const Setup<MAX_DEGREES, SCALE_DEGREES> &setup,
+    NoteValue granularity,
     ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords) {
   return GenerateWeightedChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
-      ts, scale, bars, mode, 0, granularity, chords);
+      setup, 0, granularity, chords);
 }
 
 template <std::size_t MAX_DEGREES, std::size_t SCALE_DEGREES,
           std::size_t MAX_EVENTS>
 std::size_t GenerateWeightedChordEvents(
-    const TimeSignature &ts, const ScaleMap<SCALE_DEGREES> &scale, int bars,
-    HarmonicMode mode, Note tonic, NoteValue value,
+    const Setup<MAX_DEGREES, SCALE_DEGREES> &setup,
+    Note tonic, 
+    NoteValue granularity,
     ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords) {
-  if (chords.Capacity() == 0 || bars <= 0 || value == NoteValue::None)
+
+  if (chords.Capacity() == 0 || setup.bars <= 0 || granularity == NoteValue::None)
     return 0;
 
   const std::size_t totalEvents =
-      (static_cast<std::size_t>(bars) * static_cast<std::size_t>(ts.beats) *
-       static_cast<std::size_t>(ts.beatValue)) /
-      static_cast<std::size_t>(value);
+      (static_cast<std::size_t>(setup.bars) * static_cast<std::size_t>(setup.timeSignature.beats) *
+       static_cast<std::size_t>(setup.timeSignature.beatValue)) /
+      static_cast<std::size_t>(granularity);
   const std::size_t chordsToEmit = min(totalEvents, chords.Capacity());
-  ScaleDegree degree = GetWeightedStartingChord(mode);
-  const bool hasScale = (scale.Count() >= SCALE_CHORD_COUNT);
+  ScaleDegree degree = GetWeightedStartingChord(setup.scaleMap.GetHarmonicMode());
+  const bool hasScale = (setup.scaleMap.Count() >= SCALE_CHORD_COUNT);
 
   chords.Clear();
   for (std::size_t i = 0; i < chordsToEmit; ++i) {
-    const int degreeIndex = ScaleDegreeIndex(degree, mode);
+    const int degreeIndex = ScaleDegreeIndex(degree, setup.scaleMap.GetHarmonicMode());
     Note rootOffset = ScaleDegreeToSemitone(degree);
     if (hasScale && degreeIndex >= 0) {
       int scalePeriodOffset = 0;
       rootOffset = static_cast<Note>(
-          scale.GetMappedDegree(degreeIndex, scalePeriodOffset));
+          setup.scaleMap.GetMappedDegree(degreeIndex, scalePeriodOffset));
     }
 
     ChordExtension extensions = (degree == ScaleDegree::V)
                                     ? ChordExtension::Seventh
                                     : Music::ChordExtension{};
-    chords.Emplace(tonic + rootOffset, value, extensions);
+    chords.Emplace(tonic + rootOffset, granularity, extensions);
 
-    degree = GetWeightedNextChord(degree, mode);
+    degree = GetWeightedNextChord(degree, setup.scaleMap.GetHarmonicMode());
   }
-
   return chords.Count();
 }
 
@@ -299,10 +300,9 @@ void DebugNoteEvents(const Temperament<MAX_DEGREES> &t, const TimeSignature &ts,
 template <std::size_t MAX_DEGREES, std::size_t SCALE_DEGREES,
           std::size_t MAX_EVENTS>
 void DebugChordEvents(
-    const TimeSignature &ts, const Temperament<MAX_DEGREES> &t,
-    const ScaleMap<SCALE_DEGREES> &s,
+    const Setup<MAX_DEGREES, SCALE_DEGREES> &setup,
     const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords) {
-  int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
+  int vPerBar = setup.timeSignature.beats * static_cast<int>(setup.timeSignature.beatValue);
   int v = 0;
   char noteLabel[8];
   MString<16> chordName;
@@ -311,15 +311,15 @@ void DebugChordEvents(
   for (std::size_t i = 0; i < chords.Count(); i++) {
     Note tones[8];
     std::size_t toneCount = chords[i].GetChordTones(
-        s, static_cast<int>(t.DegreesPerPeriod()), tones, ArrayLen(tones));
+        setup.scaleMap, static_cast<int>(setup.temperament.DegreesPerPeriod()), tones, ArrayLen(tones));
 
     if (v % vPerBar == 0)
       std::cout << "| ";
-    chords[i].GetChordName(s, t, chordName);
+    chords[i].GetChordName(setup.scaleMap, setup.temperament, chordName);
     std::cout << chordName << " (";
 
     for (std::size_t j = 0; j < toneCount; j++) {
-      t.GetNoteLabel(tones[j], noteLabel, sizeof(noteLabel));
+      setup.temperament.GetNoteLabel(tones[j], noteLabel, sizeof(noteLabel));
       std::cout << noteLabel;
       if (j < toneCount - 1)
         std::cout << "|";

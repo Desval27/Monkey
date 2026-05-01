@@ -27,9 +27,7 @@ constexpr std::size_t SCALE_DEGREES = HEPATONIC;
 
 constexpr HarmonicMode mode = HarmonicMode::Major;
 
-using MyTimeSignature = Music::TimeSignature;
-using MyTemperament = Music::Temperament<MAX_DEGREES>;
-using MyScaleMap = Music::ScaleMap<SCALE_DEGREES>;
+using MySetup = Music::Setup<MAX_DEGREES, SCALE_DEGREES>;
 using MyPitchEngine = Music::PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
 using MyChordEventSet =
     Music::ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
@@ -44,16 +42,13 @@ using MyEuclidianPatternGenerator =
 using MyStyleANoteGenerator =
     Music::StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
-MyTimeSignature ts(4, NoteValue::Quarter);
-MyTemperament t;
-MyScaleMap scale;
-MyPitchEngine pe;
+// Testing Setup 3/4 time 12-EDO
+MySetup setup(3, NoteValue::Quarter, 12, 2.0f);
+MyPitchEngine pitchEngine;
 
 void doDebug(const char *format, va_list args) { std::vprintf(format, args); }
 
 void testThing() {
-  const int bars = 8;
-
   static MyChordEventSet chords;
   static MyPatternEventSet pattern;
   static MyNoteEventSet noteEvents;
@@ -64,44 +59,45 @@ void testThing() {
 
   // Make Chord Progression
   GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
-      ts, scale, bars, mode, NoteValue::Whole, chords);
+      setup, NoteValue::Whole, chords);
 
   // We have a 25% chance of simply inverting a prior run
   // But there will still be chord changes from above
   // If that's not the case then we will regenerate our parameters
   if (randomRange(0.0, 1.0) <= 0.25 && pattern.Count() > 0) {
-    MyInversionPatternGenerator::GeneratePattern(ts, bars, density, g, pattern);
+    MyInversionPatternGenerator::GeneratePattern(
+        setup.timeSignature, setup.bars, density, g, pattern);
   } else {
     density = randomRange(0.6f, 0.9f); // 0.50f;
     g = GetRandomGranularity(NoteValue::Eighth, NoteValue::Whole);
     pattern.Clear();
 
     if (randomRange(0.0, 1.0) > 0.50) {
-      MySimpleRandomPatternGenerator::GeneratePattern(ts, bars, density, g,
-                                                      pattern);
+      MySimpleRandomPatternGenerator::GeneratePattern(
+          setup.timeSignature, setup.bars, density, g, pattern);
     } else {
-      MyEuclidianPatternGenerator::GeneratePattern(ts, bars, density, g,
-                                                   pattern);
+      MyEuclidianPatternGenerator::GeneratePattern(
+          setup.timeSignature, setup.bars, density, g, pattern);
     }
   }
 
   std::cout << "Granularity: " << static_cast<int>(g) << " "
             << GetNoteValueText(g) << std::endl;
 
-  DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(ts, t, scale,
-                                                           chords);
+  DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(setup, chords);
   std::cout << std::endl;
 
-  DebugPattern<MAX_EVENTS>(ts, g, pattern);
+  DebugPattern<MAX_EVENTS>(setup.timeSignature, g, pattern);
   std::cout << std::endl;
 
   // Make Notes from "Hit" Pattern
-  MyStyleANoteGenerator::GenerateEvents(pattern, chords, ts, t, scale, bars, g,
-                                        WEIGHT_MAP, noteEvents);
-  DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(t, ts, noteEvents);
+  MyStyleANoteGenerator::GenerateEvents(setup, pattern, chords, g, WEIGHT_MAP,
+                                        noteEvents);
+  DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(setup.temperament,
+                                           setup.timeSignature, noteEvents);
   std::cout << std::endl;
 
-  NoteEventScore score = ScoreNoteEvents(t, noteEvents);
+  NoteEventScore score = ScoreNoteEvents(setup.temperament, noteEvents);
   std::cout << TTY_FG_MAGENTA << "Event Score" << TTY_RESET << ": Overall    "
             << score.overall << std::endl;
   std::cout << "           : Density    " << score.density << std::endl;
@@ -117,31 +113,30 @@ void testThing() {
 int main(int argc, char *argv[]) {
   SET_DEBUG(doDebug);
 
-  t.MakeEqualDivision(TEMPERAMENT_DEGREES, 2.0f);
 #if TEMPERAMENT_DEGREES == 12
-  t.AttachNoteLabels(Music::NOTE_NAMES_12);
-  t.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
+  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_12);
+  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
 #elif TEMPERAMENT_DEGREES == 15
-  t.AttachNoteLabels(Music::NOTE_NAMES_15);
-  t.AttachIntervalLabels(Music::INTERVAL_NAMES_15);
+  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_15);
+  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_15);
 #elif TEMPERAMENT_DEGREES == 17
-  t.AttachNoteLabels(Music::NOTE_NAMES_17);
-  t.AttachIntervalLabels(Music::INTERVAL_NAMES_17);
+  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_17);
+  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_17);
 #elif TEMPERAMENT_DEGREES == 19
-  t.AttachNoteLabels(Music::NOTE_NAMES_19);
-  t.AttachIntervalLabels(Music::INTERVAL_NAMES_19);
+  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_19);
+  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_19);
 #elif TEMPERAMENT_DEGREES == 22
-  t.AttachNoteLabels(Music::NOTE_NAMES_22);
-  t.AttachIntervalLabels(Music::INTERVAL_NAMES_22);
+  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_22);
+  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_22);
 #else
 #error Unsupported TEMPERAMENT_DEGREES for music_demo
 #endif
 
-  scale.SetDegrees(PALETTE);
+  pitchEngine.SetTemperament(&setup.temperament);
+  pitchEngine.SetScaleMap(&setup.scaleMap);
+  pitchEngine.SetRootHz(C4FREQ); // C4
 
-  pe.SetTemperament(&t);
-  pe.SetScaleMap(&scale);
-  pe.SetRootHz(C4FREQ); // C4
+  setup.scaleMap.SetDegrees(PALETTE);
 
   for (;;) {
     testThing();

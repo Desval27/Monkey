@@ -15,13 +15,7 @@ constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
 #define PALETTE IONIAN_D15
 #define PALETTE_LEN ArrayLen(PALETTE)
 
-TimeSignature ts;
-Temperament<> t;
-ScaleMap<SCALE_TYPE> scale;
-PitchEngine<DEF_MAX_DEGREES, SCALE_TYPE> pe;
-const HarmonicMode mode = HarmonicMode::Major;
-
-const int bars = 8;
+Setup<DEF_MAX_DEGREES, SCALE_TYPE> setup;
 ChordEventSet<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS> chords;
 
 void DoThing()
@@ -31,10 +25,10 @@ void DoThing()
     PatternEventSet<> pattern;
     NoteEventSet<> noteEvents;
 
-    EuclidianPatternGenerator<>::GeneratePattern(ts, bars, density, g, pattern);
+    EuclidianPatternGenerator<>::GeneratePattern(setup.timeSignature, setup.bars, density, g, pattern);
 
-    StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::GenerateEvents(pattern, chords, ts, t, scale, bars, g, SCALE_WEIGHTS_7_UNIFORM, noteEvents);
-    NoteEventScore score = ScoreNoteEvents(t, noteEvents);
+    StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::GenerateEvents(setup, pattern, chords, g, SCALE_WEIGHTS_7_UNIFORM, noteEvents);
+    NoteEventScore score = ScoreNoteEvents(setup.temperament, noteEvents);
 
     float v1 = density;
     float v2 = score.rests / 100.0;
@@ -44,15 +38,9 @@ void DoThing()
 
 int main(int argc, char *argv[])
 {
-    t.MakeEqualDivision(12, 2.0f);
-    t.AttachNoteLabels(Music::NOTE_NAMES_12); 
-    t.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
-
-    scale.SetDegrees(Music::IONIAN_D12);
-
-    pe.SetTemperament(&t);
-    pe.SetScaleMap(&scale);
-    pe.SetRootHz(C4FREQ);
+    setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_12); 
+    setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
+    setup.scaleMap.SetDegrees(Music::IONIAN_D12);
 
     std::cout << "set title 'Density/Granularity vs Score'" << std::endl;
     std::cout << "set xlabel 'Density/Granularity'" << std::endl;
@@ -62,7 +50,7 @@ int main(int argc, char *argv[])
     std::cout << "$MyData << EOD" << std::endl;
     //std::cout << "plot '-' using 2:1 with points" << std::endl;
 
-    GenerateStandardChordEvents(ts, scale, bars, mode, NoteValue::Whole, chords);
+    GenerateStandardChordEvents(setup, NoteValue::Whole, chords);
     for (int i = 0; i < 5000; i++)
     {
         DoThing();
