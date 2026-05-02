@@ -4,6 +4,7 @@
 
 using Music::Degree;
 using Music::DEF_MAX_DEGREES;
+using Music::HarmonicMode;
 using Music::ScaleMap;
 
 TEST_CASE("ScaleMap default map behavior") {
@@ -13,6 +14,7 @@ TEST_CASE("ScaleMap default map behavior") {
                                       1.0f, 1.0f, 1.0f};
 
   CHECK_EQ(map.Count(), std::size_t(Music::DEF_SCALE_DEGREES));
+  CHECK(map.GetHarmonicMode() == HarmonicMode::Major);
 
   CHECK_EQ(map.GetMappedDegree(3, period), Degree(0));
   CHECK_EQ(period, 0);
@@ -46,6 +48,30 @@ TEST_CASE("ScaleMap SetDegrees validates input and wraps indices") {
 
   CHECK_EQ(map.GetMappedDegree(9, period), Degree(7));
   CHECK_EQ(period, 1);
+}
+
+TEST_CASE("ScaleMap tracks harmonic mode from degree maps") {
+  ScaleMap map;
+
+  map.SetDegrees(Music::IONIAN_D12);
+  CHECK(map.GetHarmonicMode() == HarmonicMode::Major);
+
+  map.SetDegrees(Music::AEOLIAN_D12);
+  CHECK(map.GetHarmonicMode() == HarmonicMode::Minor);
+
+  map.SetDegrees(Music::PHRYGIAN_DOMINANT_D12, HarmonicMode::Minor);
+  CHECK(map.GetHarmonicMode() == HarmonicMode::Minor);
+}
+
+TEST_CASE("ScaleMap can load harmonic mode from scale table metadata") {
+  ScaleMap map;
+  int period = 99;
+
+  map.SetScale(Music::SCALE_TABLES[5]);
+
+  CHECK_EQ(map.GetMappedDegree(2, period), Degree(3));
+  CHECK_EQ(period, 0);
+  CHECK(map.GetHarmonicMode() == HarmonicMode::Minor);
 }
 
 TEST_CASE("ScaleMap GetIndexOfDegree returns first match") {

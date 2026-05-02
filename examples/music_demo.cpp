@@ -17,18 +17,14 @@ constexpr std::size_t MAX_DEGREES = 64;
 constexpr std::size_t MAX_EVENTS = 128;
 
 #define TEMPERAMENT_DEGREES 12
-
-#define PALETTE IONIAN_D12
-// #define PALETTE MAJOR_PENTATONIC_D12
-
-constexpr std::size_t SCALE_DEGREES = HEPATONIC;
+#define MY_SCALE HEPATONIC_D12_SCALES[0]
 #define WEIGHT_MAP SCALE_WEIGHTS_7_UNIFORM
-// #define WEIGHT_MAP SCALE_WEIGHTS_5_UNIFORM
-
-constexpr HarmonicMode mode = HarmonicMode::Major;
+constexpr std::size_t SCALE_DEGREES = HEPATONIC;
 
 using MySetup = Music::Setup<MAX_DEGREES, SCALE_DEGREES>;
 using MyPitchEngine = Music::PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
+using MyScaleTable = Music::ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>;
+
 using MyChordEventSet =
     Music::ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 using MyPatternEventSet = Music::PatternEventSet<MAX_EVENTS>;
@@ -43,7 +39,7 @@ using MyStyleANoteGenerator =
     Music::StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
 // Testing Setup 3/4 time 12-EDO
-MySetup setup(3, NoteValue::Quarter, 12, 2.0f);
+MySetup setup(4, NoteValue::Quarter, 12, 2.0f);
 MyPitchEngine pitchEngine;
 
 void doDebug(const char *format, va_list args) { std::vprintf(format, args); }
@@ -55,7 +51,12 @@ void testThing() {
   static float density;
   static NoteValue g;
 
-  std::cout << std::string(80, '-') << std::endl;
+  const std::size_t scaleIdx = randomRange(0UL, ArrayLen(HEPATONIC_D12_SCALES)-1);
+  setup.scaleMap.SetScale(HEPATONIC_D12_SCALES[scaleIdx]);
+
+  // std::cout << std::string(80, '-') << std::endl;
+  std::cout << TTY_CLEAR;
+  std::cout << "SCALE: " << HEPATONIC_D12_SCALES[scaleIdx].name << std::endl;
 
   // Make Chord Progression
   GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
@@ -135,8 +136,6 @@ int main(int argc, char *argv[]) {
   pitchEngine.SetTemperament(&setup.temperament);
   pitchEngine.SetScaleMap(&setup.scaleMap);
   pitchEngine.SetRootHz(C4FREQ); // C4
-
-  setup.scaleMap.SetDegrees(PALETTE);
 
   for (;;) {
     testThing();

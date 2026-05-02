@@ -35,7 +35,8 @@ namespace Music
     /**
      * @brief Constructs an empty scale map.
      */
-    ScaleMap()    
+    ScaleMap()
+        : harmonicMode_(HarmonicMode::Major)
     {
       degrees_.fill(0);
     }
@@ -43,6 +44,24 @@ namespace Music
     void SetDegrees(const DegreeMap<SCALE_DEGREES>& degrees)
     {
       degrees_ = degrees;
+      harmonicMode_ = InferHarmonicMode(degrees_);
+    }
+
+    void SetDegrees(const DegreeMap<SCALE_DEGREES>& degrees, HarmonicMode harmonicMode)
+    {
+      degrees_ = degrees;
+      harmonicMode_ = harmonicMode;
+    }
+
+    template <std::size_t TEMPERAMENT_DEGREES>
+    void SetScale(const ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>& scale)
+    {
+      SetDegrees(scale.degrees, scale.harmonicMode);
+    }
+
+    void SetHarmonicMode(HarmonicMode harmonicMode)
+    {
+      harmonicMode_ = harmonicMode;
     }
 
     /**
@@ -52,7 +71,7 @@ namespace Music
      */
     std::size_t Count() const { return degrees_.size(); }
 
-    HarmonicMode GetHarmonicMode() const { return HarmonicMode::Major; }
+    HarmonicMode GetHarmonicMode() const { return harmonicMode_; }
 
     /**
      * @brief Resolves an index into a mapped degree and period offset.
@@ -174,6 +193,20 @@ namespace Music
 
   private:
     DegreeMap<SCALE_DEGREES> degrees_;
+    HarmonicMode harmonicMode_;
+
+    static HarmonicMode InferHarmonicMode(const DegreeMap<SCALE_DEGREES>& degrees)
+    {
+      if (SCALE_DEGREES < 3)
+        return HarmonicMode::Major;
+
+      const Degree third = static_cast<Degree>(degrees[2] - degrees[0]);
+      const Degree fifth = (SCALE_DEGREES >= 5)
+                               ? static_cast<Degree>(degrees[4] - degrees[0])
+                               : static_cast<Degree>(third + third);
+
+      return (third * 2 < fifth) ? HarmonicMode::Minor : HarmonicMode::Major;
+    }
 
     /**
      * @brief Chooses a degree slot from the weight table.

@@ -61,8 +61,8 @@ static const std::array<const char *, 12> INTERVAL_NAMES_12 =
 ///////////////////////////////////////////////////////////////////////////////
 static constexpr DegreeMap<PENTATONIC> MAJOR_PENTATONIC_D12       = {P1, M2, M3, P5, M6};
 static constexpr DegreeMap<PENTATONIC> SUSPENDED_PENTATONIC_D12   = {P1, M2, P4, P5, m7};
-static constexpr DegreeMap<PENTATONIC> MINOR_BLUES_PENTATONIC_D12 = {P1, m3, P4, m6, m7};
-static constexpr DegreeMap<PENTATONIC> MAJOR_BLUES_PENTATONIC_D12 = {P1, M2, P4, P5, M6};
+static constexpr DegreeMap<PENTATONIC> BLUES_MAJOR_PENTATONIC_D12 = {P1, m3, P4, m6, m7};
+static constexpr DegreeMap<PENTATONIC> BLUES_MINOR_PENTATONIC_D12 = {P1, M2, P4, P5, M6};
 static constexpr DegreeMap<PENTATONIC> MINOR_PENTATONIC_D12       = {P1, m3, P4, P5, m7};
 
 ///////////////////////////////////////////////////////////////////////////////

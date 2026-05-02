@@ -14,6 +14,13 @@
 
 namespace Music
 {
+    // Modes of the Pentatonic Scale
+    static const char *s_MAJOR_PENTATONIC = "MAJOR PENTATONIC";
+    static const char *s_SUSPENDED_PENTATONIC = "SUSPENDED PENTATONIC";
+    static const char *s_BLUES_MINOR_PENTATONIC = "BLUES MINOR";
+    static const char *s_BLUES_MAJOR_PENTATONIC = "BLUES MAJOR";
+    static const char *s_MINOR_PENTATONIC = "MINOR_PENTATONIC";
+
     // Modes of the Diatonic Scale
     static const char *s_IONIAN = "IONIAN";
     static const char *s_DORIAN = "DORIAN";

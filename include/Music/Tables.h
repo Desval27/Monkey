@@ -89,10 +89,18 @@ namespace Music
         {s_Chord_Tone_Heavy, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY},
     };
 
+    // 12 Tone Pentatonic Scales
+    static const ScaleTable<12, PENTATONIC> PENTATONIC_D12_SCALES[] = {
+        {s_MAJOR_PENTATONIC, HarmonicMode::Major, MAJOR_PENTATONIC_D12},
+        {s_SUSPENDED_PENTATONIC, HarmonicMode::Minor, SUSPENDED_PENTATONIC_D12},
+        {s_BLUES_MINOR_PENTATONIC, HarmonicMode::Minor, BLUES_MINOR_PENTATONIC_D12},
+        {s_BLUES_MAJOR_PENTATONIC, HarmonicMode::Major, BLUES_MAJOR_PENTATONIC_D12},
+        {s_MINOR_PENTATONIC, HarmonicMode::Minor, MINOR_PENTATONIC_D12},
+    };
 
-    // // For temporary rigging
-    static const ScaleTable<12, HEPATONIC> SCALE_TABLES[] = {
-        // 12 Tone
+
+    // 12 Tone Hepatonic Scales
+    static const ScaleTable<12, HEPATONIC> HEPATONIC_D12_SCALES[] = {
         {s_IONIAN, HarmonicMode::Major, IONIAN_D12},
         {s_DORIAN, HarmonicMode::Minor, DORIAN_D12},
         {s_PHRYGIAN, HarmonicMode::Minor, PHRYGIAN_D12},
@@ -131,9 +139,9 @@ namespace Music
         {s_HUNGARIAN_MINOR, HarmonicMode::Minor, HUNGARIAN_MINOR_D12},
         {s_ORIENTAL, HarmonicMode::Major, ORIENTAL_D12},
         {s_IONIAN_s2_s5, HarmonicMode::Major, IONIAN_s2_s5_D12},
-        {s_LOCRIAN_bb3_bb7, HarmonicMode::Minor, LOCRIAN_bb3_bb7_D12},
+        {s_LOCRIAN_bb3_bb7, HarmonicMode::Minor, LOCRIAN_bb3_bb7_D12}
     };
-    constexpr std::size_t NUM_SCALES = ArrayLen(SCALE_TABLES);
+    //constexpr std::size_t NUM_SCALES = ArrayLen(SCALE_TABLES);
 
 
     //     // Hexatonic Scales

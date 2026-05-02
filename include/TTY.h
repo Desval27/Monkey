@@ -11,6 +11,7 @@
  */
 #pragma once
 
+#define TTY_CLEAR               "\033[2J\033[H"
 #define TTY_RESET               "\033[0m"
 #define TTY_BOLD                "\033[1m"
 #define TTY_FAINT               "\033[2m"
