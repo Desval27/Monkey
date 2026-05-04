@@ -22,6 +22,8 @@ namespace Music
 #define PPQN 24
 
     constexpr float C4FREQ = 261.6256f;
+    constexpr Period MIN_PERIOD = -1;
+    constexpr Period MAX_PERIOD = 10;
 
     // for convience for now.
     constexpr Note REST = -1;
