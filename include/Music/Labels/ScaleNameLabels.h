@@ -44,7 +44,7 @@ namespace Music
     static const char *s_DORIAN_b2 = "DORIAN b2";
     static const char *s_LYDIAN_AUG = "LYDIAN AUGMENTED";
     static const char *s_LYDIAN_DOMINANT = "LYDIAN DOMINANT";
-    static const char *s_MIXOLYDIAN_b6 = "MIXOLYD b6";
+    static const char *s_MIXOLYDIAN_b6 = "MIXOLYDIAN b6";
     static const char *s_LOCRIAN_s2 = "LOCRIAN #2";
     static const char *s_SUPER_LOCRIAN = "SUPER LOCRIAN";
 
