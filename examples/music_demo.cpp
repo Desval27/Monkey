@@ -13,6 +13,8 @@
 
 using namespace Music;
 
+using FRange = Range<float>;
+
 constexpr std::size_t MAX_DEGREES = 64;
 constexpr std::size_t MAX_EVENTS = 128;
 
@@ -24,6 +26,8 @@ constexpr std::size_t SCALE_DEGREES = HEPATONIC;
 using MySetup = Music::Setup<MAX_DEGREES, SCALE_DEGREES>;
 using MyPitchEngine = Music::PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
 using MyScaleTable = Music::ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>;
+template <typename TRole>
+using MyPersona = Music::Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
 using MyChordEventSet =
     Music::ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
@@ -35,67 +39,53 @@ using MyInversionPatternGenerator =
     Music::InversionPatternGenerator<MAX_EVENTS>;
 using MyEuclidianPatternGenerator =
     Music::EuclidianPatternGenerator<MAX_EVENTS>;
-using MyStyleANoteGenerator =
-    Music::StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
-// Testing Setup 3/4 time 12-EDO
+// Testing Setup 4/4 time 12-EDO
 MySetup setup(4, NoteValue::Quarter, 12, 2.0f);
 MyPitchEngine pitchEngine;
+
+
+// Different Test Personas
+struct RoleTypeA {
+  static constexpr const char Name[] = "Role1";
+  const int octaveOffset;
+  const FRange density;
+  const Music::NoteValue granularity = Music::NoteValue::Quarter;
+
+  RoleTypeA(int o, float dl, float dh) : octaveOffset(o), density(dl, dh) {};
+};
+
+RoleTypeA role1(0, 0.0f, 1.0f);
+
+MyPersona<RoleTypeA> bob(setup, role1);
 
 void doDebug(const char *format, va_list args) { std::vprintf(format, args); }
 
 void testThing() {
   static MyChordEventSet chords;
-  static MyPatternEventSet pattern;
   static MyNoteEventSet noteEvents;
-  static float density;
-  static NoteValue g;
 
   const std::size_t scaleIdx = randomRange(static_cast<std::size_t>(0), ArrayLen(HEPATONIC_D12_SCALES)-1);
   setup.scaleMap.SetScale(HEPATONIC_D12_SCALES[scaleIdx]);
 
   // std::cout << std::string(80, '-') << std::endl;
   std::cout << TTY_CLEAR;
-  std::cout << "SCALE: " << HEPATONIC_D12_SCALES[scaleIdx].name << std::endl;
+  std::cout << "ROLE: " << bob.GetName();
+  std::cout << "\tSCALE: " << HEPATONIC_D12_SCALES[scaleIdx].name;
+  std::cout << "\tGRANULARITY: " << bob.GetGranularity() << " " << GetNoteValueText(bob.GetGranularity());
+  std::cout << std::endl;
 
   // Make Chord Progression
   GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
       setup, NoteValue::Whole, chords);
 
-  // We have a 25% chance of simply inverting a prior run
-  // But there will still be chord changes from above
-  // If that's not the case then we will regenerate our parameters
-  if (randomRange(0.0, 1.0) <= 0.25 && pattern.Count() > 0) {
-    MyInversionPatternGenerator::GeneratePattern(
-        setup.timeSignature, setup.bars, density, g, pattern);
-  } else {
-    density = randomRange(0.6f, 0.9f); // 0.50f;
-    g = GetRandomGranularity(NoteValue::Eighth, NoteValue::Whole);
-    pattern.Clear();
-
-    if (randomRange(0.0, 1.0) > 0.50) {
-      MySimpleRandomPatternGenerator::GeneratePattern(
-          setup.timeSignature, setup.bars, density, g, pattern);
-    } else {
-      MyEuclidianPatternGenerator::GeneratePattern(
-          setup.timeSignature, setup.bars, density, g, pattern);
-    }
-  }
-
-  std::cout << "Granularity: " << static_cast<int>(g) << " "
-            << GetNoteValueText(g) << std::endl;
-
   DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(setup, chords);
   std::cout << std::endl;
 
-  DebugPattern<MAX_EVENTS>(setup.timeSignature, g, pattern);
-  std::cout << std::endl;
-
-  // Make Notes from "Hit" Pattern
-  MyStyleANoteGenerator::GenerateEvents(setup, pattern, chords, g, WEIGHT_MAP,
-                                        noteEvents);
+  bob.GenerateNoteEvents(chords, noteEvents);
   DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(setup.temperament,
                                            setup.timeSignature, noteEvents);
+                                           
   std::cout << std::endl;
 
   NoteEventScore score = ScoreNoteEvents(setup.temperament, noteEvents);

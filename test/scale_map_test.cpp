@@ -67,7 +67,7 @@ TEST_CASE("ScaleMap can load harmonic mode from scale table metadata") {
   ScaleMap map;
   int period = 99;
 
-  map.SetScale(Music::SCALE_TABLES[5]);
+  map.SetScale(Music::HEPATONIC_D12_SCALES[5]);
 
   CHECK_EQ(map.GetMappedDegree(2, period), Degree(3));
   CHECK_EQ(period, 0);

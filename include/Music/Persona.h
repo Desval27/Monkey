@@ -47,6 +47,8 @@ namespace Music
   class Persona
   {
   public:
+    using MySetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
+    using MyNoteGenerator = StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
     using DefaultPatternGenerator =
         typename PersonaPatternGeneratorSelector<TRole, MAX_EVENTS>::Type;
 
@@ -56,9 +58,8 @@ namespace Music
     /// @param t
     /// @param s
     /// @param role
-    Persona(const TimeSignature &ts, const Temperament<MAX_DEGREES> &t, const ScaleMap<SCALE_DEGREES> &s,
-            const TRole &role)
-        : ts_(&ts), t_(&t), s_(&s), role_(role) {};
+    Persona(const MySetup &setup, const TRole &role)
+        : setup_(&setup), role_(role) {};
 
     //////////////////////////////////////////////////////////////////////////
     /// @brief
@@ -105,13 +106,12 @@ namespace Music
       const float density = GetDensity();
       const NoteValue granularity = GetGranularity();
 
-      TPatternGenerator::GeneratePattern(*ts_,
-                                         chords.GetBarsForTimeSignature(*ts_),
+      TPatternGenerator::GeneratePattern(setup_->timeSignature,
+                                         chords.GetBarsForTimeSignature(setup_->timeSignature),
                                          density,
                                          granularity,
                                          pattern);
-      events.Clear();
-      return events.Count();
+      return MyNoteGenerator::GenerateEvents(*setup_, pattern, chords, granularity, SCALE_WEIGHTS_7_UNIFORM, events);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -125,9 +125,7 @@ namespace Music
     NoteValue GetGranularity() { return role_.granularity; }
 
   private:
-    const TimeSignature *ts_;
-    const Temperament<MAX_DEGREES> *t_;
-    const ScaleMap<SCALE_DEGREES> *s_;
+    const MySetup *setup_;
     const TRole &role_;
   };
 

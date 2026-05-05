@@ -25,6 +25,8 @@ namespace Music
    */
   struct NoteEvent
   {
+    static NoteEvent EmptyNote;
+
     NoteEvent()
     {
       note = REST;
