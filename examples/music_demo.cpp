@@ -51,7 +51,7 @@ void testThing() {
   static float density;
   static NoteValue g;
 
-  const std::size_t scaleIdx = randomRange(0ULL, ArrayLen(HEPATONIC_D12_SCALES)-1);
+  const std::size_t scaleIdx = randomRange(static_cast<std::size_t>(0), ArrayLen(HEPATONIC_D12_SCALES)-1);
   setup.scaleMap.SetScale(HEPATONIC_D12_SCALES[scaleIdx]);
 
   // std::cout << std::string(80, '-') << std::endl;
