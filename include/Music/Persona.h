@@ -58,13 +58,18 @@ namespace Music
     /// @param t
     /// @param s
     /// @param role
-    Persona(const MySetup &setup, const TRole &role)
-        : setup_(&setup), role_(role) {};
+    Persona(const char *personaName, const MySetup &setup, const TRole &role)
+        : personaName_(personaName), setup_(&setup), role_(role) {};
+
+    //////////////////////////////////////////////////////////////////////////
+    /// @brief 
+    /// @return 
+    const char *GetPersonaName() const { return personaName_.c_str(); }
 
     //////////////////////////////////////////////////////////////////////////
     /// @brief
     /// @return
-    const char *GetName() { return role_.Name; }
+    const char *GetRoleName() const { return role_.Name; }
 
     //////////////////////////////////////////////////////////////////////////
     /// @brief
@@ -124,6 +129,7 @@ namespace Music
     NoteValue GetGranularity() { return role_.granularity; }
 
   private:
+    const MString<20> personaName_;
     const MySetup *setup_;
     const TRole &role_;
     PatternEventSet<MAX_EVENTS> pattern_;

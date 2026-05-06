@@ -34,6 +34,7 @@ LIB_OUT := $(LIB_DIR)/$(LIB_NAME)
 # Build Options
 ###############################################################################
 USE_DEBUG = -DUSE_DEBUG -DDEBUG_COUT
+NO_USE_DEBUG = -UUSE_DEBUG -UDEBUG_COUT
 DEBUGFLAGS = -g
 OPTIMIZEFLAGS = -O2
 CXXSTANDARD = -std=c++17
@@ -52,7 +53,7 @@ EXTRA_WARNINGS = -Wno-unused-parameter -Wno-unused-variable -Wno-unused-but-set-
 ###############################################################################
 #CXX := g++
 CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS)
-TEST_CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(TEST_INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS)
+TEST_CXXFLAGS = $(CXXSTANDARD) $(DEPFLAGS) $(TEST_INCLUDES) $(DEFINES) $(WARNINGS) $(EXTRA_WARNINGS) $(NO_USE_DEBUG)
 LDFLAGS = -L$(LIB_DIR)
 LDLIBS = -lMonkey
 

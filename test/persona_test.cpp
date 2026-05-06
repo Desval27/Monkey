@@ -9,7 +9,7 @@ using Music::TimeSignature;
 using Music::Temperament;
 using Music::ScaleMap;
 using Music::EuclidianPatternGenerator;
-using Music::NullPatternGenerator;
+using Music::RandomRandomPatternGenerator;
 using MySetup = Music::Setup<>;
 using MyChordEventSet = Music::ChordEventSet<>;
 using FRange = Range<float>;
@@ -41,32 +41,37 @@ const float dHigh = 0.9f;
 Role1 role(-1, dLow, dHigh);
 Role2 roleWithoutPatternGenerator(0, dLow, dHigh);
 
-TEST_CASE("Name Test") {
-  Persona<Role1> p(setup, role);  
-  CHECK_EQ(p.GetName(), "Role1");
+TEST_CASE("Persona Name Test") {
+  Persona<Role1> p("Persona", setup, role);  
+  CHECK_EQ(p.GetPersonaName(), "Persona");
+}
+
+TEST_CASE("Role Name Test") {
+  Persona<Role1> p("P", setup, role);  
+  CHECK_EQ(p.GetRoleName(), "Role1");
 }
 
 TEST_CASE("Density Test") {
-  Persona<Role1> p(setup, role);  
+  Persona<Role1> p("P", setup, role);  
   CHECK_IN_RANGE(p.GetDensity(), dLow, dHigh);
 }
 
 TEST_CASE("Generator Injection Syntax Test") {
-  Persona<Role1> p(setup, role);
+  Persona<Role1> p("P", setup, role);
   MyChordEventSet chords;
   Music::NoteEventSet<> events;
   CHECK_EQ(p.GenerateNoteEvents<EuclidianPatternGenerator>(chords, events), 0UL);
 }
 
 TEST_CASE("Role Default Generator Syntax Test") {
-  Persona<Role1> p(setup, role);
+  Persona<Role1> p("P", setup, role);
   MyChordEventSet chords;
   Music::NoteEventSet<> events;
   CHECK_EQ(p.GenerateNoteEvents(chords, events), 0UL);
 }
 
 TEST_CASE("Default Fallback Generator Syntax Test") {
-  Persona<Role2> p(setup, roleWithoutPatternGenerator);
+  Persona<Role2> p("P", setup, roleWithoutPatternGenerator);
   MyChordEventSet chords;
   Music::NoteEventSet<> events;
   CHECK_EQ(p.GenerateNoteEvents(chords, events), 0UL);
@@ -75,6 +80,6 @@ TEST_CASE("Default Fallback Generator Syntax Test") {
 static_assert(std::is_same_v<typename Persona<Role1>::DefaultPatternGenerator,
                              EuclidianPatternGenerator<Music::DEF_MAX_EVENTS>>);
 static_assert(std::is_same_v<typename Persona<Role2>::DefaultPatternGenerator,
-                             NullPatternGenerator<Music::DEF_MAX_EVENTS>>);
+                             RandomRandomPatternGenerator<Music::DEF_MAX_EVENTS>>);
 
 TEST_MAIN();

@@ -289,8 +289,9 @@ void DebugNoteEvents(const Temperament<MAX_DEGREES> &t, const TimeSignature &ts,
       std::cout << TTY_FAINT;
 
     t.GetNoteLabel(events[i].note, noteLabel, sizeof(noteLabel));
-    std::cout << std::setw(5) << std::right << noteLabel << "-" << std::setw(10)
-              << std::left << GetNoteValueText(events[i].value);
+    std::cout << std::right << std::setw(6) << noteLabel
+              << static_cast<int>(events[i].period) << "-" 
+              << std::left << std::setw(6) << GetNoteValueText(events[i].value);
 
     if (!events[i].IsPitched())
       std::cout << TTY_RESET;
