@@ -22,12 +22,12 @@
 namespace Music
 {
   template <std::size_t MAX_EVENTS>
-  class NullPatternGenerator;
+  class RandomRandomPatternGenerator;
 
   template <typename TRole, std::size_t MAX_EVENTS, typename = void>
   struct PersonaPatternGeneratorSelector
   {
-    using Type = NullPatternGenerator<MAX_EVENTS>;
+    using Type = RandomRandomPatternGenerator<MAX_EVENTS>;
   };
 
   template <typename TRole, std::size_t MAX_EVENTS>
@@ -102,7 +102,6 @@ namespace Music
         const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
         NoteEventSet<MAX_EVENTS> &events)
     {
-      PatternEventSet<MAX_EVENTS> pattern;
       const float density = GetDensity();
       const NoteValue granularity = GetGranularity();
 
@@ -110,8 +109,8 @@ namespace Music
                                          chords.GetBarsForTimeSignature(setup_->timeSignature),
                                          density,
                                          granularity,
-                                         pattern);
-      return MyNoteGenerator::GenerateEvents(*setup_, pattern, chords, granularity, SCALE_WEIGHTS_7_UNIFORM, events);
+                                         pattern_);
+      return MyNoteGenerator::GenerateEvents(*setup_, pattern_, chords, granularity, SCALE_WEIGHTS_7_UNIFORM, events);
     }
 
     //////////////////////////////////////////////////////////////////////////
@@ -127,6 +126,7 @@ namespace Music
   private:
     const MySetup *setup_;
     const TRole &role_;
+    PatternEventSet<MAX_EVENTS> pattern_;
   };
 
 } // namespace Music

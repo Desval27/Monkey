@@ -1,23 +1,15 @@
 /* SPDX-License-Identifier: CC0-1.0 */
 #pragma once
 
-#ifndef DAISY_PLATFORM
+#ifdef USE_DEBUG
 #include <TTY.h>
 #include <iomanip>
 #include <iostream>
 #endif
 
-namespace Music {
-template <std::size_t MAX_DEGREES, std::size_t SCALE_DEGREES,
-          std::size_t MAX_EVENTS>
-std::size_t GenerateStandardChordEvents(
-    const Setup<MAX_DEGREES, SCALE_DEGREES> &setup,
-    NoteValue granularity,
-    ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords) {
-  return GenerateWeightedChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
-      setup, 0, granularity, chords);
-}
+#include <Music/Music.h>
 
+namespace Music {
 template <std::size_t MAX_DEGREES, std::size_t SCALE_DEGREES,
           std::size_t MAX_EVENTS>
 std::size_t GenerateWeightedChordEvents(
@@ -55,6 +47,17 @@ std::size_t GenerateWeightedChordEvents(
     degree = GetWeightedNextChord(degree, setup.scaleMap.GetHarmonicMode());
   }
   return chords.Count();
+}
+
+template <std::size_t MAX_DEGREES, std::size_t SCALE_DEGREES,
+          std::size_t MAX_EVENTS>
+std::size_t GenerateStandardChordEvents(
+    const Setup<MAX_DEGREES, SCALE_DEGREES> &setup,
+    NoteValue granularity,
+    ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords)
+{
+  return GenerateWeightedChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
+      setup, 0, granularity, chords);
 }
 
 template <std::size_t MAX_DEGREES, std::size_t SCALE_DEGREES,
@@ -250,12 +253,13 @@ NoteEventScore ScoreNoteEvents(const Temperament<MAX_DEGREES> &t,
   return score;
 }
 
-#ifndef DAISY_PLATFORM
+#ifdef USE_DEBUG
 template <std::size_t MAX_EVENTS>
 void DebugPattern(const TimeSignature &ts, NoteValue granularity,
                   const PatternEventSet<MAX_EVENTS> &pattern) {
   std::cout << TTY_FG_YELLOW << "PATTERN EVENTS" << TTY_RESET
-            << " Density: " << pattern.GetDensity() << std::endl;
+            << "\t" << ts.beats << "/" << ts.GetDenominator() 
+            << "\tDensity: " << pattern.GetDensity() << std::endl;
   if (pattern.Count() == 0 || granularity == NoteValue::None)
     return;
 
