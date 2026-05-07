@@ -22,16 +22,17 @@ template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
 struct Setup {
   Setup(int beats, NoteValue beatValue, uint16_t degreesPerPeriod,
         float periodRatio)
-      : timeSignature(beats, beatValue), tuningReference(Music::BASE_HZ, 9, 0),
+      : timeSignature(beats, beatValue),
+        tuningReference(Music::BASE_HZ, Note_M6, 0),
         temperament(degreesPerPeriod, periodRatio), bars(8) {}
-  Setup() : Setup(4, NoteValue::Quarter, 12, 2.0f) {}
+  Setup() : Setup(4, NoteValue::Quarter, TWELVE_TONE, OCTAVE_DOUBLE) {}
 
   const TimeSignature timeSignature;
   const TuningReference tuningReference;
 
   Temperament<MAX_DEGREES> temperament;
   ScaleMap<SCALE_DEGREES> scaleMap;
-  std::size_t bars;
+  int bars;
 };
 
 } // namespace Music

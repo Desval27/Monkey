@@ -82,8 +82,9 @@ public:
       return true;
     }
     std::size_t i = 0;
-    for (; i < N && s[i] != '\0'; ++i)
+    for (; i < N && s[i] != '\0'; ++i) {
       data[i] = s[i];
+    }
     data[i] = '\0';
     return s[i] == '\0';
   }
@@ -96,12 +97,14 @@ public:
    * due to capacity limits.
    */
   bool append(const char *s) {
-    if (s == nullptr)
+    if (s == nullptr) {
       return true;
+    }
     std::size_t len = size();
     std::size_t i = 0;
-    for (; len < N && s[i] != '\0'; ++len, ++i)
+    for (; len < N && s[i] != '\0'; ++len, ++i) {
       data[len] = s[i];
+    }
     data[len] = '\0';
     return s[i] == '\0';
   }

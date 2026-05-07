@@ -61,14 +61,16 @@ public:
   //////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  const char *GetPersonaName() const { return personaName_.c_str(); }
+  [[nodiscard]] const char *GetPersonaName() const {
+    return personaName_.c_str();
+  }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
   // const char *GetRoleName() const { return role_.Name; }
 
-  const char *GetRoleName() const { return role_.Name.c_str(); }
+  [[nodiscard]] const char *GetRoleName() const { return role_.Name.c_str(); }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief

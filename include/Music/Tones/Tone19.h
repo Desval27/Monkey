@@ -2,7 +2,7 @@
 /**
  * @file Tone19.h
  * @author pfburdette <paul.f.burdette@gmail.com>
- * @brief 
+ * @brief
  * @copyright This work is dedicated to the public domain under CC0 1.0.
  * To the extent possible under law, the author(s) have waived all copyright
  * and related or neighboring rights to this software.
@@ -16,37 +16,15 @@
 #include <Music/Labels/NoteNameLabels.h>
 #include <Music/MusicTypes.h>
 
-namespace Music
-{
+namespace Music {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 19 Tone Temperaments
-//    0     1     2     3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18
-// i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4, i_d5, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7, i_A7
+//    0     1     2     3     4     5     6     7     8     9    10    11    12
+//    13    14    15    16    17    18
+// i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4, i_d5, i_P5, i_A5,
+// i_m6, i_M6, i_A6, i_m7, i_M7, i_A7
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // For mapping 19 tone scales
-#if false
-// 19 EDO - Full Chromatic
-#define P1  0  // Perfect Unison
-#define A1  1  // Augmented Unison (Chromatic semitone)
-#define m2  2  // Minor Second (Diatonic semitone)
-#define M2  3  // Major Second (Whole tone)
-#define A2  4  // Augmented Second
-#define m3  5  // Minor Third
-#define M3  6  // Major Third
-#define A3  7  // Augmented Third
-#define P4  8  // Perfect Fourth
-#define A4  9  // Augmented Fourth
-#define d5  10 // Diminished Fifth
-#define P5  11 // Perfect Fifth
-#define A5  12 // Augmented Fifth
-#define m6  13 // Minor Sixth
-#define M6  14 // Major Sixth
-#define A6  15 // Augmented Sixth
-#define m7  16 // Minor Seventh
-#define M7  17 // Major Seventh
-#define A7  18 // Augmented Seventh
-#endif
-
 #define P1 0
 #define A1 1
 #define m2 2
@@ -74,11 +52,13 @@ namespace Music
 //
 // Note & Interval Names
 //
-static const std::array<const char *, 19> NOTE_NAMES_19 =
-    {n_C, n_Cs, n_Db, n_D, n_Ds, n_Eb, n_E, n_Es_Fb, n_F, n_Fs, n_Gb, n_G, n_Gs, n_Ab, n_A, n_As, n_Bb, n_B, n_Bs_Cb};
+static const std::array<const char *, 19> NOTE_NAMES_19 = {
+    n_C,  n_Cs, n_Db, n_D,  n_Ds, n_Eb, n_E,  n_Es_Fb, n_F,    n_Fs,
+    n_Gb, n_G,  n_Gs, n_Ab, n_A,  n_As, n_Bb, n_B,     n_Bs_Cb};
 
-static const std::array<const char *, 19> INTERVAL_NAMES_19 =
-    {i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4, i_d5, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7, i_A7};
+static const std::array<const char *, 19> INTERVAL_NAMES_19 = {
+    i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4,
+    i_d5, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7, i_A7};
 
 // clang-format off
 
@@ -116,6 +96,5 @@ static constexpr DegreeMap<HEPATONIC> LOCRIAN_D19           = {P1, m2, m3, P4, d
 #undef m7
 #undef M7
 #undef A7
-
 
 } // namespace Music

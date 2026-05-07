@@ -2,7 +2,7 @@
 /**
  * @file Tone15.h
  * @author pfburdette <paul.f.burdette@gmail.com>
- * @brief 
+ * @brief
  * @copyright This work is dedicated to the public domain under CC0 1.0.
  * To the extent possible under law, the author(s) have waived all copyright
  * and related or neighboring rights to this software.
@@ -16,32 +16,14 @@
 #include <Music/Labels/NoteNameLabels.h>
 #include <Music/MusicTypes.h>
 
-namespace Music
-{
+namespace Music {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 // 15 Tone Temperaments
-//    0     1     2     3     4     5     6     7     8     9    10    11    12    13    14
-// i_P1, i_m2, i_M2, i_A2, i_m3, i_M3, i_P4, i_TT, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7
+//    0     1     2     3     4     5     6     7     8     9    10    11    12
+//    13    14
+// i_P1, i_m2, i_M2, i_A2, i_m3, i_M3, i_P4, i_TT, i_P5, i_A5, i_m6, i_M6, i_A6,
+// i_m7, i_M7
 //////////////////////////////////////////////////////////////////////////////////////////////////
-
-#if false
-// 15 EDO - Full Chromatic
-#define P1  0  // Perfect Unison
-#define m2  1  // Minor Second
-#define M2  2  // Major Second
-#define n3  3  // Neutral Third (Between M2 and m3)
-#define m3  4  // Minor Third
-#define M3  5  // Major Third
-#define P4  6  // Perfect Fourth
-#define A4  7  // Augmented Fourth
-#define d5  8  // Diminished Fifth
-#define P5  9  // Perfect Fifth
-#define m6  10 // Minor Sixth
-#define M6  11 // Major Sixth
-#define n7  12 // Neutral Seventh
-#define m7  13 // Minor Seventh
-#define M7  14 // Major Seventh
-#endif
 
 // For mapping 15 tone scales
 #define P1 0
@@ -69,12 +51,16 @@ namespace Music
 // Note & Interval Names
 //
 static const std::array<const char *, 15> NOTE_NAMES_15 =
-    // 0        1    2     3     4     5     6         7    8     9    10   11    12    13   14
-    {n_C, n_Cs_Db, n_D, n_Ds, n_Eb, n_E, n_F, n_Fs_Gb, n_G, n_Gs, n_Ab, n_A, n_As, n_Bb, n_B};
+    // 0        1    2     3     4     5     6         7    8     9    10   11
+    // 12    13   14
+    {n_C, n_Cs_Db, n_D,  n_Ds, n_Eb, n_E,  n_F, n_Fs_Gb,
+     n_G, n_Gs,    n_Ab, n_A,  n_As, n_Bb, n_B};
 
 static const std::array<const char *, 15> INTERVAL_NAMES_15 =
-    // 0     1     2     3     4     5     6     7     8     9    10    11    12    13    14
-    {i_P1, i_m2, i_M2, i_A2, i_m3, i_M3, i_P4, i_TT, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7};
+    // 0     1     2     3     4     5     6     7     8     9    10    11    12
+    // 13    14
+    {i_P1, i_m2, i_M2, i_A2, i_m3, i_M3, i_P4, i_TT,
+     i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7};
 
 // clang-format off
     

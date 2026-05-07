@@ -96,7 +96,8 @@ void testThing() {
   // std::cout << std::string(80, '-') << '\n';
   std::cout << TTY_CLEAR << "PERSONA: " << pName << ":" << rName
             << "\t\tSCALE: " << HEPATONIC_D12_SCALES[scaleIdx].name
-            << "\t\tGRANULARITY: " << g << " " << GetNoteValueText(g) << '\n';
+            << "\t\tGRANULARITY: " << static_cast<unsigned int>(g) << " "
+            << GetNoteValueText(g) << '\n';
 
   // Make Chord Progression
   GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(

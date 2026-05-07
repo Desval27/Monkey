@@ -1,2 +1,16 @@
 {
+  "C_Cpp.codeAnalysis.clangTidy.checks.disabled": [
+    "bugprone-throwing-static-initialization",
+    "readability-identifier-length",
+    "bugprone-easily-swappable-parameters",
+    "modernize-use-trailing-return-type",
+    "modernize-use-auto",
+    "readability-magic-numbers",
+    "modernize-avoid-c-arrays",
+    "modernize-avoid-variadic-functions",
+    "readability-avoid-nested-conditional-operator",
+    "readability-redundant-declaration",
+    "readability-const-return-type",
+    "readability-function-cognitive-complexity"
+  ]
 }

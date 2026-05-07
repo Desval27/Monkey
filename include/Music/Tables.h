@@ -29,11 +29,11 @@
 
 #include <Music/MusicTypes.h>
 
-#include <Music/Labels/NoteValueLabels.h>
-#include <Music/Labels/NoteNameLabels.h>
 #include <Music/Labels/IntervalNameLabels.h>
-#include <Music/Labels/ScaleNameLabels.h>
+#include <Music/Labels/NoteNameLabels.h>
+#include <Music/Labels/NoteValueLabels.h>
 #include <Music/Labels/OtherLabels.h>
+#include <Music/Labels/ScaleNameLabels.h>
 
 #include <Music/Tones/Tone12.h>
 #include <Music/Tones/Tone15.h>
@@ -41,25 +41,24 @@
 #include <Music/Tones/Tone19.h>
 #include <Music/Tones/Tone22.h>
 
-namespace Music
-{
-    // clang-format off
+namespace Music {
+// clang-format off
 
     // Reusable 7-note scale weight presets.
 
     // Index 0 maps to the first degree in the selected scale degree map.
     // These are relative values; they do not need to sum to 1.0f.
-    static const WeightMap<PENTATONIC> SCALE_WEIGHTS_5_UNIFORM = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
-    static const WeightMap<PENTATONIC> SCALE_WEIGHTS_5_TONIC_HEAVY = {5.0f, 1.25f, 1.75f, 3.5f, 1.5f};
-    static const WeightMap<PENTATONIC> SCALE_WEIGHTS_5_CHORD_TONE_HEAVY = {4.0f, 1.0f, 3.0f, 3.5f, 1.5f};
+    static const WeightMap<PENTATONIC> SCALE_WEIGHTS_5_UNIFORM = {1.0F, 1.0F, 1.0F, 1.0F, 1.0F};
+    static const WeightMap<PENTATONIC> SCALE_WEIGHTS_5_TONIC_HEAVY = {5.0F, 1.25F, 1.75F, 3.5F, 1.5F};
+    static const WeightMap<PENTATONIC> SCALE_WEIGHTS_5_CHORD_TONE_HEAVY = {4.0F, 1.0F, 3.0F, 3.5F, 1.5F};
 
-    static const WeightMap<HEXATONIC> SCALE_WEIGHTS_6_UNIFORM = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
-    static const WeightMap<HEXATONIC> SCALE_WEIGHTS_6_TONIC_HEAVY = {5.0f, 1.0f, 1.5f, 1.0f, 3.0f, 1.25f};
-    static const WeightMap<HEXATONIC> SCALE_WEIGHTS_6_CHORD_TONE_HEAVY = {4.0f, 0.8f, 3.0f, 1.0f, 3.5f, 1.25f};
+    static const WeightMap<HEXATONIC> SCALE_WEIGHTS_6_UNIFORM = {1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F};
+    static const WeightMap<HEXATONIC> SCALE_WEIGHTS_6_TONIC_HEAVY = {5.0F, 1.0F, 1.5F, 1.0F, 3.0F, 1.25F};
+    static const WeightMap<HEXATONIC> SCALE_WEIGHTS_6_CHORD_TONE_HEAVY = {4.0F, 0.8F, 3.0F, 1.0F, 3.5F, 1.25F};
 
-    static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_UNIFORM = {1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f, 1.0f};
-    static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_TONIC_HEAVY = {5.0f, 1.0f, 1.5f, 1.0f, 3.0f, 1.0f, 1.5f};
-    static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_CHORD_TONE_HEAVY = {4.0f, 0.75f, 3.0f, 0.75f, 3.5f, 0.75f, 1.5f};
+    static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_UNIFORM = {1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F, 1.0F};
+    static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_TONIC_HEAVY = {5.0F, 1.0F, 1.5F, 1.0F, 3.0F, 1.0F, 1.5F};
+    static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_CHORD_TONE_HEAVY = {4.0F, 0.75F, 3.0F, 0.75F, 3.5F, 0.75F, 1.5F};
 
     // Reusable 5-note scale weight presets.
 
@@ -155,6 +154,6 @@ namespace Music
     //     {5, s_Chord_Tone_Heavy, SCALE_WEIGHTS_5_CHORD_TONE_HEAVY}};
     // constexpr std::size_t NUM_WEIGHTS = ArrayLen(WEIGHT_TABLES);
 
-    // clang-format on
+// clang-format on
 
 }; // namespace Music

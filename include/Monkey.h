@@ -60,7 +60,7 @@ template <typename T> constexpr const T min(const T &valueA, const T &valueB) {
  * @param valueB The second value.
  * @return The maximum of the two values.
  */
-template <typename T> constexpr const T max(const T &valueA, const T &valueB) {
+template <typename T> constexpr T max(const T &valueA, const T &valueB) {
   return (valueA > valueB) ? valueA : valueB;
 }
 
@@ -74,7 +74,7 @@ template <typename T> constexpr const T max(const T &valueA, const T &valueB) {
  * @return The clamped value.
  */
 template <typename T>
-constexpr const T &clamp(const T &value, const T &low, const T &high) {
+constexpr T clamp(const T &value, const T &low, const T &high) {
   return (value < low) ? low : (value > high) ? high : value;
 }
 
@@ -88,9 +88,10 @@ constexpr const T &clamp(const T &value, const T &low, const T &high) {
  * @note If count is less than or equal to 0, the function returns 0 to avoid
  * division by zero.
  */
-template <typename T> constexpr const T wrap(const T value, const T &count) {
-  if (count <= 0)
+template <typename T> constexpr T wrap(const T value, const T &count) {
+  if (count <= 0) {
     return 0;
+  }
   const T r = value % count;
   return (r < 0) ? (r + count) : r;
 }
@@ -131,16 +132,18 @@ template <typename T> constexpr const T fastPow(T base, int exp) {
   // static_assert(std::is_floating_point<T>::value, "T must be a floating-point
   // type");
 
-  if (exp == 0)
+  if (exp == 0) {
     return static_cast<T>(1.0);
+  }
 
   T result = static_cast<T>(1.0);
   bool neg = (exp < 0);
   int e = neg ? -exp : exp;
 
   while (e > 0) {
-    if (e & 1)
+    if (e & 1) {
       result *= base;
+    }
     base *= base;
     e >>= 1;
   }
@@ -250,6 +253,6 @@ template <typename T> T randomRange(const Range<T> &range) {
  * @param arr A reference to a C-style array of any type and size.
  */
 template <typename T, std::size_t N>
-constexpr std::size_t ArrayLen(const T (&)[N]) {
+constexpr std::size_t ArrayLen(const T (& /*unused*/)[N]) {
   return N;
 }
