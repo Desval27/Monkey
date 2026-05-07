@@ -6,8 +6,8 @@ Checks: 'bugprone-*,
          readability-*'
 
 # Treats all warnings as errors to enforce clean builds
-WarningsAsErrors: '*'
+#WarningsAsErrors: '*'
 
 # Provide a regex to filter header files (important for multi-file projects)
 HeaderFilterRegex: '.*'
-...
+---

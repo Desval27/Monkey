@@ -33,8 +33,8 @@ LIB_OUT := $(LIB_DIR)/$(LIB_NAME)
 ###############################################################################
 # Build Options
 ###############################################################################
-USE_DEBUG = -DUSE_DEBUG -DDEBUG_COUT
-NO_USE_DEBUG = -UUSE_DEBUG -UDEBUG_COUT
+USE_DEBUG = -DUSE_DEBUG 
+NO_USE_DEBUG = -UUSE_DEBUG 
 DEBUGFLAGS = -g
 OPTIMIZEFLAGS = -O2
 CXXSTANDARD = -std=c++17

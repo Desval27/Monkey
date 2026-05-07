@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include <Music/MusicConst.h>
+#include <Music/MusicTypes.h>
 #include <Music/NoteValue.h>
 
 namespace Music

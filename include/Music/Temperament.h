@@ -24,9 +24,8 @@
 #include <type_traits>
 
 #include <Monkey.h>
-#include <Music/MusicConst.h>
-#include <Music/MusicHelpers.h>
 #include <Music/MusicTypes.h>
+#include <Music/MusicHelpers.h>
 
 namespace Music
 {

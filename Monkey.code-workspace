@@ -5,12 +5,18 @@
 		}
 	],
 	"settings": {
-		"makefile.launchConfigurations": [
-			{
-				"cwd": "/home/desval27/src/Monkey",
-				"binaryPath": "/home/desval27/src/Monkey/music_test",
-				"binaryArgs": []
-			}
-		]
+		"editor.formatOnSave": true,
+		"C_Cpp.default.cppStandard": "gnu++17",
+		"C_Cpp.default.cStandard": "gnu17",
+		"C_Cpp.default.defines": [
+			"USE_DEBUG"
+		],
+		"C_Cpp.default.includePath": [
+			"${workspaceFolder}/include"
+		],
+		"C_Cpp.clang_format_style": "LLVM",
+		"C_Cpp.clang_format_sortIncludes": true,
+		"C_Cpp.codeAnalysis.clangTidy.enabled": true,
+		"C_Cpp.clang_format_fallbackStyle": "LLVM"
 	}
 }

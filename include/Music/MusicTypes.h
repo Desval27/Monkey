@@ -17,15 +17,16 @@
 
 namespace Music
 {
-    ///////////////////////////////////////////////////////////////////////////////
-    // Core Music Constants
-    ///////////////////////////////////////////////////////////////////////////////
-    constexpr float BASE_HZ = 440.0f; // A4 = 440Hz
+/// @brief The number of clock pulses per quarter note.
+// This is independent of the beat unit of a time signature.
+// Example: If a time signature's beat unit is an eighth note the
+// number of pulses for it will still be PPQN / 2.
+#define PPQN 24
 
     ///////////////////////////////////////////////////////////////////////////////
     // Core Music Types
     ///////////////////////////////////////////////////////////////////////////////
-    using Note = int8_t;        
+    using Note = int8_t;
     using Degree = int8_t;
     using Period = int8_t;
 
@@ -95,6 +96,33 @@ namespace Music
     using DegreeMap = std::array<Degree, N>;
     template <std::size_t N = HEPATONIC>
     using WeightMap = std::array<float, N>;
+
+    ///////////////////////////////////////////////////////////////////////////////
+    // Core Music Constants
+    ///////////////////////////////////////////////////////////////////////////////
+    constexpr float BASE_HZ = 440.0f; // A4 = 440Hz
+
+    constexpr float C4FREQ = 261.6256F;
+    constexpr Period MIN_PERIOD = -1;
+    constexpr Period MAX_PERIOD = 10;
+
+    constexpr int TWELVE_TONE = 12;
+    constexpr float OCTAVE_DOUBLE = 2.0F;
+
+    // for convience for now.
+    constexpr Note REST = -1;
+    constexpr Note Note_P1 = 0;
+    constexpr Note Note_m2 = 1;
+    constexpr Note Note_M2 = 2;
+    constexpr Note Note_m3 = 3;
+    constexpr Note Note_M3 = 4;
+    constexpr Note Note_P4 = 5;
+    constexpr Note Note_TT = 6;
+    constexpr Note Note_P5 = 7;
+    constexpr Note Note_m6 = 8;
+    constexpr Note Note_M6 = 9;
+    constexpr Note Note_m7 = 10;
+    constexpr Note Note_M7 = 11;
 
     ///////////////////////////////////////////////////////////////////////////////
     // Common Music Data Structures
@@ -167,8 +195,8 @@ namespace Music
             attack = 0.0f;
             decay = 0.0f;
         }
-        float attack;   ///< In Seconds
-        float decay;    ///< In Seconds
+        float attack; ///< In Seconds
+        float decay;  ///< In Seconds
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -180,8 +208,8 @@ namespace Music
             attack = 0.0f;
             release = 0.0f;
         }
-        float attack;   ///< In Seconds
-        float release;  ///< In Seconds
+        float attack;  ///< In Seconds
+        float release; ///< In Seconds
     };
 
     ////////////////////////////////////////////////////////////////////////////////
@@ -195,10 +223,10 @@ namespace Music
             sustain = 0.0f;
             release = 0.0f;
         }
-        float attack;   ///< In Seconds
-        float decay;    ///< In Seconds
-        float sustain;  ///< As 0.0 -> 1.0
-        float release;  ///< In Seconds
+        float attack;  ///< In Seconds
+        float decay;   ///< In Seconds
+        float sustain; ///< As 0.0 -> 1.0
+        float release; ///< In Seconds
     };
 
     ////////////////////////////////////////////////////////////////////////////////

@@ -15,7 +15,6 @@
 #include <Music/Chord.h>
 #include <Music/EventSet.h>
 #include <Music/MusicConfig.h>
-#include <Music/MusicConst.h>
 #include <Music/MusicHelpers.h>
 #include <Music/MusicTypes.h>
 #include <Music/Note.h>

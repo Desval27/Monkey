@@ -15,6 +15,8 @@ using namespace Music;
 constexpr std::size_t MAX_DEGREES = 64;
 constexpr std::size_t MAX_EVENTS = 128;
 constexpr std::size_t SCALE_DEGREES = HEPATONIC;
+constexpr int LOOP_SECONDS = 5;
+constexpr float HALF = 0.5F;
 
 #define TEMPERAMENT_DEGREES 12
 #define MY_SCALE HEPATONIC_D12_SCALES[0]
@@ -34,30 +36,34 @@ using MyPatternEventSet = Music::PatternEventSet<MAX_EVENTS>;
 using MyNoteEventSet = Music::NoteEventSet<MAX_EVENTS>;
 
 // Testing Setup 4/4 time 12-EDO
-MySetup setup(4, NoteValue::Quarter, 12, 2.0f);
+MySetup setup(4, NoteValue::Quarter, TWELVE_TONE, OCTAVE_DOUBLE);
 MyPitchEngine pitchEngine;
 
 // Different Test Personas
 struct RoleTypeA {
-  static constexpr const char Name[] = "Role A";
+  const MString<7> Name = "Role A";
+  //  static constexpr const char Name[] = "Role A";
   const int octaveOffset;
   const FRange density;
   const Music::NoteValue granularity = Music::NoteValue::Quarter;
 
-  RoleTypeA(int o, float dl, float dh) : octaveOffset(o), density(dl, dh) {};
+  RoleTypeA(int octaveOffset, FRange density)
+      : octaveOffset(octaveOffset), density(density) {};
 };
 
 struct RoleTypeB {
-  static constexpr const char Name[] = "Role B";
+  const MString<7> Name = "Role B";
+  // static constexpr const char Name[] = "Role B";
   const int octaveOffset;
   const FRange density;
   const Music::NoteValue granularity = Music::NoteValue::Eighth;
 
-  RoleTypeB(int o, float dl, float dh) : octaveOffset(o), density(dl, dh) {};
+  RoleTypeB(int octaveOffset, FRange density)
+      : octaveOffset(octaveOffset), density(density) {};
 };
 
-RoleTypeA role1(0, 0.0F, 0.6F);
-RoleTypeB role2(0, 0.6F, 1.0F);
+RoleTypeA role1(0, FRange(0.0F, HALF));
+RoleTypeB role2(0, FRange(HALF, 1.0F));
 
 MyPersona<RoleTypeA> bob("BOB", setup, role1);
 MyPersona<RoleTypeB> mary("MARY", setup, role2);
@@ -71,7 +77,7 @@ void testThing() {
   const char *rName;
   Music::NoteValue g;
 
-  if (randomRange(0.0F, 1.0F) < 0.5F) {
+  if (randomRange(0.0F, 1.0F) < HALF) {
     noteManager.SetPersona(bob);
     pName = bob.GetPersonaName();
     rName = bob.GetRoleName();
@@ -87,37 +93,36 @@ void testThing() {
                                            ArrayLen(HEPATONIC_D12_SCALES) - 1);
   setup.scaleMap.SetScale(HEPATONIC_D12_SCALES[scaleIdx]);
 
-  // std::cout << std::string(80, '-') << std::endl;
+  // std::cout << std::string(80, '-') << '\n';
   std::cout << TTY_CLEAR << "PERSONA: " << pName << ":" << rName
             << "\t\tSCALE: " << HEPATONIC_D12_SCALES[scaleIdx].name
-            << "\t\tGRANULARITY: " << g << " " << GetNoteValueText(g)
-            << std::endl;
+            << "\t\tGRANULARITY: " << g << " " << GetNoteValueText(g) << '\n';
 
   // Make Chord Progression
   GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
       setup, NoteValue::Whole, chords);
 
   DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(setup, chords);
-  std::cout << std::endl;
+  std::cout << '\n';
 
   noteManager.MakeNoteEventsFromChords(chords);
   DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(
       setup.temperament, setup.timeSignature, noteManager.GetEvents());
 
-  std::cout << std::endl;
+  std::cout << '\n';
 
   NoteEventScore score =
       ScoreNoteEvents(setup.temperament, noteManager.GetEvents());
   std::cout << TTY_FG_MAGENTA << "Event Score" << TTY_RESET << ": Overall    "
-            << score.overall << std::endl;
-  std::cout << "           : Density    " << score.density << std::endl;
-  std::cout << "           : Rests      " << score.rests << std::endl;
-  std::cout << "           : Cadence    " << score.cadence << std::endl;
-  std::cout << "           : Repetition " << score.repetition << std::endl;
-  std::cout << "           : Contour    " << score.contour << std::endl;
-  std::cout << "           : Phrase     " << score.phrase << std::endl;
-  std::cout << "           : Rhythm     " << score.rhythm << std::endl;
-  std::cout << std::endl;
+            << score.overall << '\n';
+  std::cout << "           : Density    " << score.density << '\n';
+  std::cout << "           : Rests      " << score.rests << '\n';
+  std::cout << "           : Cadence    " << score.cadence << '\n';
+  std::cout << "           : Repetition " << score.repetition << '\n';
+  std::cout << "           : Contour    " << score.contour << '\n';
+  std::cout << "           : Phrase     " << score.phrase << '\n';
+  std::cout << "           : Rhythm     " << score.rhythm << '\n';
+  std::cout << '\n';
 }
 
 auto main(int argc, char *argv[]) -> int {
@@ -148,7 +153,7 @@ auto main(int argc, char *argv[]) -> int {
 
   for (;;) {
     testThing();
-    sleep(5);
+    sleep(LOOP_SECONDS);
   }
   return 0;
 }
