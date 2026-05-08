@@ -173,7 +173,8 @@ public:
     int t = bars * ts.beats * ts.beatValue;
     int n = t / granularity;
     int r = t % granularity;
-    int k = n * density;
+    double k1 = static_cast<float>(n) * density;
+    int k = static_cast<int>(trunc(k1));
 #ifdef USE_DEBUG
     std::clog << TTY_FG_RED << "Eulclidian Pattern:" << TTY_RESET << " " << t
               << "/" << static_cast<unsigned int>(granularity)

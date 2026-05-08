@@ -11,6 +11,7 @@
     "readability-avoid-nested-conditional-operator",
     "readability-redundant-declaration",
     "readability-const-return-type",
-    "readability-function-cognitive-complexity"
+    "readability-function-cognitive-complexity",
+    "modernize-type-traits"
   ]
 }
