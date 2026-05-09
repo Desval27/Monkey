@@ -2,7 +2,7 @@
 /**
  * @file Tone22.h
  * @author pfburdette <paul.f.burdette@gmail.com>
- * @brief 
+ * @brief
  * @copyright This work is dedicated to the public domain under CC0 1.0.
  * To the extent possible under law, the author(s) have waived all copyright
  * and related or neighboring rights to this software.
@@ -10,14 +10,13 @@
  */
 #pragma once
 
-#include <array>
-
 #include <Music/Labels/IntervalNameLabels.h>
 #include <Music/Labels/NoteNameLabels.h>
 #include <Music/MusicTypes.h>
 
-namespace Music
-{
+#include <array>
+
+namespace Music {
 // clang-format off
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

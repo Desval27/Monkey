@@ -1,12 +1,13 @@
-#include "TestFramework.h"
-
 #include <Music/Gnome.h>
+
+#include "TestFramework.h"
 
 using Music::Gnome;
 using Music::NoteValue;
 using Music::TimeSignature;
 
-TEST_CASE("Gnome starts in pre-roll and enters beat zero on first pulse") {
+TEST_CASE("Gnome starts in pre-roll and enters beat zero on first pulse")
+{
   TimeSignature ts(4, NoteValue::Quarter);
   Gnome gnome(ts, 2);
 
@@ -24,7 +25,8 @@ TEST_CASE("Gnome starts in pre-roll and enters beat zero on first pulse") {
   CHECK(gnome.RisingBarEdge());
 }
 
-TEST_CASE("Gnome beat edge fires once per beat") {
+TEST_CASE("Gnome beat edge fires once per beat")
+{
   TimeSignature ts(4, NoteValue::Quarter);
   Gnome gnome(ts, 1);
   const int pulsesPerBeat = static_cast<int>(NoteValue::Quarter);
@@ -50,7 +52,8 @@ TEST_CASE("Gnome beat edge fires once per beat") {
   CHECK_EQ(gnome.GetBeat(), 1);
 }
 
-TEST_CASE("Gnome wraps to the start without losing phase") {
+TEST_CASE("Gnome wraps to the start without losing phase")
+{
   TimeSignature ts(2, NoteValue::Eighth);
   Gnome gnome(ts, 2);
   const int pulsesPerBeat = static_cast<int>(NoteValue::Eighth);
@@ -84,7 +87,8 @@ TEST_CASE("Gnome wraps to the start without losing phase") {
   CHECK(gnome.RisingBarEdge());
 }
 
-TEST_CASE("Gnome Reset restores the pre-roll state") {
+TEST_CASE("Gnome Reset restores the pre-roll state")
+{
   TimeSignature ts(3, NoteValue::Quarter);
   Gnome gnome(ts, 2);
 
@@ -105,7 +109,8 @@ TEST_CASE("Gnome Reset restores the pre-roll state") {
   CHECK(gnome.RisingBarEdge());
 }
 
-TEST_CASE("Gnome invalid meter stays idle") {
+TEST_CASE("Gnome invalid meter stays idle")
+{
   TimeSignature zeroBeats(0, NoteValue::Quarter);
   Gnome noBeats(zeroBeats, 1);
 

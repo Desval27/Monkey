@@ -11,9 +11,12 @@
  */
 #pragma once
 
-template <typename T> class Singleton {
+template<typename T>
+class Singleton
+{
 public:
-  static auto getInstance() -> T & {
+  static auto getInstance() -> T&
+  {
     static T instance;
     return instance;
   }

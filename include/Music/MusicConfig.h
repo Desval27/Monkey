@@ -2,7 +2,7 @@
 /* SPDX-License-Identifier: CC0-1.0 */
 /**
  * @file MusicConfig.h
- * @brief 
+ * @brief
  * @author pfburdette <paul.f.burdette@gmail.com>
  *
  * @copyright This work is dedicated to the public domain under CC0 1.0.
@@ -14,11 +14,11 @@
 
 #include <cstddef>
 
-namespace Music
-{
-    // Default limits for template parameters. These can be overridden by defining them before including this header.
-    constexpr std::size_t DEF_MAX_DEGREES = 64;
-    constexpr std::size_t DEF_MAX_EVENTS = 128;
-    constexpr std::size_t DEF_SCALE_DEGREES = 7;  // HEPATONIC
+namespace Music {
+// Default limits for template parameters. These can be overridden by defining
+// them before including this header.
+constexpr std::size_t DEF_MAX_DEGREES = 64;
+constexpr std::size_t DEF_MAX_EVENTS = 128;
+constexpr std::size_t DEF_SCALE_DEGREES = 7; // HEPATONIC
 
 } // namespace Music

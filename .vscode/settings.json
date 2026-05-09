@@ -12,6 +12,7 @@
     "readability-redundant-declaration",
     "readability-const-return-type",
     "readability-function-cognitive-complexity",
-    "modernize-type-traits"
+    "modernize-type-traits",
+    "readability-avoid-unconditional-preprocessor-if"
   ]
 }

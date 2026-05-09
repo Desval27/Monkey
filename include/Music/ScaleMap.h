@@ -11,13 +11,13 @@
  */
 #pragma once
 
-#include <array>
-#include <cstddef>
-
 #include <Monkey.h>
 #include <Music/MusicTypes.h>
 
-namespace Music {
+#include <array>
+#include <cstddef>
+
+namespace music {
 
 /**
  * @brief Maps integer indices to scale degrees with optional weighted
@@ -27,30 +27,36 @@ namespace Music {
  * wrapped back into the stored degree list, and the number of wraps is
  * returned as a period offset.
  */
-template <std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES> class ScaleMap {
+template<std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES>
+class ScaleMap
+{
 public:
   /**
    * @brief Constructs an empty scale map.
    */
   ScaleMap() { degrees_.fill(0); }
 
-  void SetDegrees(const DegreeMap<SCALE_DEGREES> &degrees) {
+  void set_degrees(const DegreeMap<SCALE_DEGREES>& degrees)
+  {
     degrees_ = degrees;
     harmonicMode_ = InferHarmonicMode(degrees_);
   }
 
-  void SetDegrees(const DegreeMap<SCALE_DEGREES> &degrees,
-                  HarmonicMode harmonicMode) {
+  void set_degrees(const DegreeMap<SCALE_DEGREES>& degrees,
+                   HarmonicMode harmonicMode)
+  {
     degrees_ = degrees;
     harmonicMode_ = harmonicMode;
   }
 
-  template <std::size_t TEMPERAMENT_DEGREES>
-  void SetScale(const ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES> &scale) {
-    SetDegrees(scale.degrees, scale.harmonicMode);
+  template<std::size_t TEMPERAMENT_DEGREES>
+  void set_scale(const ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>& scale)
+  {
+    set_degrees(scale.degrees, scale.harmonicMode);
   }
 
-  void SetHarmonicMode(HarmonicMode harmonicMode) {
+  void set_harmonic_mode(HarmonicMode harmonicMode)
+  {
     harmonicMode_ = harmonicMode;
   }
 
@@ -59,7 +65,7 @@ public:
    *
    * @return Number of mapped degrees.
    */
-  [[nodiscard]] std::size_t Count() const { return degrees_.size(); }
+  [[nodiscard]] std::size_t size() const { return degrees_.size(); }
 
   [[nodiscard]] HarmonicMode GetHarmonicMode() const { return harmonicMode_; }
 
@@ -73,9 +79,10 @@ public:
    * @param outPeriodOffset Receives the wrapped period offset.
    * @return Mapped scale degree, or `0` when the map is empty.
    */
-  Degree GetMappedDegree(std::size_t index, int &outPeriodOffset) const {
-    int wrapped = wrap(index, Count());
-    int cycles = (index - wrapped) / Count();
+  Degree get_mapped_degree(std::size_t index, int& outPeriodOffset) const
+  {
+    int wrapped = wrap(index, size());
+    int cycles = (index - wrapped) / size();
     outPeriodOffset = cycles;
     return degrees_[wrapped];
   }
@@ -86,7 +93,8 @@ public:
    * @param degree Degree to search for.
    * @return Matching index, or `0` when the degree is not present.
    */
-  [[nodiscard]] std::size_t GetIndexOfDegree(Degree degree) const {
+  [[nodiscard]] std::size_t get_index_of_degree(Degree degree) const
+  {
     for (std::size_t i = 0; i < degrees_.size(); i++) {
       if (degrees_[i] == degree) {
         return i;
@@ -111,15 +119,17 @@ public:
    * @param weightCount Number of entries available in @p weights.
    * @return Selected degree, or `0` when the map is empty.
    */
-  Degree GetWeightedDegree(float unitRandom, int &outPeriodOffset,
-                           const WeightMap<SCALE_DEGREES> &weights) const {
-    if (Count() == 0) {
+  Degree GetWeightedDegree(float unitRandom,
+                           int& outPeriodOffset,
+                           const WeightMap<SCALE_DEGREES>& weights) const
+  {
+    if (size() == 0) {
       outPeriodOffset = 0;
       return 0;
     }
     outPeriodOffset = 0;
     std::size_t idx = GetWeightedIndex(unitRandom, weights);
-    if (idx < Count()) {
+    if (idx < size()) {
       return degrees_[idx];
     }
     return 0;
@@ -134,8 +144,10 @@ public:
    * @param weightCount Number of entries available in @p weights.
    * @return Selected degree, or `0` when the map is empty.
    */
-  Degree GetWeightedNote(float unitRandom, int &outPeriodOffset,
-                         const WeightMap<SCALE_DEGREES> &weights) const {
+  Degree GetWeightedNote(float unitRandom,
+                         int& outPeriodOffset,
+                         const WeightMap<SCALE_DEGREES>& weights) const
+  {
     return GetWeightedDegree(unitRandom, outPeriodOffset, weights);
   }
 
@@ -152,16 +164,17 @@ public:
    * @param weightCount Number of entries available in @p weights.
    * @return Selected degree, or `0` when the map is empty.
    */
-  Degree
-  GetWeightedMappedDegree(std::size_t index, float unitRandom,
-                          int &outPeriodOffset,
-                          const WeightMap<SCALE_DEGREES> &weights) const {
-    int wrapped = wrap(index, Count());
-    int cycles = (index - wrapped) / Count();
+  Degree GetWeightedMappedDegree(std::size_t index,
+                                 float unitRandom,
+                                 int& outPeriodOffset,
+                                 const WeightMap<SCALE_DEGREES>& weights) const
+  {
+    int wrapped = wrap(index, size());
+    int cycles = (index - wrapped) / size();
     outPeriodOffset = cycles;
 
     std::size_t idx = GetWeightedIndex(unitRandom, weights);
-    if (idx < Count()) {
+    if (idx < size()) {
       return degrees_[idx];
     }
     return 0;
@@ -177,25 +190,28 @@ public:
    * @param weightCount Number of entries available in @p weights.
    * @return Selected degree, or `0` when the map is empty.
    */
-  Degree GetWeightedNote(int index, float unitRandom, int &outPeriodOffset,
-                         const WeightMap<SCALE_DEGREES> &weights) const {
+  Degree GetWeightedNote(int index,
+                         float unitRandom,
+                         int& outPeriodOffset,
+                         const WeightMap<SCALE_DEGREES>& weights) const
+  {
     return GetWeightedMappedDegree(index, unitRandom, outPeriodOffset, weights);
   }
 
 private:
   DegreeMap<SCALE_DEGREES> degrees_;
-  HarmonicMode harmonicMode_{HarmonicMode::Major};
+  HarmonicMode harmonicMode_{ HarmonicMode::Major };
 
-  static HarmonicMode
-  InferHarmonicMode(const DegreeMap<SCALE_DEGREES> &degrees) {
+  static HarmonicMode InferHarmonicMode(const DegreeMap<SCALE_DEGREES>& degrees)
+  {
     if (SCALE_DEGREES < 3) {
       return HarmonicMode::Major;
     }
 
     const Degree third = static_cast<Degree>(degrees[2] - degrees[0]);
     const Degree fifth = (SCALE_DEGREES >= 5)
-                             ? static_cast<Degree>(degrees[4] - degrees[0])
-                             : static_cast<Degree>(third + third);
+                           ? static_cast<Degree>(degrees[4] - degrees[0])
+                           : static_cast<Degree>(third + third);
 
     return (third * 2 < fifth) ? HarmonicMode::Minor : HarmonicMode::Major;
   }
@@ -211,11 +227,12 @@ private:
    * @param weightCount Number of entries available in @p weights.
    * @return Selected array index.
    */
-  [[nodiscard]] std::size_t
-  GetWeightedIndex(float unitRandom,
-                   const WeightMap<SCALE_DEGREES> &weights) const {
+  [[nodiscard]] std::size_t GetWeightedIndex(
+    float unitRandom,
+    const WeightMap<SCALE_DEGREES>& weights) const
+  {
     float sum = 0.0F;
-    int thisCount = min(Count(), weights.size());
+    int thisCount = min(size(), weights.size());
     if (thisCount <= 0) {
       return 0;
     }
@@ -254,7 +271,8 @@ private:
    * @param v Input value to clamp.
    * @return Clamped unit interval value.
    */
-  static float ClampUnit(float v) {
+  static float ClampUnit(float v)
+  {
     if (v < 0.0F) {
       return 0.0F;
     }

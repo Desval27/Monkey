@@ -19,7 +19,8 @@ namespace Music {
 /**
  * @brief Broad classification of a time signature.
  */
-enum class TimeSignatureType : uint8_t {
+enum class TimeSignatureType : uint8_t
+{
   Common,    // 4/4  Technically simple but we break it out separately here
   Simple,    // 3/4, 2/4
   Compound,  // 6/8, 9/8, 12/8
@@ -44,7 +45,8 @@ enum class TimeSignatureType : uint8_t {
  * handling of various time signatures, including common, simple,
  * compound, and irregular meters.
  */
-struct TimeSignature {
+struct TimeSignature
+{
   /**
    * @brief Number of beats in each bar.
    */
@@ -60,24 +62,28 @@ struct TimeSignature {
    * @param b Number of beats in each bar.
    * @param v Note value that receives one beat.
    */
-  TimeSignature(int b, NoteValue v) : beats(b), beatValue(v) {};
+  TimeSignature(int b, NoteValue v)
+    : beats(b)
+    , beatValue(v){};
 
   /**
    * @brief Constructs a common 4/4 time signature.
    */
-  TimeSignature() : TimeSignature(4, NoteValue::Quarter) {};
+  TimeSignature()
+    : TimeSignature(4, NoteValue::Quarter){};
 
   /**
    * @brief Copy Constructor
    */
-  TimeSignature(const TimeSignature &other) = default;
+  TimeSignature(const TimeSignature& other) = default;
 
   /**
    * @brief Classifies the time signature.
    *
    * @return TimeSignatureType Derived type for the current meter.
    */
-  [[nodiscard]] TimeSignatureType GetType() const {
+  [[nodiscard]] TimeSignatureType GetType() const
+  {
     if (beats == 4 && beatValue == NoteValue::Quarter) {
       return TimeSignatureType::Common;
     }
@@ -94,7 +100,8 @@ struct TimeSignature {
     return TimeSignatureType::Irregular;
   }
 
-  [[nodiscard]] bool InThrees() const {
+  [[nodiscard]] bool InThrees() const
+  {
     // Generally considered (for now) to be potentially considered
     // to be in threes if the number of beats is evenly divisible
     // by three and the denominator is evenly divisible by two.
@@ -109,7 +116,8 @@ struct TimeSignature {
    * @return int The denominator of the time signature, or 0 if the beat value
    * is invalid.
    */
-  [[nodiscard]] int GetDenominator() const {
+  [[nodiscard]] int GetDenominator() const
+  {
     if (static_cast<int>(beatValue) != 0) {
       return (4 * PPQN) / static_cast<int>(beatValue);
     }
@@ -121,7 +129,8 @@ struct TimeSignature {
    * @brief Calculates the total number of pulses in one bar.
    * @return int Pulses contained in a full bar.
    */
-  [[nodiscard]] int GetPulsesPerBar() const {
+  [[nodiscard]] int GetPulsesPerBar() const
+  {
     return (beats * static_cast<int>(beatValue));
   }
 };

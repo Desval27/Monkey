@@ -10,21 +10,22 @@
  */
 #pragma once
 
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
-
 #include <Monkey.h>
 #include <Music/MusicTypes.h>
 #include <Music/NoteValue.h>
 #include <Music/ScaleMap.h>
 #include <Music/Temperament.h>
 
-namespace Music {
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+
+namespace music {
 constexpr int SCALE_CHORD_COUNT = 7;
 constexpr std::size_t DEFAULT_CHORD_TONE_COUNT = 3;
 
-enum class ChordExtension : uint8_t {
+enum class ChordExtension : uint8_t
+{
   None = 0,
   Sixth = 1 << 0,
   Seventh = 1 << 1,
@@ -35,7 +36,8 @@ enum class ChordExtension : uint8_t {
   Sus4 = 1 << 6,
 };
 
-enum class ChordAlteration : uint8_t {
+enum class ChordAlteration : uint8_t
+{
   None = 0,
   Flat5 = 1 << 0,
   Sharp5 = 1 << 1,
@@ -45,45 +47,57 @@ enum class ChordAlteration : uint8_t {
   Flat13 = 1 << 5,
 };
 
-static inline ChordExtension operator|(ChordExtension lhs, ChordExtension rhs) {
+static inline ChordExtension
+operator|(ChordExtension lhs, ChordExtension rhs)
+{
   return static_cast<ChordExtension>(static_cast<uint16_t>(lhs) |
                                      static_cast<uint16_t>(rhs));
 }
 
-static inline ChordExtension operator&(ChordExtension lhs, ChordExtension rhs) {
+static inline ChordExtension
+operator&(ChordExtension lhs, ChordExtension rhs)
+{
   return static_cast<ChordExtension>(static_cast<uint16_t>(lhs) &
                                      static_cast<uint16_t>(rhs));
 }
 
-static inline ChordExtension &operator|=(ChordExtension &lhs,
-                                         ChordExtension rhs) {
+static inline ChordExtension&
+operator|=(ChordExtension& lhs, ChordExtension rhs)
+{
   lhs = lhs | rhs;
   return lhs;
 }
 
-static inline ChordAlteration operator|(ChordAlteration lhs,
-                                        ChordAlteration rhs) {
+static inline ChordAlteration
+operator|(ChordAlteration lhs, ChordAlteration rhs)
+{
   return static_cast<ChordAlteration>(static_cast<uint16_t>(lhs) |
                                       static_cast<uint16_t>(rhs));
 }
 
-static inline ChordAlteration operator&(ChordAlteration lhs,
-                                        ChordAlteration rhs) {
+static inline ChordAlteration
+operator&(ChordAlteration lhs, ChordAlteration rhs)
+{
   return static_cast<ChordAlteration>(static_cast<uint16_t>(lhs) &
                                       static_cast<uint16_t>(rhs));
 }
 
-static inline ChordAlteration &operator|=(ChordAlteration &lhs,
-                                          ChordAlteration rhs) {
+static inline ChordAlteration&
+operator|=(ChordAlteration& lhs, ChordAlteration rhs)
+{
   lhs = lhs | rhs;
   return lhs;
 }
 
-static inline bool HasFlag(ChordExtension value, ChordExtension flag) {
+static inline bool
+HasFlag(ChordExtension value, ChordExtension flag)
+{
   return (static_cast<uint16_t>(value & flag) != 0);
 }
 
-static inline bool HasFlag(ChordAlteration value, ChordAlteration flag) {
+static inline bool
+HasFlag(ChordAlteration value, ChordAlteration flag)
+{
   return (static_cast<uint16_t>(value & flag) != 0);
 }
 
@@ -92,16 +106,31 @@ static inline bool HasFlag(ChordAlteration value, ChordAlteration flag) {
  * Includes the chord's root note, duration, extensions, alterations, and
  * inversion.
  */
-template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
-          std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES>
-struct ChordEvent {
+template<std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
+         std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES>
+struct ChordEvent
+{
   ChordEvent()
-      : root(0), value(NoteValue::None), extensions(ChordExtension{}),
-        alterations(ChordAlteration{}), inversion(0) {}
+    : root(0)
+    , value(NoteValue::None)
+    , extensions(ChordExtension{})
+    , alterations(ChordAlteration{})
+    , inversion(0)
+  {
+  }
 
-  ChordEvent(Note r, NoteValue v, ChordExtension ext = ChordExtension{},
-             ChordAlteration alt = ChordAlteration{}, int inv = 0)
-      : root(r), value(v), extensions(ext), alterations(alt), inversion(inv) {}
+  ChordEvent(Note r,
+             NoteValue v,
+             ChordExtension ext = ChordExtension{},
+             ChordAlteration alt = ChordAlteration{},
+             int inv = 0)
+    : root(r)
+    , value(v)
+    , extensions(ext)
+    , alterations(alt)
+    , inversion(inv)
+  {
+  }
 
   Note root;
   NoteValue value;
@@ -109,26 +138,30 @@ struct ChordEvent {
   ChordAlteration alterations;
   int inversion;
 
-  std::size_t GetChordTones(const ScaleMap<SCALE_DEGREES> &scale, Note note[],
-                            std::size_t noteLen) const {
-    return GetChordTones(scale, TWELVE_TONE, note, noteLen);
+  std::size_t get_chord_tones(const ScaleMap<SCALE_DEGREES>& scale,
+                              Note note[],
+                              std::size_t noteLen) const
+  {
+    return get_chord_tones(scale, TWELVE_TONE, note, noteLen);
   }
 
-  std::size_t GetChordTones(const ScaleMap<SCALE_DEGREES> &scale,
-                            int degreesPerPeriod, Note note[],
-                            std::size_t noteLen) const {
-    if ((note == nullptr) || noteLen == 0 || scale.Count() == 0 ||
+  std::size_t get_chord_tones(const ScaleMap<SCALE_DEGREES>& scale,
+                              int degreesPerPeriod,
+                              Note note[],
+                              std::size_t noteLen) const
+  {
+    if ((note == nullptr) || noteLen == 0 || scale.size() == 0 ||
         degreesPerPeriod <= 0) {
       return 0;
     }
 
-    const std::size_t rootIdx = scale.GetIndexOfDegree(root);
-    if (rootIdx >= scale.Count()) {
+    const std::size_t rootIdx = scale.get_index_of_degree(root);
+    if (rootIdx >= scale.size()) {
       return 0;
     }
 
     int rootPeriodOffset = 0;
-    if (scale.GetMappedDegree(rootIdx, rootPeriodOffset) != root) {
+    if (scale.get_mapped_degree(rootIdx, rootPeriodOffset) != root) {
       return 0;
     }
 
@@ -137,32 +170,56 @@ struct ChordEvent {
                                                                       : 2;
 
     std::size_t toneCount = 0;
-    AddScaleTone(scale, rootIdx, 0, 0, degreesPerPeriod, note, noteLen,
+    AddScaleTone(
+      scale, rootIdx, 0, 0, degreesPerPeriod, note, noteLen, toneCount);
+    AddScaleTone(
+      scale, rootIdx, thirdSpan, 0, degreesPerPeriod, note, noteLen, toneCount);
+    AddScaleTone(scale,
+                 rootIdx,
+                 4,
+                 FifthAlteration(),
+                 degreesPerPeriod,
+                 note,
+                 noteLen,
                  toneCount);
-    AddScaleTone(scale, rootIdx, thirdSpan, 0, degreesPerPeriod, note, noteLen,
-                 toneCount);
-    AddScaleTone(scale, rootIdx, 4, FifthAlteration(), degreesPerPeriod, note,
-                 noteLen, toneCount);
 
     if (HasFlag(extensions, ChordExtension::Sixth)) {
-      AddScaleTone(scale, rootIdx, 5, 0, degreesPerPeriod, note, noteLen,
-                   toneCount);
+      AddScaleTone(
+        scale, rootIdx, 5, 0, degreesPerPeriod, note, noteLen, toneCount);
     }
     if (HasFlag(extensions, ChordExtension::Seventh)) {
-      AddScaleTone(scale, rootIdx, 6, 0, degreesPerPeriod, note, noteLen,
-                   toneCount);
+      AddScaleTone(
+        scale, rootIdx, 6, 0, degreesPerPeriod, note, noteLen, toneCount);
     }
     if (HasFlag(extensions, ChordExtension::Ninth)) {
-      AddScaleTone(scale, rootIdx, 8, NinthAlteration(), degreesPerPeriod, note,
-                   noteLen, toneCount);
+      AddScaleTone(scale,
+                   rootIdx,
+                   8,
+                   NinthAlteration(),
+                   degreesPerPeriod,
+                   note,
+                   noteLen,
+                   toneCount);
     }
     if (HasFlag(extensions, ChordExtension::Eleventh)) {
-      AddScaleTone(scale, rootIdx, 10, EleventhAlteration(), degreesPerPeriod,
-                   note, noteLen, toneCount);
+      AddScaleTone(scale,
+                   rootIdx,
+                   10,
+                   EleventhAlteration(),
+                   degreesPerPeriod,
+                   note,
+                   noteLen,
+                   toneCount);
     }
     if (HasFlag(extensions, ChordExtension::Thirteenth)) {
-      AddScaleTone(scale, rootIdx, 12, ThirteenthAlteration(), degreesPerPeriod,
-                   note, noteLen, toneCount);
+      AddScaleTone(scale,
+                   rootIdx,
+                   12,
+                   ThirteenthAlteration(),
+                   degreesPerPeriod,
+                   note,
+                   noteLen,
+                   toneCount);
     }
 
     ApplyInversion(note, toneCount, degreesPerPeriod);
@@ -170,45 +227,56 @@ struct ChordEvent {
     return toneCount;
   }
 
-  template <std::size_t N>
-  bool GetChordName(const ScaleMap<SCALE_DEGREES> &scale, MString<N> &out,
-                    int degreesPerPeriod = 12) const {
-    const std::size_t rootIdx = scale.GetIndexOfDegree(root);
-    if (scale.Count() == 0 || rootIdx >= scale.Count()) {
+  template<std::size_t N>
+  bool GetChordName(const ScaleMap<SCALE_DEGREES>& scale,
+                    MString<N>& out,
+                    int degreesPerPeriod = 12) const
+  {
+    const std::size_t rootIdx = scale.get_index_of_degree(root);
+    if (scale.size() == 0 || rootIdx >= scale.size()) {
       return out.set("?");
     }
 
     int periodOffset = 0;
-    if (scale.GetMappedDegree(rootIdx, periodOffset) != root) {
+    if (scale.get_mapped_degree(rootIdx, periodOffset) != root) {
       return out.set("?");
     }
 
     Note tones[8];
     const std::size_t toneCount =
-        GetChordTones(scale, degreesPerPeriod, tones, ArrayLen(tones));
-    return BuildChordNameFromTones(scale, rootIdx, root, tones, toneCount,
-                                   degreesPerPeriod, extensions, alterations,
+      get_chord_tones(scale, degreesPerPeriod, tones, ArrayLen(tones));
+    return BuildChordNameFromTones(scale,
+                                   rootIdx,
+                                   root,
+                                   tones,
+                                   toneCount,
+                                   degreesPerPeriod,
+                                   extensions,
+                                   alterations,
                                    out);
   }
 
-  template <std::size_t TEMPERAMENT_DEGREES, std::size_t N>
-  bool GetChordName(const ScaleMap<SCALE_DEGREES> &scale,
-                    const Temperament<TEMPERAMENT_DEGREES> &temperament,
-                    MString<N> &out) const {
-    const std::size_t rootIdx = scale.GetIndexOfDegree(root);
-    if (scale.Count() == 0 || rootIdx >= scale.Count()) {
+  template<std::size_t TEMPERAMENT_DEGREES, std::size_t N>
+  bool GetChordName(const ScaleMap<SCALE_DEGREES>& scale,
+                    const Temperament<TEMPERAMENT_DEGREES>& temperament,
+                    MString<N>& out) const
+  {
+    const std::size_t rootIdx = scale.get_index_of_degree(root);
+    if (scale.size() == 0 || rootIdx >= scale.size()) {
       return out.set("?");
     }
 
     int periodOffset = 0;
-    if (scale.GetMappedDegree(rootIdx, periodOffset) != root) {
+    if (scale.get_mapped_degree(rootIdx, periodOffset) != root) {
       return out.set("?");
     }
 
     Note tones[8];
     const std::size_t toneCount =
-        GetChordTones(scale, static_cast<int>(temperament.DegreesPerPeriod()),
-                      tones, ArrayLen(tones));
+      get_chord_tones(scale,
+                      static_cast<int>(temperament.DegreesPerPeriod()),
+                      tones,
+                      ArrayLen(tones));
     if (toneCount < 3) {
       return out.set("?");
     }
@@ -223,49 +291,51 @@ struct ChordEvent {
     }
 
     if (!temperament.GetIntervalLabel(
-            static_cast<Degree>(
-                wrap(static_cast<int>(tones[1] - root),
-                     static_cast<int>(temperament.DegreesPerPeriod()))),
-            thirdLabel) ||
+          static_cast<Degree>(
+            wrap(static_cast<int>(tones[1] - root),
+                 static_cast<int>(temperament.DegreesPerPeriod()))),
+          thirdLabel) ||
         !temperament.GetIntervalLabel(
-            static_cast<Degree>(
-                wrap(static_cast<int>(qualityFifth - root),
-                     static_cast<int>(temperament.DegreesPerPeriod()))),
-            fifthLabel)) {
-      return GetChordName(scale, out,
-                          static_cast<int>(temperament.DegreesPerPeriod()));
+          static_cast<Degree>(
+            wrap(static_cast<int>(qualityFifth - root),
+                 static_cast<int>(temperament.DegreesPerPeriod()))),
+          fifthLabel)) {
+      return GetChordName(
+        scale, out, static_cast<int>(temperament.DegreesPerPeriod()));
     }
 
     ChordQuality quality =
-        HasFlag(extensions, ChordExtension::Sus4) ? ChordQuality::Suspended4
-        : HasFlag(extensions, ChordExtension::Sus2)
-            ? ChordQuality::Suspended2
-            : ClassifyChordQualityFromIntervalLabels(thirdLabel, fifthLabel);
+      HasFlag(extensions, ChordExtension::Sus4) ? ChordQuality::Suspended4
+      : HasFlag(extensions, ChordExtension::Sus2)
+        ? ChordQuality::Suspended2
+        : ClassifyChordQualityFromIntervalLabels(thirdLabel, fifthLabel);
     if (quality == ChordQuality::Unknown) {
       const int lowerThird =
-          wrap(static_cast<int>(tones[1] - root),
-               static_cast<int>(temperament.DegreesPerPeriod()));
+        wrap(static_cast<int>(tones[1] - root),
+             static_cast<int>(temperament.DegreesPerPeriod()));
       const int upperThird =
-          wrap(static_cast<int>(tones[2] - tones[1]),
-               static_cast<int>(temperament.DegreesPerPeriod()));
+        wrap(static_cast<int>(tones[2] - tones[1]),
+             static_cast<int>(temperament.DegreesPerPeriod()));
 
       int allThirds[SCALE_CHORD_COUNT] = {};
       std::size_t thirdCount = 0;
-      for (std::size_t i = 0; i < scale.Count() && i < SCALE_CHORD_COUNT; ++i) {
+      for (std::size_t i = 0; i < scale.size() && i < SCALE_CHORD_COUNT; ++i) {
         int firstPeriod = 0;
         int thirdPeriod = 0;
-        const Degree first = scale.GetMappedDegree(i, firstPeriod);
-        const Degree third = scale.GetMappedDegree(i + 2, thirdPeriod);
+        const Degree first = scale.get_mapped_degree(i, firstPeriod);
+        const Degree third = scale.get_mapped_degree(i + 2, thirdPeriod);
         allThirds[thirdCount++] =
-            (third +
-             (thirdPeriod * static_cast<int>(temperament.DegreesPerPeriod()))) -
-            (first +
-             (firstPeriod * static_cast<int>(temperament.DegreesPerPeriod())));
+          (third +
+           (thirdPeriod * static_cast<int>(temperament.DegreesPerPeriod()))) -
+          (first +
+           (firstPeriod * static_cast<int>(temperament.DegreesPerPeriod())));
       }
 
-      quality = ClassifyChordQualityFromThirdStack(
-          lowerThird, upperThird, MinValue(allThirds, thirdCount),
-          MaxValue(allThirds, thirdCount));
+      quality =
+        ClassifyChordQualityFromThirdStack(lowerThird,
+                                           upperThird,
+                                           MinValue(allThirds, thirdCount),
+                                           MaxValue(allThirds, thirdCount));
     }
 
     if (!BuildChordNameFromQuality(rootIdx, quality, out)) {
@@ -276,7 +346,8 @@ struct ChordEvent {
   }
 
 private:
-  enum class ChordQuality : uint8_t {
+  enum class ChordQuality : uint8_t
+  {
     Unknown,
     Major,
     Minor,
@@ -287,13 +358,19 @@ private:
     PowerChord,
   };
 
-  template <std::size_t N>
-  static bool BuildChordNameFromTones(
-      const ScaleMap<SCALE_DEGREES> &scale, int scaleIndex, Note chordRoot,
-      const Note tones[], std::size_t toneCount, int degreesPerPeriod,
-      ChordExtension extensions, ChordAlteration alterations, MString<N> &out) {
+  template<std::size_t N>
+  static bool BuildChordNameFromTones(const ScaleMap<SCALE_DEGREES>& scale,
+                                      int scaleIndex,
+                                      Note chordRoot,
+                                      const Note tones[],
+                                      std::size_t toneCount,
+                                      int degreesPerPeriod,
+                                      ChordExtension extensions,
+                                      ChordAlteration alterations,
+                                      MString<N>& out)
+  {
     Note qualityTones[3] = {};
-    const Note *tonesForQuality = tones;
+    const Note* tonesForQuality = tones;
     if (tones && toneCount >= 3) {
       for (std::size_t i = 0; i < 3; ++i) {
         qualityTones[i] = tones[i];
@@ -308,26 +385,30 @@ private:
       tonesForQuality = qualityTones;
     }
 
-    const ChordQuality quality =
-        HasFlag(extensions, ChordExtension::Sus4) ? ChordQuality::Suspended4
-        : HasFlag(extensions, ChordExtension::Sus2)
-            ? ChordQuality::Suspended2
-            : ClassifyChordQuality(scale, scaleIndex, chordRoot,
-                                   tonesForQuality, toneCount,
-                                   degreesPerPeriod);
+    const ChordQuality quality = HasFlag(extensions, ChordExtension::Sus4)
+                                   ? ChordQuality::Suspended4
+                                 : HasFlag(extensions, ChordExtension::Sus2)
+                                   ? ChordQuality::Suspended2
+                                   : ClassifyChordQuality(scale,
+                                                          scaleIndex,
+                                                          chordRoot,
+                                                          tonesForQuality,
+                                                          toneCount,
+                                                          degreesPerPeriod);
 
     switch (quality) {
-    default: {
-      if (!BuildChordNameFromQuality(scaleIndex, quality, out)) {
-        return false;
+      default: {
+        if (!BuildChordNameFromQuality(scaleIndex, quality, out)) {
+          return false;
+        }
+        return AppendExtensionName(out, extensions) &&
+               AppendAlterationName(out, alterations);
       }
-      return AppendExtensionName(out, extensions) &&
-             AppendAlterationName(out, alterations);
-    }
     }
   }
 
-  [[nodiscard]] int FifthAlteration() const {
+  [[nodiscard]] int FifthAlteration() const
+  {
     if (HasFlag(alterations, ChordAlteration::Flat5)) {
       return -1;
     }
@@ -337,7 +418,8 @@ private:
     return 0;
   }
 
-  [[nodiscard]] int NinthAlteration() const {
+  [[nodiscard]] int NinthAlteration() const
+  {
     if (HasFlag(alterations, ChordAlteration::Flat9)) {
       return -1;
     }
@@ -347,16 +429,20 @@ private:
     return 0;
   }
 
-  [[nodiscard]] int EleventhAlteration() const {
+  [[nodiscard]] int EleventhAlteration() const
+  {
     return HasFlag(alterations, ChordAlteration::Sharp11) ? 1 : 0;
   }
 
-  [[nodiscard]] int ThirteenthAlteration() const {
+  [[nodiscard]] int ThirteenthAlteration() const
+  {
     return HasFlag(alterations, ChordAlteration::Flat13) ? -1 : 0;
   }
 
-  void ApplyInversion(Note note[], std::size_t toneCount,
-                      int degreesPerPeriod) const {
+  void ApplyInversion(Note note[],
+                      std::size_t toneCount,
+                      int degreesPerPeriod) const
+  {
     if ((note == nullptr) || toneCount < 2 || inversion == 0) {
       return;
     }
@@ -376,7 +462,7 @@ private:
     const std::size_t turns = static_cast<std::size_t>(-inversion) % toneCount;
     for (std::size_t i = 0; i < turns; ++i) {
       const Note moved =
-          static_cast<Note>(note[toneCount - 1] - degreesPerPeriod);
+        static_cast<Note>(note[toneCount - 1] - degreesPerPeriod);
       for (std::size_t j = toneCount - 1; j > 0; --j) {
         note[j] = note[j - 1];
       }
@@ -384,28 +470,35 @@ private:
     }
   }
 
-  static void AddScaleTone(const ScaleMap<SCALE_DEGREES> &scale,
-                           std::size_t rootIdx, int scaleSpan, int alteration,
-                           int degreesPerPeriod, Note note[],
-                           std::size_t noteLen, std::size_t &toneCount) {
+  static void AddScaleTone(const ScaleMap<SCALE_DEGREES>& scale,
+                           std::size_t rootIdx,
+                           int scaleSpan,
+                           int alteration,
+                           int degreesPerPeriod,
+                           Note note[],
+                           std::size_t noteLen,
+                           std::size_t& toneCount)
+  {
     if (toneCount >= noteLen) {
       return;
     }
 
     int periodOffset = 0;
     const Note mapped = static_cast<Note>(
-        scale.GetMappedDegree(rootIdx + scaleSpan, periodOffset));
+      scale.get_mapped_degree(rootIdx + scaleSpan, periodOffset));
     note[toneCount++] = static_cast<Note>(
-        mapped + (periodOffset * degreesPerPeriod) + alteration);
+      mapped + (periodOffset * degreesPerPeriod) + alteration);
   }
 
-  static ChordQuality ClassifyChordQuality(const ScaleMap<SCALE_DEGREES> &scale,
-                                           int scaleIndex, Note chordRoot,
+  static ChordQuality ClassifyChordQuality(const ScaleMap<SCALE_DEGREES>& scale,
+                                           int scaleIndex,
+                                           Note chordRoot,
                                            const Note tones[],
                                            std::size_t toneCount,
-                                           int degreesPerPeriod) {
+                                           int degreesPerPeriod)
+  {
     if ((tones == nullptr) || toneCount < 3 || degreesPerPeriod <= 0 ||
-        scale.Count() < 3) {
+        scale.size() < 3) {
       return ChordQuality::Unknown;
     }
 
@@ -414,25 +507,25 @@ private:
     std::size_t thirdCount = 0;
     std::size_t fifthCount = 0;
 
-    for (std::size_t i = 0; i < scale.Count() && i < SCALE_CHORD_COUNT; ++i) {
+    for (std::size_t i = 0; i < scale.size() && i < SCALE_CHORD_COUNT; ++i) {
       thirdIntervals[thirdCount++] =
-          GetScaleSpanInterval(scale, i, 2, degreesPerPeriod);
+        GetScaleSpanInterval(scale, i, 2, degreesPerPeriod);
       fifthIntervals[fifthCount++] =
-          GetScaleSpanInterval(scale, i, 4, degreesPerPeriod);
+        GetScaleSpanInterval(scale, i, 4, degreesPerPeriod);
     }
 
     const int minorThird = MinValue(thirdIntervals, thirdCount);
     const int majorThird = MaxValue(thirdIntervals, thirdCount);
 
     const int triadThird =
-        wrap(static_cast<int>(tones[1] - chordRoot), degreesPerPeriod);
+      wrap(static_cast<int>(tones[1] - chordRoot), degreesPerPeriod);
     const int triadFifth =
-        wrap(static_cast<int>(tones[2] - chordRoot), degreesPerPeriod);
+      wrap(static_cast<int>(tones[2] - chordRoot), degreesPerPeriod);
 
     const int diminishedFifth =
-        GreatestValueLessThan(fifthIntervals, fifthCount, triadFifth);
+      GreatestValueLessThan(fifthIntervals, fifthCount, triadFifth);
     const int augmentedFifth =
-        LeastValueGreaterThan(fifthIntervals, fifthCount, triadFifth);
+      LeastValueGreaterThan(fifthIntervals, fifthCount, triadFifth);
 
     int perfectFifth = triadFifth;
     bool foundPerfectFifth = false;
@@ -459,15 +552,16 @@ private:
     }
 
     const int upperThird =
-        wrap(static_cast<int>(tones[2] - tones[1]), degreesPerPeriod);
+      wrap(static_cast<int>(tones[2] - tones[1]), degreesPerPeriod);
     (void)scaleIndex;
-    return ClassifyChordQualityFromThirdStack(triadThird, upperThird,
-                                              minorThird, majorThird);
+    return ClassifyChordQualityFromThirdStack(
+      triadThird, upperThird, minorThird, majorThird);
   }
 
-  static ChordQuality
-  ClassifyChordQualityFromIntervalLabels(const char *thirdLabel,
-                                         const char *fifthLabel) {
+  static ChordQuality ClassifyChordQualityFromIntervalLabels(
+    const char* thirdLabel,
+    const char* fifthLabel)
+  {
     if ((thirdLabel == nullptr) || (fifthLabel == nullptr)) {
       return ChordQuality::Unknown;
     }
@@ -502,7 +596,8 @@ private:
   static ChordQuality ClassifyChordQualityFromThirdStack(int lowerThird,
                                                          int upperThird,
                                                          int smallThird,
-                                                         int largeThird) {
+                                                         int largeThird)
+  {
     if (lowerThird > upperThird) {
       return ChordQuality::Major;
     }
@@ -517,35 +612,41 @@ private:
     return ChordQuality::Augmented;
   }
 
-  template <std::size_t N>
-  static bool BuildChordNameFromQuality(int scaleIndex, ChordQuality quality,
-                                        MString<N> &out) {
+  template<std::size_t N>
+  static bool BuildChordNameFromQuality(int scaleIndex,
+                                        ChordQuality quality,
+                                        MString<N>& out)
+  {
     switch (quality) {
-    case ChordQuality::Major:
-      return out.set(RomanNumeralForScaleIndex(scaleIndex));
-    case ChordQuality::Minor:
-      return out.set(LowercaseRomanNumeralForScaleIndex(scaleIndex));
-    case ChordQuality::Diminished:
-      return out.set(LowercaseRomanNumeralForScaleIndex(scaleIndex)) &&
-             out.append("_o");
-    case ChordQuality::Augmented:
-      return out.set(RomanNumeralForScaleIndex(scaleIndex)) && out.append("+");
-    case ChordQuality::Suspended2:
-      return out.set(RomanNumeralForScaleIndex(scaleIndex)) &&
-             out.append("sus2");
-    case ChordQuality::Suspended4:
-      return out.set(RomanNumeralForScaleIndex(scaleIndex)) &&
-             out.append("sus4");
-    case ChordQuality::PowerChord:
-      return out.set(RomanNumeralForScaleIndex(scaleIndex)) && out.append("5");
-    case ChordQuality::Unknown:
-    default:
-      return out.set(RomanNumeralForScaleIndex(scaleIndex)) && out.append("?");
+      case ChordQuality::Major:
+        return out.set(RomanNumeralForScaleIndex(scaleIndex));
+      case ChordQuality::Minor:
+        return out.set(LowercaseRomanNumeralForScaleIndex(scaleIndex));
+      case ChordQuality::Diminished:
+        return out.set(LowercaseRomanNumeralForScaleIndex(scaleIndex)) &&
+               out.append("_o");
+      case ChordQuality::Augmented:
+        return out.set(RomanNumeralForScaleIndex(scaleIndex)) &&
+               out.append("+");
+      case ChordQuality::Suspended2:
+        return out.set(RomanNumeralForScaleIndex(scaleIndex)) &&
+               out.append("sus2");
+      case ChordQuality::Suspended4:
+        return out.set(RomanNumeralForScaleIndex(scaleIndex)) &&
+               out.append("sus4");
+      case ChordQuality::PowerChord:
+        return out.set(RomanNumeralForScaleIndex(scaleIndex)) &&
+               out.append("5");
+      case ChordQuality::Unknown:
+      default:
+        return out.set(RomanNumeralForScaleIndex(scaleIndex)) &&
+               out.append("?");
     }
   }
 
-  template <std::size_t N>
-  static bool AppendExtensionName(MString<N> &name, ChordExtension extensions) {
+  template<std::size_t N>
+  static bool AppendExtensionName(MString<N>& name, ChordExtension extensions)
+  {
     if (HasFlag(extensions, ChordExtension::Thirteenth)) {
       return name.append("13");
     }
@@ -564,9 +665,10 @@ private:
     return true;
   }
 
-  template <std::size_t N>
-  static bool AppendAlterationName(MString<N> &name,
-                                   ChordAlteration alterations) {
+  template<std::size_t N>
+  static bool AppendAlterationName(MString<N>& name,
+                                   ChordAlteration alterations)
+  {
     if (HasFlag(alterations, ChordAlteration::Flat5)) {
       if (!name.append("b5")) {
         return false;
@@ -600,19 +702,23 @@ private:
     return true;
   }
 
-  static int GetScaleSpanInterval(const ScaleMap<SCALE_DEGREES> &scale,
-                                  int rootIdx, int scaleSpan,
-                                  int degreesPerPeriod) {
+  static int GetScaleSpanInterval(const ScaleMap<SCALE_DEGREES>& scale,
+                                  int rootIdx,
+                                  int scaleSpan,
+                                  int degreesPerPeriod)
+  {
     int rootPeriodOffset = 0;
     int targetPeriodOffset = 0;
-    const Degree rootDegree = scale.GetMappedDegree(rootIdx, rootPeriodOffset);
+    const Degree rootDegree =
+      scale.get_mapped_degree(rootIdx, rootPeriodOffset);
     const Degree targetDegree =
-        scale.GetMappedDegree(rootIdx + scaleSpan, targetPeriodOffset);
+      scale.get_mapped_degree(rootIdx + scaleSpan, targetPeriodOffset);
     return (targetDegree + (targetPeriodOffset * degreesPerPeriod)) -
            (rootDegree + (rootPeriodOffset * degreesPerPeriod));
   }
 
-  static int MinValue(const int values[], std::size_t count) {
+  static int MinValue(const int values[], std::size_t count)
+  {
     if ((values == nullptr) || count == 0) {
       return 0;
     }
@@ -624,7 +730,8 @@ private:
     return best;
   }
 
-  static int MaxValue(const int values[], std::size_t count) {
+  static int MaxValue(const int values[], std::size_t count)
+  {
     if ((values == nullptr) || count == 0) {
       return 0;
     }
@@ -636,8 +743,10 @@ private:
     return best;
   }
 
-  static int GreatestValueLessThan(const int values[], std::size_t count,
-                                   int limit) {
+  static int GreatestValueLessThan(const int values[],
+                                   std::size_t count,
+                                   int limit)
+  {
     int best = 0;
     bool found = false;
     for (std::size_t i = 0; i < count; ++i) {
@@ -649,8 +758,10 @@ private:
     return found ? best : limit;
   }
 
-  static int LeastValueGreaterThan(const int values[], std::size_t count,
-                                   int limit) {
+  static int LeastValueGreaterThan(const int values[],
+                                   std::size_t count,
+                                   int limit)
+  {
     int best = 0;
     bool found = false;
     for (std::size_t i = 0; i < count; ++i) {
@@ -662,49 +773,52 @@ private:
     return found ? best : limit;
   }
 
-  static const char *RomanNumeralForScaleIndex(int scaleIndex) {
+  static const char* RomanNumeralForScaleIndex(int scaleIndex)
+  {
     switch (wrap(scaleIndex, SCALE_CHORD_COUNT)) {
-    case 0:
-      return "I";
-    case 1:
-      return "II";
-    case 2:
-      return "III";
-    case 3:
-      return "IV";
-    case 4:
-      return "V";
-    case 5:
-      return "VI";
-    case 6:
-      return "VII";
-    default:
-      return "?";
+      case 0:
+        return "I";
+      case 1:
+        return "II";
+      case 2:
+        return "III";
+      case 3:
+        return "IV";
+      case 4:
+        return "V";
+      case 5:
+        return "VI";
+      case 6:
+        return "VII";
+      default:
+        return "?";
     }
   }
 
-  static const char *LowercaseRomanNumeralForScaleIndex(int scaleIndex) {
+  static const char* LowercaseRomanNumeralForScaleIndex(int scaleIndex)
+  {
     switch (wrap(scaleIndex, SCALE_CHORD_COUNT)) {
-    case 0:
-      return "i";
-    case 1:
-      return "ii";
-    case 2:
-      return "iii";
-    case 3:
-      return "iv";
-    case 4:
-      return "v";
-    case 5:
-      return "vi";
-    case 6:
-      return "vii";
-    default:
-      return "?";
+      case 0:
+        return "i";
+      case 1:
+        return "ii";
+      case 2:
+        return "iii";
+      case 3:
+        return "iv";
+      case 4:
+        return "v";
+      case 5:
+        return "vi";
+      case 6:
+        return "vii";
+      default:
+        return "?";
     }
   }
 
-  static bool MatchesIntervalLabel(const char *actual, const char *expected) {
+  static bool MatchesIntervalLabel(const char* actual, const char* expected)
+  {
     if ((actual == nullptr) || (expected == nullptr)) {
       return false;
     }
@@ -720,81 +834,92 @@ private:
   }
 };
 
-struct ChordTone {
+struct ChordTone
+{
   ScaleDegree degree; // temeprament or scale degree
   Period preferredPeriod;
   uint8_t flags; // optional: chord root, avoid doubling, tendency tone, etc.
 };
 
-struct ChordProbability {
+struct ChordProbability
+{
   ScaleDegree fromDegree;
   float toDegree[SCALE_CHORD_COUNT];
 };
 
 static const ScaleDegree MAJOR_SCALE_DEGREES[SCALE_CHORD_COUNT] = {
-    ScaleDegree::I, ScaleDegree::ii, ScaleDegree::iii,  ScaleDegree::IV,
-    ScaleDegree::V, ScaleDegree::vi, ScaleDegree::vii_o};
+  ScaleDegree::I, ScaleDegree::ii, ScaleDegree::iii,  ScaleDegree::IV,
+  ScaleDegree::V, ScaleDegree::vi, ScaleDegree::vii_o
+};
 
 static const ScaleDegree MINOR_SCALE_DEGREES[SCALE_CHORD_COUNT] = {
-    ScaleDegree::i, ScaleDegree::ii_o, ScaleDegree::III, ScaleDegree::iv,
-    ScaleDegree::v, ScaleDegree::VI,   ScaleDegree::VII};
+  ScaleDegree::i, ScaleDegree::ii_o, ScaleDegree::III, ScaleDegree::iv,
+  ScaleDegree::v, ScaleDegree::VI,   ScaleDegree::VII
+};
 
 static const float MAJOR_STARTING_CHORD_WEIGHTS[SCALE_CHORD_COUNT] = {
-    4.0F, 0.50F, 0.25F, 1.25F, 2.50F, 1.50F, 0.10F};
+  4.0F, 0.50F, 0.25F, 1.25F, 2.50F, 1.50F, 0.10F
+};
 
 static const float MINOR_STARTING_CHORD_WEIGHTS[SCALE_CHORD_COUNT] = {
-    4.0F, 0.20F, 1.25F, 1.00F, 1.50F, 1.25F, 1.00F};
+  4.0F, 0.20F, 1.25F, 1.00F, 1.50F, 1.25F, 1.00F
+};
 
 static const ChordProbability MajorScaleChordProbability[SCALE_CHORD_COUNT] = {
-    //                    Technically I -> I is valid but I want to keep things
-    //                    interesting for now.
-    //                         I      ii     iii    IV     V      vi     vii_0
-    {ScaleDegree::I,
-     /******/ {0.10F, 0.25F, 0.25F, 1.00F, 1.00F, 0.50F, 0.05F}},
-    {ScaleDegree::ii,
-     /*****/ {0.25F, 0.10F, 0.25F, 0.50F, 1.00F, 0.50F, 0.05F}},
-    {ScaleDegree::iii,
-     /****/ {0.25F, 0.25F, 0.10F, 0.50F, 0.25F, 0.75F, 0.05F}},
-    {ScaleDegree::IV,
-     /*****/ {0.50F, 0.50F, 0.25F, 0.10F, 1.00F, 0.25F, 0.05F}},
-    {ScaleDegree::V,
-     /******/ {1.00F, 0.25F, 0.25F, 0.50F, 0.10F, 0.50F, 0.05F}},
-    {ScaleDegree::vi,
-     /*****/ {0.25F, 1.00F, 0.50F, 0.50F, 1.00F, 0.10F, 0.05F}},
-    {ScaleDegree::vii_o,
-     /**/ {1.00F, 0.25F, 0.50F, 0.25F, 0.25F, 0.50F, 0.05F}},
+  //                    Technically I -> I is valid but I want to keep things
+  //                    interesting for now.
+  //                         I      ii     iii    IV     V      vi     vii_0
+  { ScaleDegree::I,
+    /******/ { 0.10F, 0.25F, 0.25F, 1.00F, 1.00F, 0.50F, 0.05F } },
+  { ScaleDegree::ii,
+    /*****/ { 0.25F, 0.10F, 0.25F, 0.50F, 1.00F, 0.50F, 0.05F } },
+  { ScaleDegree::iii,
+    /****/ { 0.25F, 0.25F, 0.10F, 0.50F, 0.25F, 0.75F, 0.05F } },
+  { ScaleDegree::IV,
+    /*****/ { 0.50F, 0.50F, 0.25F, 0.10F, 1.00F, 0.25F, 0.05F } },
+  { ScaleDegree::V,
+    /******/ { 1.00F, 0.25F, 0.25F, 0.50F, 0.10F, 0.50F, 0.05F } },
+  { ScaleDegree::vi,
+    /*****/ { 0.25F, 1.00F, 0.50F, 0.50F, 1.00F, 0.10F, 0.05F } },
+  { ScaleDegree::vii_o,
+    /**/ { 1.00F, 0.25F, 0.50F, 0.25F, 0.25F, 0.50F, 0.05F } },
 };
 
 static const ChordProbability MinorScaleChordProbability[SCALE_CHORD_COUNT] = {
-    //                         i      ii_o   III    iv     v      VI     VII
-    {ScaleDegree::i,
-     /*******/ {0.10F, 0.15F, 0.75F, 1.00F, 1.00F, 0.75F, 0.75F}},
-    {ScaleDegree::ii_o,
-     /****/ {1.00F, 0.10F, 0.15F, 0.50F, 1.00F, 0.25F, 0.25F}},
-    {ScaleDegree::III,
-     /*****/ {0.75F, 0.15F, 0.10F, 0.75F, 0.50F, 1.00F, 0.75F}},
-    {ScaleDegree::iv,
-     /******/ {0.75F, 0.25F, 0.50F, 0.10F, 1.00F, 0.75F, 0.50F}},
-    {ScaleDegree::v,
-     /*******/ {1.00F, 0.25F, 0.25F, 0.75F, 0.10F, 0.50F, 0.75F}},
-    {ScaleDegree::VI,
-     /******/ {0.50F, 0.75F, 0.50F, 1.00F, 0.75F, 0.10F, 1.00F}},
-    {ScaleDegree::VII,
-     /*****/ {1.00F, 0.15F, 0.50F, 0.75F, 0.25F, 0.75F, 0.10F}},
+  //                         i      ii_o   III    iv     v      VI     VII
+  { ScaleDegree::i,
+    /*******/ { 0.10F, 0.15F, 0.75F, 1.00F, 1.00F, 0.75F, 0.75F } },
+  { ScaleDegree::ii_o,
+    /****/ { 1.00F, 0.10F, 0.15F, 0.50F, 1.00F, 0.25F, 0.25F } },
+  { ScaleDegree::III,
+    /*****/ { 0.75F, 0.15F, 0.10F, 0.75F, 0.50F, 1.00F, 0.75F } },
+  { ScaleDegree::iv,
+    /******/ { 0.75F, 0.25F, 0.50F, 0.10F, 1.00F, 0.75F, 0.50F } },
+  { ScaleDegree::v,
+    /*******/ { 1.00F, 0.25F, 0.25F, 0.75F, 0.10F, 0.50F, 0.75F } },
+  { ScaleDegree::VI,
+    /******/ { 0.50F, 0.75F, 0.50F, 1.00F, 0.75F, 0.10F, 1.00F } },
+  { ScaleDegree::VII,
+    /*****/ { 1.00F, 0.15F, 0.50F, 0.75F, 0.25F, 0.75F, 0.10F } },
 };
 
-static inline const ScaleDegree *ScaleDegreesForMode(HarmonicMode mode) {
+static inline const ScaleDegree*
+ScaleDegreesForMode(HarmonicMode mode)
+{
   return (mode == HarmonicMode::Minor) ? MINOR_SCALE_DEGREES
                                        : MAJOR_SCALE_DEGREES;
 }
 
-static inline const ChordProbability *
-ChordProbabilityTableForMode(HarmonicMode mode) {
+static inline const ChordProbability*
+ChordProbabilityTableForMode(HarmonicMode mode)
+{
   return (mode == HarmonicMode::Minor) ? MinorScaleChordProbability
                                        : MajorScaleChordProbability;
 }
 
-static inline const float *StartingChordWeightsForMode(HarmonicMode mode) {
+static inline const float*
+StartingChordWeightsForMode(HarmonicMode mode)
+{
   return (mode == HarmonicMode::Minor) ? MINOR_STARTING_CHORD_WEIGHTS
                                        : MAJOR_STARTING_CHORD_WEIGHTS;
 }
@@ -807,8 +932,10 @@ static inline const float *StartingChordWeightsForMode(HarmonicMode mode) {
  * @param mode The harmonic mode.
  * @return int The index of the scale degree, or -1 if not found.
  */
-static inline int ScaleDegreeIndex(ScaleDegree degree, HarmonicMode mode) {
-  const ScaleDegree *degrees = ScaleDegreesForMode(mode);
+static inline int
+ScaleDegreeIndex(ScaleDegree degree, HarmonicMode mode)
+{
+  const ScaleDegree* degrees = ScaleDegreesForMode(mode);
   for (std::size_t i = 0; i < SCALE_CHORD_COUNT; ++i) {
     if (degrees[i] == degree) {
       return static_cast<int>(i);
@@ -817,46 +944,50 @@ static inline int ScaleDegreeIndex(ScaleDegree degree, HarmonicMode mode) {
   return -1;
 }
 
-static inline ScaleDegree ScaleDegreeFromIndex(int index, HarmonicMode mode) {
+static inline ScaleDegree
+ScaleDegreeFromIndex(int index, HarmonicMode mode)
+{
   index = std::max(index, 0);
 
   const int wrapped = index % static_cast<int>(SCALE_CHORD_COUNT);
   return ScaleDegreesForMode(mode)[wrapped];
 }
 
-static inline Note ScaleDegreeToSemitone(ScaleDegree degree) {
+static inline Note
+ScaleDegreeToSemitone(ScaleDegree degree)
+{
   switch (degree) {
-  case ScaleDegree::I:
-    return Note_P1;
-  case ScaleDegree::ii:
-    return Note_M2;
-  case ScaleDegree::iii:
-    return Note_M3;
-  case ScaleDegree::IV:
-    return Note_P4;
-  case ScaleDegree::V:
-    return Note_P5;
-  case ScaleDegree::vi:
-    return Note_M6;
-  case ScaleDegree::vii_o:
-    return Note_M7;
+    case ScaleDegree::I:
+      return Note_P1;
+    case ScaleDegree::ii:
+      return Note_M2;
+    case ScaleDegree::iii:
+      return Note_M3;
+    case ScaleDegree::IV:
+      return Note_P4;
+    case ScaleDegree::V:
+      return Note_P5;
+    case ScaleDegree::vi:
+      return Note_M6;
+    case ScaleDegree::vii_o:
+      return Note_M7;
 
-  case ScaleDegree::i:
-    return Note_P1;
-  case ScaleDegree::ii_o:
-    return Note_M2;
-  case ScaleDegree::III:
-    return Note_m3;
-  case ScaleDegree::iv:
-    return Note_P4;
-  case ScaleDegree::v:
-    return Note_P5;
-  case ScaleDegree::VI:
-    return Note_m6;
-  case ScaleDegree::VII:
-    return Note_m7;
-  default:
-    return Note_P1;
+    case ScaleDegree::i:
+      return Note_P1;
+    case ScaleDegree::ii_o:
+      return Note_M2;
+    case ScaleDegree::III:
+      return Note_m3;
+    case ScaleDegree::iv:
+      return Note_P4;
+    case ScaleDegree::v:
+      return Note_P5;
+    case ScaleDegree::VI:
+      return Note_m6;
+    case ScaleDegree::VII:
+      return Note_m7;
+    default:
+      return Note_P1;
   }
 }
 

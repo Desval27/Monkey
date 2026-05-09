@@ -1,12 +1,13 @@
-#include "TestFramework.h"
-
 #include <Music/TimeSignature.h>
+
+#include "TestFramework.h"
 
 using Music::NoteValue;
 using Music::TimeSignature;
 using Music::TimeSignatureType;
 
-static int TypeValue(TimeSignatureType type)
+static int
+TypeValue(TimeSignatureType type)
 {
   return static_cast<int>(type);
 }
@@ -38,7 +39,8 @@ TEST_CASE("TimeSignature copy preserves meter")
   CHECK_EQ(TypeValue(copy.GetType()), TypeValue(TimeSignatureType::Compound));
 }
 
-TEST_CASE("TimeSignature classifies common simple compound and irregular meters")
+TEST_CASE(
+  "TimeSignature classifies common simple compound and irregular meters")
 {
   CHECK_EQ(TypeValue(TimeSignature(4, NoteValue::Quarter).GetType()),
            TypeValue(TimeSignatureType::Common));
@@ -82,7 +84,8 @@ TEST_CASE("TimeSignature pulses per bar multiplies beats by beat value")
            7 * static_cast<int>(NoteValue::Eighth));
 }
 
-TEST_CASE("TimeSignature pulses per bar reflects invalid inputs without hiding them")
+TEST_CASE("TimeSignature pulses per bar reflects invalid inputs without hiding "
+          "them")
 {
   CHECK_EQ(TimeSignature(0, NoteValue::Quarter).GetPulsesPerBar(), 0);
   CHECK_EQ(TimeSignature(4, NoteValue::None).GetPulsesPerBar(), 0);

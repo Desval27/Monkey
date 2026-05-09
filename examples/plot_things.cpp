@@ -1,12 +1,12 @@
+#include <Music/Music.h>
+#include <unistd.h>
+
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
 #include <iostream>
 #include <string>
-#include <unistd.h>
-
-#include <Music/Music.h>
 
 using namespace Music;
 
@@ -19,20 +19,21 @@ constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
 Setup<DEF_MAX_DEGREES, SCALE_TYPE> setup;
 ChordEventSet<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS> chords;
 
-void DoThing() {
+void
+DoThing()
+{
   const float density = randomRange(0.0F, 1.0F); // 0.50f;
   const NoteValue g =
-      GetRandomGranularity(NoteValue::Sixteenth, NoteValue::Whole);
+    GetRandomGranularity(NoteValue::Sixteenth, NoteValue::Whole);
   PatternEventSet<> pattern;
   NoteEventSet<> noteEvents;
 
-  EuclidianPatternGenerator<>::GeneratePattern(setup.timeSignature, setup.bars,
-                                               density, g, pattern);
+  EuclidianPatternGenerator<>::GeneratePattern(
+    setup.timeSignature, setup.bars, density, g, pattern);
 
-  StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE,
-                      DEF_MAX_EVENTS>::GenerateEvents(setup, pattern, chords, g,
-                                                      SCALE_WEIGHTS_7_UNIFORM,
-                                                      noteEvents);
+  StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::
+    GenerateEvents(
+      setup, pattern, chords, g, SCALE_WEIGHTS_7_UNIFORM, noteEvents);
   NoteEventScore score = ScoreNoteEvents(setup.temperament, noteEvents);
 
   float v1 = density;
@@ -41,10 +42,12 @@ void DoThing() {
   std::cout << score.overall << '\t' << v1 << '\t' << v2 << '\n';
 }
 
-int main(int argc, char *argv[]) {
+int
+main(int argc, char* argv[])
+{
   setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_12);
   setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
-  setup.scaleMap.SetDegrees(Music::IONIAN_D12);
+  setup.scaleMap.set_degrees(Music::IONIAN_D12);
 
   std::cout << "set title 'Density/Granularity vs Score'" << '\n';
   std::cout << "set xlabel 'Density/Granularity'" << '\n';

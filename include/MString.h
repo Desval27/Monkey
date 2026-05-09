@@ -12,17 +12,21 @@
 
 #pragma once
 
+#include <cstdarg>
 #include <cstdint>
+#include <cstring>
 #include <ostream>
 
-template <std::size_t N> struct MString {
+template<std::size_t N>
+struct MString
+{
 public:
   /**
    * @brief Default constructor initializes the string to empty.
    * @param s Optional C-style string to initialize the MString with. If not
    * provided, the MString will be initialized to an empty string.
    */
-  MString(const char *s = "") { set(s); }
+  MString(const char* s = "") { set(s); }
 
   // constexpr MString(const char (&s)[N]) { set(s); }
 
@@ -31,13 +35,13 @@ public:
    * C-style strings.
    * @return A pointer to the internal C-style string.
    */
-  operator const char *() const { return data.data(); }
+  operator const char*() const { return data.data(); }
 
   /**
    * @brief Get a pointer to the internal C-style string (null-terminated).
    * @return A pointer to the internal C-style string.
    */
-  [[nodiscard]] auto c_str() const -> const char * { return data.data(); }
+  [[nodiscard]] auto c_str() const -> const char* { return data.data(); }
 
   /**
    * @brief Get the capacity of the string (maximum number of characters it can
@@ -51,7 +55,8 @@ public:
    * terminator).
    * @return The length of the string.
    */
-  [[nodiscard]] std::size_t size() const {
+  [[nodiscard]] std::size_t size() const
+  {
     std::size_t len = 0;
     while (len < N && data[len] != '\0') {
       ++len;
@@ -71,12 +76,14 @@ public:
   void clear() { data.fill('\0'); }
 
   /**
-   * @brief Set the string to a new value, ensuring it does not exceed capacity.
+   * @brief Set the string to a new value, ensuring it does not exceed
+   * capacity.
    * @param s The new string value. If nullptr, the string will be cleared.
    * @return true if the string was set successfully, false if it was truncated
    * due to
    */
-  auto set(const char *s) -> bool {
+  auto set(const char* s) -> bool
+  {
     if (s == nullptr) {
       clear();
       return true;
@@ -96,7 +103,8 @@ public:
    * @return true if the entire string was appended, false if it was truncated
    * due to capacity limits.
    */
-  bool append(const char *s) {
+  bool append(const char* s)
+  {
     if (s == nullptr) {
       return true;
     }
@@ -118,7 +126,8 @@ public:
    * value is the number of characters that would have been written if enough
    * space had been available.
    */
-  int printf(const char *format, ...) {
+  int printf(const char* format, ...)
+  {
     va_list args;
     va_start(args, format);
     const int written = std::vsnprintf(data.data(), N + 1, format, args);
@@ -131,7 +140,8 @@ public:
    * @param other The other MString to compare with.
    * @return true if the strings are equal, false otherwise.
    */
-  bool operator==(const MString &other) const {
+  bool operator==(const MString& other) const
+  {
     return std::strcmp(data.data(), other.data.data()) == 0;
   }
 
@@ -140,7 +150,7 @@ public:
    * @param other The other MString to compare with.
    * @return true if the strings are not equal, false otherwise.
    */
-  bool operator!=(const MString &other) const { return !(*this == other); }
+  bool operator!=(const MString& other) const { return !(*this == other); }
 
   /**
    * @brief Compare this MString with another for ordering (lexicographical
@@ -148,7 +158,8 @@ public:
    * @param other The other MString to compare with.
    * @return true if this MString is less than the other, false otherwise.
    */
-  bool operator<(const MString &other) const {
+  bool operator<(const MString& other) const
+  {
     return std::strcmp(data.data(), other.data.data()) < 0;
   }
 
@@ -158,7 +169,8 @@ public:
    * @param other The other MString to compare with.
    * @return true if this MString is greater than the other, false otherwise.
    */
-  bool operator>(const MString &other) const {
+  bool operator>(const MString& other) const
+  {
     return std::strcmp(data.data(), other.data.data()) > 0;
   }
 
@@ -169,7 +181,9 @@ private:
 // Inferance & Deduction
 // template <std::size_t N> MString(const char (*)[N]) -> MString<N>;
 
-template <std::size_t N>
-std::ostream &operator<<(std::ostream &out, const MString<N> &text) {
+template<std::size_t N>
+std::ostream&
+operator<<(std::ostream& out, const MString<N>& text)
+{
   return out << text.c_str();
 }

@@ -8,15 +8,16 @@
 		"editor.formatOnSave": true,
 		"C_Cpp.default.cppStandard": "gnu++17",
 		"C_Cpp.default.cStandard": "gnu17",
+		"C_Cpp.default.intelliSenseMode": "linux-gcc-x64",
 		"C_Cpp.default.defines": [
 			"USE_DEBUG"
 		],
 		"C_Cpp.default.includePath": [
 			"${workspaceFolder}/include"
 		],
-		"C_Cpp.clang_format_style": "LLVM",
+		"C_Cpp.clang_format_style": "file",
 		"C_Cpp.clang_format_sortIncludes": true,
 		"C_Cpp.codeAnalysis.clangTidy.enabled": true,
-		"C_Cpp.clang_format_fallbackStyle": "LLVM"
+		"C_Cpp.clang_format_fallbackStyle": "Mozilla"
 	}
 }

@@ -15,6 +15,10 @@
  */
 #pragma once
 
+#include <Monkey.h>
+#include <Music/MusicHelpers.h>
+#include <Music/MusicTypes.h>
+
 #include <array>
 #include <cmath>
 #include <cstddef>
@@ -23,10 +27,6 @@
 #include <cstring>
 #include <type_traits>
 
-#include <Monkey.h>
-#include <Music/MusicHelpers.h>
-#include <Music/MusicTypes.h>
-
 namespace Music {
 
 /**
@@ -34,11 +34,14 @@ namespace Music {
  * temperament.
  *
  */
-template <std::size_t MAX_DEGREES = 64> class LabelSet {
+template<std::size_t MAX_DEGREES = 64>
+class LabelSet
+{
 public:
   LabelSet() = default;
 
-  bool Attach(const char *const *labels, uint16_t count) {
+  bool Attach(const char* const* labels, uint16_t count)
+  {
     if ((labels == nullptr) || count == 0 || count > MAX_DEGREES) {
       return false;
     }
@@ -48,29 +51,32 @@ public:
     return true;
   }
 
-  template <std::size_t N> bool Get(Degree index, MString<N> &out) const {
+  template<std::size_t N>
+  bool Get(Degree index, MString<N>& out) const
+  {
     if (!_labels || index < 0 || index >= _count) {
       return false;
     }
 
-    const char *src = TUNING_PGM_READ_PTR(&_labels[index]);
+    const char* src = TUNING_PGM_READ_PTR(&_labels[index]);
     return out.set(src);
   }
 
-  bool Get(Degree index, char *out, std::size_t maxOut) const {
+  bool Get(Degree index, char* out, std::size_t maxOut) const
+  {
     if ((_labels == nullptr) || index >= _count || (out == nullptr) ||
         maxOut == 0) {
       return false;
     }
 
-    const char *src = TUNING_PGM_READ_PTR(&_labels[index]);
+    const char* src = TUNING_PGM_READ_PTR(&_labels[index]);
     tuning_copy_string(out, src, maxOut);
     return true;
   }
 
 private:
-  uint16_t _count{0};
-  const char *const *_labels{nullptr};
+  uint16_t _count{ 0 };
+  const char* const* _labels{ nullptr };
 };
 
 /**
@@ -78,20 +84,28 @@ private:
  * pitches.
  *
  */
-template <std::size_t MAX_DEGREES = DEF_MAX_DEGREES, int8_t MIN_PERIOD = -4,
-          int8_t MAX_PERIOD = 4>
-class Temperament {
+template<std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
+         int8_t MIN_PERIOD = -4,
+         int8_t MAX_PERIOD = 4>
+class Temperament
+{
 public:
-  enum class Kind : uint8_t { RatioTable = 0, EqualDivision };
+  enum class Kind : uint8_t
+  {
+    RatioTable = 0,
+    EqualDivision
+  };
 
   /**
    * @brief Construct a new Temperament object with equal division of the
    * octave.
    *
-   * @param degreesPerPeriod Number of degrees per period (e.g., 12 for 12-EDO).
+   * @param degreesPerPeriod Number of degrees per period (e.g., 12 for
+   * 12-EDO).
    * @param periodRatio The ratio of the period (e.g., 2.0 for octave).
    */
-  Temperament(uint16_t degreesPerPeriod = 12, float periodRatio = 2.0F) {
+  Temperament(uint16_t degreesPerPeriod = 12, float periodRatio = 2.0F)
+  {
     Clear();
     MakeEqualDivision(degreesPerPeriod, periodRatio);
   }
@@ -100,7 +114,8 @@ public:
    * @brief Reset the temperament to default state with no ratios.
    *
    */
-  void Clear() {
+  void Clear()
+  {
     kind_ = Kind::RatioTable;
     degreesPerPeriod_ = 0;
     periodRatio_ = OCTAVE_DOUBLE;
@@ -121,7 +136,8 @@ public:
    * @return true if successful, false if parameters are invalid.
    * @return false
    */
-  bool MakeEqualDivision(uint16_t degreesPerPeriod, float periodRatio) {
+  bool MakeEqualDivision(uint16_t degreesPerPeriod, float periodRatio)
+  {
     if (degreesPerPeriod == 0 || degreesPerPeriod > MAX_DEGREES ||
         periodRatio <= 0.0F) {
       return false;
@@ -133,8 +149,8 @@ public:
 
     for (uint16_t i = 0; i < degreesPerPeriod_; ++i) {
       ratios_[i] =
-          powf(periodRatio_,
-               static_cast<float>(i) / static_cast<float>(degreesPerPeriod_));
+        powf(periodRatio_,
+             static_cast<float>(i) / static_cast<float>(degreesPerPeriod_));
     }
 
     RebuildPeriodMultipliers();
@@ -150,10 +166,9 @@ public:
    * @return true if successful, false if parameters are invalid.
    * @return false
    */
-  template <typename T, std::size_t N>
-  bool MakeRatioTable(const std::array<T, N> &ratios,
-                      float periodRatio = 2.0F) {
-
+  template<typename T, std::size_t N>
+  bool MakeRatioTable(const std::array<T, N>& ratios, float periodRatio = 2.0F)
+  {
     static_assert(std::is_floating_point<T>::value,
                   "T must be a floating-point type");
 
@@ -183,9 +198,10 @@ public:
    * @return true if successful, false if parameters are invalid.
    * @return false
    */
-  template <typename T, std::size_t N>
-  bool MakeNormalizedRatioTable(const std::array<T, N> &ratios,
-                                float periodRatio = 2.0F) {
+  template<typename T, std::size_t N>
+  bool MakeNormalizedRatioTable(const std::array<T, N>& ratios,
+                                float periodRatio = 2.0F)
+  {
     if (ratios.empty() || ratios.size() > MAX_DEGREES || periodRatio <= 1.0F) {
       return false;
     }
@@ -223,12 +239,14 @@ public:
    * @return true if successful, false if parameters are invalid.
    * @return false
    */
-  bool AttachNoteLabels(const char *const *labels, uint16_t count) {
+  bool AttachNoteLabels(const char* const* labels, uint16_t count)
+  {
     return noteLabels_.Attach(labels, count);
   }
 
-  template <typename T, std::size_t N>
-  bool AttachNoteLabels(const std::array<T, N> &labels) {
+  template<typename T, std::size_t N>
+  bool AttachNoteLabels(const std::array<T, N>& labels)
+  {
     return noteLabels_.Attach(labels.data(), labels.size());
   }
 
@@ -240,12 +258,14 @@ public:
    * @return true if successful, false if parameters are invalid.
    * @return false
    */
-  bool AttachIntervalLabels(const char *const *labels, uint16_t count) {
+  bool AttachIntervalLabels(const char* const* labels, uint16_t count)
+  {
     return intervalLabels_.Attach(labels, count);
   }
 
-  template <typename T, std::size_t N>
-  bool AttachIntervalLabels(const std::array<T, N> &labels) {
+  template<typename T, std::size_t N>
+  bool AttachIntervalLabels(const std::array<T, N>& labels)
+  {
     return intervalLabels_.Attach(labels.data(), labels.size());
   }
 
@@ -259,7 +279,8 @@ public:
    * attached.
    * @return false
    */
-  bool GetNoteLabel(Degree degree, char *out, std::size_t maxOut) const {
+  bool GetNoteLabel(Degree degree, char* out, std::size_t maxOut) const
+  {
     if (degreesPerPeriod_ == 0) {
       return false;
     }
@@ -269,9 +290,10 @@ public:
     }
 
     return noteLabels_.Get(
-        static_cast<Degree>(wrap(static_cast<int>(degree),
-                                 static_cast<int>(degreesPerPeriod_))),
-        out, maxOut);
+      static_cast<Degree>(
+        wrap(static_cast<int>(degree), static_cast<int>(degreesPerPeriod_))),
+      out,
+      maxOut);
   }
 
   /**
@@ -283,8 +305,9 @@ public:
    * attached.
    * @return false
    */
-  template <std::size_t N>
-  bool GetNoteLabel(Degree degree, MString<N> &out) const {
+  template<std::size_t N>
+  bool GetNoteLabel(Degree degree, MString<N>& out) const
+  {
     if (degreesPerPeriod_ == 0) {
       return false;
     }
@@ -294,9 +317,9 @@ public:
     }
 
     return noteLabels_.Get(
-        static_cast<Degree>(wrap(static_cast<int>(degree),
-                                 static_cast<int>(degreesPerPeriod_))),
-        out);
+      static_cast<Degree>(
+        wrap(static_cast<int>(degree), static_cast<int>(degreesPerPeriod_))),
+      out);
   }
 
   /**
@@ -309,15 +332,17 @@ public:
    * attached.
    * @return false
    */
-  bool GetIntervalLabel(Degree degree, char *out, std::size_t maxOut) const {
+  bool GetIntervalLabel(Degree degree, char* out, std::size_t maxOut) const
+  {
     if (degreesPerPeriod_ == 0) {
       return false;
     }
 
     return intervalLabels_.Get(
-        static_cast<Degree>(wrap(static_cast<int>(degree),
-                                 static_cast<int>(degreesPerPeriod_))),
-        out, maxOut);
+      static_cast<Degree>(
+        wrap(static_cast<int>(degree), static_cast<int>(degreesPerPeriod_))),
+      out,
+      maxOut);
   }
 
   /**
@@ -329,16 +354,17 @@ public:
    * attached.
    * @return false
    */
-  template <std::size_t N>
-  bool GetIntervalLabel(Degree degree, MString<N> &out) const {
+  template<std::size_t N>
+  bool GetIntervalLabel(Degree degree, MString<N>& out) const
+  {
     if (degreesPerPeriod_ == 0) {
       return false;
     }
 
     return intervalLabels_.Get(
-        static_cast<Degree>(wrap(static_cast<int>(degree),
-                                 static_cast<int>(degreesPerPeriod_))),
-        out);
+      static_cast<Degree>(
+        wrap(static_cast<int>(degree), static_cast<int>(degreesPerPeriod_))),
+      out);
   }
 
   /**
@@ -361,13 +387,14 @@ public:
    * @param degree The degree to get the ratio for.
    * @return float The frequency ratio (1.0 for unison).
    */
-  [[nodiscard]] float RatioAt(Degree degree) const {
+  [[nodiscard]] float RatioAt(Degree degree) const
+  {
     if (degreesPerPeriod_ == 0) {
       return 1.0F;
     }
 
     int idx =
-        wrap(static_cast<int>(degree), static_cast<int>(degreesPerPeriod_));
+      wrap(static_cast<int>(degree), static_cast<int>(degreesPerPeriod_));
     return ratios_[idx];
   }
 
@@ -377,7 +404,8 @@ public:
    * @param period The period offset (e.g., 1 for one octave up).
    * @return float The period multiplier.
    */
-  [[nodiscard]] float PeriodMultiplier(Period period) const {
+  [[nodiscard]] float PeriodMultiplier(Period period) const
+  {
     if (period >= MIN_PERIOD && period <= MAX_PERIOD) {
       return periodMultipliers_[period - MIN_PERIOD];
     }
@@ -392,7 +420,8 @@ public:
    * @param period The period offset.
    * @return float The combined frequency ratio.
    */
-  [[nodiscard]] float RatioAt(int degree, Period period) const {
+  [[nodiscard]] float RatioAt(int degree, Period period) const
+  {
     return RatioAt(degree) * PeriodMultiplier(period);
   }
 
@@ -405,9 +434,11 @@ public:
    * @param fineCents Fine tuning adjustment in cents.
    * @return float The calculated frequency in Hz.
    */
-  [[nodiscard]] float FrequencyFromRoot(float rootHz, Degree degree,
+  [[nodiscard]] float FrequencyFromRoot(float rootHz,
+                                        Degree degree,
                                         Period period = 0,
-                                        float fineCents = 0.0F) const {
+                                        float fineCents = 0.0F) const
+  {
     float ratio = RatioAt(degree, period);
     if (fineCents != 0.0F) {
       ratio *= CentsToRatio(fineCents);
@@ -423,8 +454,10 @@ public:
    * @param fineCents Fine tuning adjustment in cents.
    * @return float The calculated frequency in Hz.
    */
-  [[nodiscard]] float FrequencyFromC0(Degree degree, Period period = 0,
-                                      float fineCents = 0.0F) const {
+  [[nodiscard]] float FrequencyFromC0(Degree degree,
+                                      Period period = 0,
+                                      float fineCents = 0.0F) const
+  {
     return FrequencyFromRoot(FREQ_C0, degree, period, fineCents);
   }
 
@@ -435,8 +468,9 @@ public:
    * @param ref The tuning reference (root frequency and degree).
    * @return float The calculated frequency in Hz.
    */
-  [[nodiscard]] float FrequencyFromReference(const TemperedPitch &pitch,
-                                             const TuningReference &ref) const {
+  [[nodiscard]] float FrequencyFromReference(const TemperedPitch& pitch,
+                                             const TuningReference& ref) const
+  {
     int relDegree = pitch.degree - ref.referenceDegree;
     int relPeriod = pitch.period - ref.referencePeriod;
 
@@ -458,8 +492,10 @@ public:
    * @return true if successful, false if no valid degree found.
    * @return false
    */
-  bool FindNearestDegreeForRatio(float targetRatio, Degree &outDegree,
-                                 float &outErrorCents) const {
+  bool FindNearestDegreeForRatio(float targetRatio,
+                                 Degree& outDegree,
+                                 float& outErrorCents) const
+  {
     if (degreesPerPeriod_ == 0 || targetRatio <= 0.0F) {
       return false;
     }
@@ -495,7 +531,8 @@ public:
    * @param b Second note.
    * @return int The distance in degrees (always positive).
    */
-  [[nodiscard]] int GetNoteDistance(Note a, Note b) const {
+  [[nodiscard]] int GetNoteDistance(Note a, Note b) const
+  {
     return abs(b - a) % degreesPerPeriod_;
   }
 
@@ -506,18 +543,19 @@ public:
    * @param interval The interval degree to check.
    * @return true if consonant, false otherwise.
    */
-  [[nodiscard]] bool IsConsonant(Degree interval) const {
+  [[nodiscard]] bool IsConsonant(Degree interval) const
+  {
     switch (interval % degreesPerPeriod_) {
-    case 0:
-    case 3:
-    case 4:
-    case 5:
-    case 7:
-    case 8:
-    case 9:
-      return true;
-    default:
-      return false;
+      case 0:
+      case 3:
+      case 4:
+      case 5:
+      case 7:
+      case 8:
+      case 9:
+        return true;
+      default:
+        return false;
     }
   }
 
@@ -536,7 +574,8 @@ private:
    * @brief Rebuild the cached period multipliers array.
    *
    */
-  void RebuildPeriodMultipliers() {
+  void RebuildPeriodMultipliers()
+  {
     for (Period p = MIN_PERIOD; p <= MAX_PERIOD; ++p) {
       periodMultipliers_[p - MIN_PERIOD] = fastPow(periodRatio_, p);
     }
@@ -546,7 +585,8 @@ private:
    * @brief Sort the ratios array in ascending order using insertion sort.
    *
    */
-  void SortRatios() {
+  void SortRatios()
+  {
     for (uint16_t i = 1; i < degreesPerPeriod_; ++i) {
       float key = ratios_[i];
       int j = static_cast<int>(i) - 1;

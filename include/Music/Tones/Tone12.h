@@ -2,7 +2,7 @@
 /**
  * @file Tone12.h
  * @author pfburdette <paul.f.burdette@gmail.com>
- * @brief 
+ * @brief
  * @copyright This work is dedicated to the public domain under CC0 1.0.
  * To the extent possible under law, the author(s) have waived all copyright
  * and related or neighboring rights to this software.
@@ -10,14 +10,13 @@
  */
 #pragma once
 
-#include <array>
-
 #include <Music/Labels/IntervalNameLabels.h>
 #include <Music/Labels/NoteNameLabels.h>
 #include <Music/MusicTypes.h>
 
-namespace Music
-{
+#include <array>
+
+namespace Music {
 ////////////////////////////////////////////////////////////////////////////////
 // 12 Tone Temperaments
 //    0     1     2     3     4     5     6     7     8     9    10    11
@@ -47,11 +46,13 @@ namespace Music
 //
 // Note & Interval Names
 //
-static const std::array<const char *, 12> NOTE_NAMES_12 =
-    {n_C, n_Db, n_D, n_Eb, n_E, n_F, n_Fs, n_G, n_Ab, n_A, n_Bb, n_B};
+static const std::array<const char*, 12> NOTE_NAMES_12 = {
+  n_C, n_Db, n_D, n_Eb, n_E, n_F, n_Fs, n_G, n_Ab, n_A, n_Bb, n_B
+};
 
-static const std::array<const char *, 12> INTERVAL_NAMES_12 =
-    {i_P1, i_m2, i_M2, i_m3, i_M3, i_P4, i_TT, i_P5, i_m6, i_M6, i_m7, i_M7};
+static const std::array<const char*, 12> INTERVAL_NAMES_12 = {
+  i_P1, i_m2, i_M2, i_m3, i_M3, i_P4, i_TT, i_P5, i_m6, i_M6, i_m7, i_M7
+};
 
 // clang-format off
 

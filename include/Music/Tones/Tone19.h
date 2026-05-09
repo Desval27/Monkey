@@ -10,19 +10,19 @@
  */
 #pragma once
 
-#include <array>
-
 #include <Music/Labels/IntervalNameLabels.h>
 #include <Music/Labels/NoteNameLabels.h>
 #include <Music/MusicTypes.h>
+
+#include <array>
 
 namespace Music {
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // 19 Tone Temperaments
 //    0     1     2     3     4     5     6     7     8     9    10    11    12
 //    13    14    15    16    17    18
-// i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4, i_d5, i_P5, i_A5,
-// i_m6, i_M6, i_A6, i_m7, i_M7, i_A7
+// i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4, i_d5, i_P5,
+// i_A5, i_m6, i_M6, i_A6, i_m7, i_M7, i_A7
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // For mapping 19 tone scales
 #define P1 0
@@ -52,13 +52,15 @@ namespace Music {
 //
 // Note & Interval Names
 //
-static const std::array<const char *, 19> NOTE_NAMES_19 = {
-    n_C,  n_Cs, n_Db, n_D,  n_Ds, n_Eb, n_E,  n_Es_Fb, n_F,    n_Fs,
-    n_Gb, n_G,  n_Gs, n_Ab, n_A,  n_As, n_Bb, n_B,     n_Bs_Cb};
+static const std::array<const char*, 19> NOTE_NAMES_19 = {
+  n_C,  n_Cs, n_Db, n_D,  n_Ds, n_Eb, n_E,  n_Es_Fb, n_F,    n_Fs,
+  n_Gb, n_G,  n_Gs, n_Ab, n_A,  n_As, n_Bb, n_B,     n_Bs_Cb
+};
 
-static const std::array<const char *, 19> INTERVAL_NAMES_19 = {
-    i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4,
-    i_d5, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7, i_A7};
+static const std::array<const char*, 19> INTERVAL_NAMES_19 = {
+  i_P1, i_A1, i_m2, i_M2, i_A2, i_m3, i_M3, i_A3, i_P4, i_A4,
+  i_d5, i_P5, i_A5, i_m6, i_M6, i_A6, i_m7, i_M7, i_A7
+};
 
 // clang-format off
 

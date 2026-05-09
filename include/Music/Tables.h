@@ -25,21 +25,19 @@
 #endif
 #endif
 
-#include <array>
-
-#include <Music/MusicTypes.h>
-
 #include <Music/Labels/IntervalNameLabels.h>
 #include <Music/Labels/NoteNameLabels.h>
 #include <Music/Labels/NoteValueLabels.h>
 #include <Music/Labels/OtherLabels.h>
 #include <Music/Labels/ScaleNameLabels.h>
-
+#include <Music/MusicTypes.h>
 #include <Music/Tones/Tone12.h>
 #include <Music/Tones/Tone15.h>
 #include <Music/Tones/Tone17.h>
 #include <Music/Tones/Tone19.h>
 #include <Music/Tones/Tone22.h>
+
+#include <array>
 
 namespace Music {
 // clang-format off
@@ -60,14 +58,12 @@ namespace Music {
     static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_TONIC_HEAVY = {5.0F, 1.0F, 1.5F, 1.0F, 3.0F, 1.0F, 1.5F};
     static const WeightMap<HEPATONIC> SCALE_WEIGHTS_7_CHORD_TONE_HEAVY = {4.0F, 0.75F, 3.0F, 0.75F, 3.5F, 0.75F, 1.5F};
 
-    // Reusable 5-note scale weight presets.
-
     static const std::array<EqualTemperamentTable, 5> EQUAL_TEMPERAMENT_TABLE = {
-        EqualTemperamentTable{NOTE_NAMES_12.size(), s_EDO12, NOTE_NAMES_12.data(), INTERVAL_NAMES_12.data()},
-        EqualTemperamentTable{NOTE_NAMES_15.size(), s_EDO15, NOTE_NAMES_15.data(), INTERVAL_NAMES_15.data()},
-        EqualTemperamentTable{NOTE_NAMES_17.size(), s_EDO17, NOTE_NAMES_17.data(), INTERVAL_NAMES_17.data()},
-        EqualTemperamentTable{NOTE_NAMES_19.size(), s_EDO19, NOTE_NAMES_19.data(), INTERVAL_NAMES_19.data()},
-        EqualTemperamentTable{NOTE_NAMES_22.size(), s_EDO22, NOTE_NAMES_22.data(), INTERVAL_NAMES_22.data()},
+        EqualTemperamentTable{12, {"EDO-12"}, NOTE_NAMES_12.data(), INTERVAL_NAMES_12.data()},
+        EqualTemperamentTable{15, {"EDO-15"}, NOTE_NAMES_15.data(), INTERVAL_NAMES_15.data()},
+        EqualTemperamentTable{17, {"EDO-17"}, NOTE_NAMES_17.data(), INTERVAL_NAMES_17.data()},
+        EqualTemperamentTable{19, {"EDO-19"}, NOTE_NAMES_19.data(), INTERVAL_NAMES_19.data()},
+        EqualTemperamentTable{22, {"EDO-22"}, NOTE_NAMES_22.data(), INTERVAL_NAMES_22.data()},
     };
 
     static const WeightTable<PENTATONIC> PENTATONIC_WEIGHT_TABLES[] = {

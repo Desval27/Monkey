@@ -18,16 +18,17 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
-
 #include <random>
 #include <type_traits>
 
 #include <MString.h>
 
 #ifdef USE_DEBUG
-using DebugFunc = void (*)(const char *format, va_list args);
-extern void setDebugFunc(DebugFunc f);
-extern void dprintf(const char *format, ...);
+using DebugFunc = void (*)(const char* format, va_list args);
+extern void
+setDebugFunc(DebugFunc f);
+extern void
+dprintf(const char* format, ...);
 
 #define SET_DEBUG(f) setDebugFunc(f)
 #define DEBUG_GOT_HERE()                                                       \
@@ -50,7 +51,10 @@ extern void dprintf(const char *format, ...);
  * @param valueB The second value.
  * @return The minimum of the two values.
  */
-template <typename T> constexpr const T min(const T &valueA, const T &valueB) {
+template<typename T>
+constexpr const T
+min(const T& valueA, const T& valueB)
+{
   return (valueA < valueB) ? valueA : valueB;
 }
 
@@ -60,7 +64,10 @@ template <typename T> constexpr const T min(const T &valueA, const T &valueB) {
  * @param valueB The second value.
  * @return The maximum of the two values.
  */
-template <typename T> constexpr T max(const T &valueA, const T &valueB) {
+template<typename T>
+constexpr T
+max(const T& valueA, const T& valueB)
+{
   return (valueA > valueB) ? valueA : valueB;
 }
 
@@ -73,8 +80,10 @@ template <typename T> constexpr T max(const T &valueA, const T &valueB) {
  * @param high The upper bound of the range.
  * @return The clamped value.
  */
-template <typename T>
-constexpr T clamp(const T &value, const T &low, const T &high) {
+template<typename T>
+constexpr T
+clamp(const T& value, const T& low, const T& high)
+{
   return (value < low) ? low : (value > high) ? high : value;
 }
 
@@ -88,7 +97,10 @@ constexpr T clamp(const T &value, const T &low, const T &high) {
  * @note If count is less than or equal to 0, the function returns 0 to avoid
  * division by zero.
  */
-template <typename T> constexpr T wrap(const T value, const T &count) {
+template<typename T>
+constexpr T
+wrap(const T value, const T& count)
+{
   if (count <= 0) {
     return 0;
   }
@@ -108,8 +120,10 @@ template <typename T> constexpr T wrap(const T value, const T &count) {
  * @note If low is greater than high, the function returns low to avoid an
  * infinite loop.
  */
-template <typename T>
-constexpr const T wrap(const T value, const T &low, const T &high) {
+template<typename T>
+constexpr const T
+wrap(const T value, const T& low, const T& high)
+{
   return (value < low) ? high : (value > high) ? low : value;
 }
 
@@ -127,10 +141,13 @@ constexpr const T wrap(const T value, const T &low, const T &high) {
  * exponent. If base is zero and exp is negative, the behavior is undefined
  * (division by zero).
  */
-template <typename T> constexpr const T fastPow(T base, int exp) {
+template<typename T>
+constexpr const T
+fastPow(T base, int exp)
+{
   // Optional: Ensure that T is a floating-point type at compile time
-  // static_assert(std::is_floating_point<T>::value, "T must be a floating-point
-  // type");
+  // static_assert(std::is_floating_point<T>::value, "T must be a
+  // floating-point type");
 
   if (exp == 0) {
     return static_cast<T>(1.0);
@@ -167,9 +184,6 @@ template <typename T> constexpr const T fastPow(T base, int exp) {
 #define bitWrite(value, bit, bitvalue)                                         \
   ((bitvalue) ? bitSet(value, bit) : bitClear(value, bit))
 #endif
-#ifndef DAISY_PLATFORM
-// #define rand() std::rand()
-#endif
 
 /**
  * @brief A simple struct to represent a range of values with a low and high
@@ -177,9 +191,15 @@ template <typename T> constexpr const T fastPow(T base, int exp) {
  * @tparam T The type of the values in the range. Must support comparison
  * operators.
  */
-template <typename T> struct Range {
-  Range() : low(0), high(0) {};
-  Range(T low, T high) : low(low), high(high) {};
+template<typename T>
+struct Range
+{
+  Range()
+    : low(0)
+    , high(0){};
+  Range(T low, T high)
+    : low(low)
+    , high(high){};
 
   T low;  ///< The lower bound of the range.
   T high; ///< The upper bound of the range.
@@ -192,9 +212,17 @@ template <typename T> struct Range {
  * @tparam T The type of the values in the range. Must support comparison
  * operators.
  */
-template <typename T> struct RangeWithDefault {
-  RangeWithDefault() : low(0), high(0), def(0) {};
-  RangeWithDefault(T low, T high, T def) : low(low), high(high), def(def) {};
+template<typename T>
+struct RangeWithDefault
+{
+  RangeWithDefault()
+    : low(0)
+    , high(0)
+    , def(0){};
+  RangeWithDefault(T low, T high, T def)
+    : low(low)
+    , high(high)
+    , def(def){};
 
   T low;  ///< The lower bound of the range.
   T high; ///< The upper bound of the range.
@@ -202,8 +230,10 @@ template <typename T> struct RangeWithDefault {
 };
 
 #ifdef DAISY_PLATFORM
-template <typename T>
-constexpr const T randomRange(const T &low, const T &high) {
+template<typename T>
+constexpr const T
+randomRange(const T& low, const T& high)
+{
   return low +
          static_cast<T>(rand()) / (static_cast<T>(RAND_MAX / (high - low)));
 }
@@ -215,11 +245,15 @@ constexpr const T randomRange(const T &low, const T &high) {
  * compared to the C-style rand() function.
  * @param low The lower bound of the range.
  * @param high The upper bound of the range.
- * @return A random number of type T between low and high (inclusive). If low is
- * greater than high, the function will return a value in the range [high, low].
+ * @return A random number of type T between low and high (inclusive). If low
+ * is greater than high, the function will return a value in the range [high,
+ * low].
  */
-template <typename T> T randomRange(T low, T high) {
-  static thread_local std::mt19937 gen{std::random_device{}()};
+template<typename T>
+T
+randomRange(T low, T high)
+{
+  static thread_local std::mt19937 gen{ std::random_device{}() };
 
   if constexpr (std::is_integral_v<T>) {
     std::uniform_int_distribution<T> dist(low, high);
@@ -233,14 +267,17 @@ template <typename T> T randomRange(T low, T high) {
 
 /**
  * @brief Generate a random number within a specified range defined by a Range
- * struct. This is a convenience overload that allows you to pass a Range object
- * directly instead of separate low and high values.
+ * struct. This is a convenience overload that allows you to pass a Range
+ * object directly instead of separate low and high values.
  * @param range A Range object that defines the low and high bounds for the
  * random number generation.
  * @return A random number of type T between range.low and range.high
  * (inclusive). If
  */
-template <typename T> T randomRange(const Range<T> &range) {
+template<typename T>
+T
+randomRange(const Range<T>& range)
+{
   return randomRange(range.low, range.high);
 }
 
@@ -248,11 +285,13 @@ template <typename T> T randomRange(const Range<T> &range) {
  * @brief Get the length of a C-style array at compile time. This function
  * template takes a reference to an array and returns its size as a constexpr
  * value. It is a safer alternative to using sizeof(array) / sizeof(array[0])
- * for determining the length of an array, as it does not decay to a pointer and
- * can be used in compile-time contexts.
+ * for determining the length of an array, as it does not decay to a pointer
+ * and can be used in compile-time contexts.
  * @param arr A reference to a C-style array of any type and size.
  */
-template <typename T, std::size_t N>
-constexpr std::size_t ArrayLen(const T (& /*unused*/)[N]) {
+template<typename T, std::size_t N>
+constexpr std::size_t
+ArrayLen(const T (& /*unused*/)[N])
+{
   return N;
 }

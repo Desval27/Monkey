@@ -13,81 +13,81 @@
  */
 #include <Music/Music.h>
 
-namespace Music
+namespace Music {
+// C  C#  D  D#  E   F  F#  G  G#   A   A#   B
+// I  ii  II iii III IV TT  V  V+   vi  vii  VII
+// 0  1   2  3   4   5  6   7  8    9   10   11
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @param weights
+/// @param count
+/// @return
+static int
+WeightedIndexFromRow(const float* weights, std::size_t count)
 {
-  // C  C#  D  D#  E   F  F#  G  G#   A   A#   B
-  // I  ii  II iii III IV TT  V  V+   vi  vii  VII
-  // 0  1   2  3   4   5  6   7  8    9   10   11
+  if (!weights || count == 0)
+    return 0;
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief
-  /// @param weights
-  /// @param count
-  /// @return
-  static int WeightedIndexFromRow(const float *weights, std::size_t count)
-  {
-    if (!weights || count == 0)
-      return 0;
-
-    float sum = 0.0f;
-    for (std::size_t i = 0; i < count; ++i)
-    {
-      if (weights[i] > 0.0f)
-        sum += weights[i];
-    }
-
-    if (sum <= 0.0f)
-      return 0;
-
-    const float unitRandom = randomRange(0.0f, 0.999999f);
-    const float pick = unitRandom * sum;
-    float accum = 0.0f;
-
-    for (std::size_t i = 0; i < count; ++i)
-    {
-      const float w = (weights[i] > 0.0f) ? weights[i] : 0.0f;
-      accum += w;
-      if (pick < accum)
-        return static_cast<int>(i);
-    }
-
-    return static_cast<int>(count - 1);
+  float sum = 0.0f;
+  for (std::size_t i = 0; i < count; ++i) {
+    if (weights[i] > 0.0f)
+      sum += weights[i];
   }
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief
-  /// @param low
-  /// @param high
-  /// @return
-  NoteValue GetRandomGranularity(NoteValue low, NoteValue high)
-  {
-    // This is really weird but it will be addressed later with some sort of table.
-    if (low == NoteValue::None)
-      return NoteValue::None;
+  if (sum <= 0.0f)
+    return 0;
 
-    int div = static_cast<int>(high) / static_cast<int>(low);
-    int tries = 0;
-    NoteValue v;
-    do
-    {
-      int cnt = randomRange(1, div);
-      v = static_cast<NoteValue>(low * cnt);
-      tries++;
-    } while (IsNoteValueWeird(v) && tries <= 100);
+  const float unitRandom = randomRange(0.0f, 0.999999f);
+  const float pick = unitRandom * sum;
+  float accum = 0.0f;
+
+  for (std::size_t i = 0; i < count; ++i) {
+    const float w = (weights[i] > 0.0f) ? weights[i] : 0.0f;
+    accum += w;
+    if (pick < accum)
+      return static_cast<int>(i);
+  }
+
+  return static_cast<int>(count - 1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @param low
+/// @param high
+/// @return
+NoteValue
+GetRandomGranularity(NoteValue low, NoteValue high)
+{
+  // This is really weird but it will be addressed later with some sort of
+  // table.
+  if (low == NoteValue::None)
+    return NoteValue::None;
+
+  int div = static_cast<int>(high) / static_cast<int>(low);
+  int tries = 0;
+  NoteValue v;
+  do {
+    int cnt = randomRange(1, div);
+    v = static_cast<NoteValue>(low * cnt);
+    tries++;
+  } while (IsNoteValueWeird(v) && tries <= 100);
 
 #ifdef DEBUG_COUT
-    std::clog << "Got Random G = " << v << " tried " << tries << " times." << std::endl;
+  std::clog << "Got Random G = " << v << " tried " << tries << " times."
+            << std::endl;
 #endif
 
-    return v;
-  }
+  return v;
+}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  const char *GetNoteValueText(NoteValue v)
-  {
-    // Crude but workable for now.
-    switch (v)
-    {
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const char*
+GetNoteValueText(NoteValue v)
+{
+  // Crude but workable for now.
+  switch (v) {
 #if PPQN >= 32
     case NoteValue::SixtyFourth:
       return v_SixtyFourthNote;
@@ -140,35 +140,37 @@ namespace Music
       std::clog << " (Undefined = " << v << ") ";
 #endif
       return v_Undefined;
-    }
   }
+}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief
-  /// @param mode
-  /// @return
-  ScaleDegree GetWeightedStartingChord(HarmonicMode mode)
-  {
-    const int index = WeightedIndexFromRow(StartingChordWeightsForMode(mode),
-                                           SCALE_CHORD_COUNT);
-    return ScaleDegreeFromIndex(index, mode);
-  }
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @param mode
+/// @return
+ScaleDegree
+GetWeightedStartingChord(HarmonicMode mode)
+{
+  const int index =
+    WeightedIndexFromRow(StartingChordWeightsForMode(mode), SCALE_CHORD_COUNT);
+  return ScaleDegreeFromIndex(index, mode);
+}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  /// @brief
-  /// @param fromDegree
-  /// @param mode
-  /// @return
-  ScaleDegree GetWeightedNextChord(ScaleDegree fromDegree, HarmonicMode mode)
-  {
-    const int fromIndex = ScaleDegreeIndex(fromDegree, mode);
-    if (fromIndex < 0)
-      return GetWeightedStartingChord(mode);
+//////////////////////////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @param fromDegree
+/// @param mode
+/// @return
+ScaleDegree
+GetWeightedNextChord(ScaleDegree fromDegree, HarmonicMode mode)
+{
+  const int fromIndex = ScaleDegreeIndex(fromDegree, mode);
+  if (fromIndex < 0)
+    return GetWeightedStartingChord(mode);
 
-    const ChordProbability *table = ChordProbabilityTableForMode(mode);
-    const int toIdx =
-        WeightedIndexFromRow(table[fromIndex].toDegree, SCALE_CHORD_COUNT);
-    return ScaleDegreeFromIndex(toIdx, mode);
-  }
+  const ChordProbability* table = ChordProbabilityTableForMode(mode);
+  const int toIdx =
+    WeightedIndexFromRow(table[fromIndex].toDegree, SCALE_CHORD_COUNT);
+  return ScaleDegreeFromIndex(toIdx, mode);
+}
 
 } // namespace Music

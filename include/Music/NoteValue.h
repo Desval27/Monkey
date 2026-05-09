@@ -14,7 +14,8 @@
 #include <Music/MusicTypes.h>
 
 namespace Music {
-enum NoteValue : uint8_t {
+enum NoteValue : uint8_t
+{
   None = 0,
 
   DottedDottedWhole = (PPQN * 4) + (PPQN * 2) + (PPQN * 1),
@@ -157,62 +158,78 @@ enum NoteValue : uint8_t {
 // //     return os;
 // // }
 
-inline bool IsNoteValueWeird(const NoteValue v) {
+inline bool
+IsNoteValueWeird(const NoteValue v)
+{
   // Crude but workable for now.
   switch (v) {
 #if PPQN >= 32
-  case NoteValue::SixtyFourth:
-  case NoteValue::DottedSixtyFourth:
+    case NoteValue::SixtyFourth:
+    case NoteValue::DottedSixtyFourth:
 #endif
-  case NoteValue::ThirtySecond:
-  case NoteValue::DottedThirtySecond:
-  case NoteValue::Sixteenth:
-  case NoteValue::DottedSixteenth:
-  case NoteValue::Eighth:
-  case NoteValue::DottedEighth:
-  case NoteValue::Quarter:
-  case NoteValue::DottedQuarter:
-  case NoteValue::Half:
-  case NoteValue::DottedHalf:
-  case NoteValue::Whole:
-    // case NoteValue::DottedWhole:
-    return false;
-  default:
-    return true;
+    case NoteValue::ThirtySecond:
+    case NoteValue::DottedThirtySecond:
+    case NoteValue::Sixteenth:
+    case NoteValue::DottedSixteenth:
+    case NoteValue::Eighth:
+    case NoteValue::DottedEighth:
+    case NoteValue::Quarter:
+    case NoteValue::DottedQuarter:
+    case NoteValue::Half:
+    case NoteValue::DottedHalf:
+    case NoteValue::Whole:
+      // case NoteValue::DottedWhole:
+      return false;
+    default:
+      return true;
   }
 }
 
-inline NoteValue &operator+=(NoteValue &lhs, const NoteValue &rhs) {
+inline NoteValue&
+operator+=(NoteValue& lhs, const NoteValue& rhs)
+{
   lhs = static_cast<NoteValue>(static_cast<int>(lhs) + static_cast<int>(rhs));
   return lhs;
 }
 
-inline NoteValue &operator+=(NoteValue &lhs, int rhs) {
+inline NoteValue&
+operator+=(NoteValue& lhs, int rhs)
+{
   lhs = static_cast<NoteValue>(static_cast<int>(lhs) + rhs);
   return lhs;
 }
 
-inline NoteValue &operator-=(NoteValue &lhs, const NoteValue &rhs) {
+inline NoteValue&
+operator-=(NoteValue& lhs, const NoteValue& rhs)
+{
   lhs = static_cast<NoteValue>(static_cast<int>(lhs) - static_cast<int>(rhs));
   return lhs;
 }
 
-inline NoteValue &operator-=(NoteValue &lhs, int rhs) {
+inline NoteValue&
+operator-=(NoteValue& lhs, int rhs)
+{
   lhs = static_cast<NoteValue>(static_cast<int>(lhs) - rhs);
   return lhs;
 }
 
-inline NoteValue &operator*=(NoteValue &lhs, int rhs) {
+inline NoteValue&
+operator*=(NoteValue& lhs, int rhs)
+{
   lhs = static_cast<NoteValue>(static_cast<int>(lhs) * rhs);
   return lhs;
 }
 
-inline NoteValue &operator/=(NoteValue &lhs, int rhs) {
+inline NoteValue&
+operator/=(NoteValue& lhs, int rhs)
+{
   lhs = static_cast<NoteValue>(static_cast<int>(lhs) / rhs);
   return lhs;
 }
 
-inline NoteValue &operator%=(NoteValue &lhs, int rhs) {
+inline NoteValue&
+operator%=(NoteValue& lhs, int rhs)
+{
   lhs = static_cast<NoteValue>(static_cast<int>(lhs) % rhs);
   return lhs;
 }

@@ -20,17 +20,21 @@
 #include <type_traits>
 
 namespace Music {
-template <std::size_t MAX_EVENTS> class RandomRandomPatternGenerator;
+template<std::size_t MAX_EVENTS>
+class RandomRandomPatternGenerator;
 
-template <typename TRole, std::size_t MAX_EVENTS, typename = void>
-struct PersonaPatternGeneratorSelector {
+template<typename TRole, std::size_t MAX_EVENTS, typename = void>
+struct PersonaPatternGeneratorSelector
+{
   using Type = RandomRandomPatternGenerator<MAX_EVENTS>;
 };
 
-template <typename TRole, std::size_t MAX_EVENTS>
+template<typename TRole, std::size_t MAX_EVENTS>
 struct PersonaPatternGeneratorSelector<
-    TRole, MAX_EVENTS,
-    std::void_t<typename TRole::template PatternGenerator<MAX_EVENTS>>> {
+  TRole,
+  MAX_EVENTS,
+  std::void_t<typename TRole::template PatternGenerator<MAX_EVENTS>>>
+{
   using Type = typename TRole::template PatternGenerator<MAX_EVENTS>;
 };
 
@@ -38,16 +42,18 @@ struct PersonaPatternGeneratorSelector<
 /// @brief
 /// @tparam TRole
 /// @tparam MAX_EVENTS
-template <typename TRole, std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
-          std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES,
-          std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
-class Persona {
+template<typename TRole,
+         std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
+         std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES,
+         std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+class Persona
+{
 public:
   using MySetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
   using MyNoteGenerator =
-      StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+    StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
   using DefaultPatternGenerator =
-      typename PersonaPatternGeneratorSelector<TRole, MAX_EVENTS>::Type;
+    typename PersonaPatternGeneratorSelector<TRole, MAX_EVENTS>::Type;
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
@@ -55,13 +61,16 @@ public:
   /// @param t
   /// @param s
   /// @param role
-  Persona(const char *personaName, const MySetup &setup, const TRole &role)
-      : personaName_(personaName), setup_(&setup), role_(role) {};
+  Persona(const char* personaName, const MySetup& setup, const TRole& role)
+    : personaName_(personaName)
+    , setup_(&setup)
+    , role_(role){};
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const char *GetPersonaName() const {
+  [[nodiscard]] const char* GetPersonaName() const
+  {
     return personaName_.c_str();
   }
 
@@ -70,7 +79,7 @@ public:
   /// @return
   // const char *GetRoleName() const { return role_.Name; }
 
-  [[nodiscard]] const char *GetRoleName() const { return role_.Name.c_str(); }
+  [[nodiscard]] const char* GetRoleName() const { return role_.Name.c_str(); }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
@@ -78,8 +87,9 @@ public:
   /// @param events
   /// @return
   std::size_t GenerateNoteEvents(
-      const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
-      NoteEventSet<MAX_EVENTS> &events) {
+    const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
+    NoteEventSet<MAX_EVENTS>& events)
+  {
     return GenerateNoteEventsWithGenerator<DefaultPatternGenerator>(chords,
                                                                     events);
   }
@@ -89,12 +99,13 @@ public:
   /// @param chords
   /// @param events
   /// @return
-  template <template <std::size_t> class TPatternGenerator>
+  template<template<std::size_t> class TPatternGenerator>
   std::size_t GenerateNoteEvents(
-      const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
-      NoteEventSet<MAX_EVENTS> &events) {
+    const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
+    NoteEventSet<MAX_EVENTS>& events)
+  {
     return GenerateNoteEventsWithGenerator<TPatternGenerator<MAX_EVENTS>>(
-        chords, events);
+      chords, events);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -103,20 +114,22 @@ public:
   /// @param chords
   /// @param events
   /// @return
-  template <typename TPatternGenerator>
+  template<typename TPatternGenerator>
   std::size_t GenerateNoteEventsWithGenerator(
-      const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS> &chords,
-      NoteEventSet<MAX_EVENTS> &events) {
+    const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
+    NoteEventSet<MAX_EVENTS>& events)
+  {
     const float density = GetDensity();
     const NoteValue granularity = GetGranularity();
 
     TPatternGenerator::GeneratePattern(
-        setup_->timeSignature,
-        chords.GetBarsForTimeSignature(setup_->timeSignature), density,
-        granularity, pattern_);
-    return MyNoteGenerator::GenerateEvents(*setup_, pattern_, chords,
-                                           granularity, SCALE_WEIGHTS_7_UNIFORM,
-                                           events);
+      setup_->timeSignature,
+      chords.GetBarsForTimeSignature(setup_->timeSignature),
+      density,
+      granularity,
+      pattern_);
+    return MyNoteGenerator::GenerateEvents(
+      *setup_, pattern_, chords, granularity, SCALE_WEIGHTS_7_UNIFORM, events);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -131,8 +144,8 @@ public:
 
 private:
   const MString<20> personaName_;
-  const MySetup *setup_;
-  const TRole &role_;
+  const MySetup* setup_;
+  const TRole& role_;
   PatternEventSet<MAX_EVENTS> pattern_;
 };
 

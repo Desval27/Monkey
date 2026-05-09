@@ -10,9 +10,8 @@
  */
 #pragma once
 
-namespace Music
-{
-    // clang-format off
+namespace Music {
+// clang-format off
 
     // Temperament Names
     static const char s_EDO12[] = "12-EDO";
@@ -26,5 +25,5 @@ namespace Music
     static const char s_Tonic_Heavy[] = "TONIC_HEAVY";
     static const char s_Chord_Tone_Heavy[] = "CHORD_TONE_HEAVY";
 
-    // clang-format on
+// clang-format on
 } // namespace Music

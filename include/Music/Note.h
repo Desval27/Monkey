@@ -21,22 +21,26 @@ namespace Music {
  * Note events are used for both active pitched notes and rests, which are
  * indicated by the special REST note value.
  */
-struct NoteEvent {
+struct NoteEvent
+{
   static NoteEvent EmptyNote;
 
-  NoteEvent() {
+  NoteEvent()
+  {
     note = REST;
     period = 0;
     value = NoteValue::None;
   }
 
-  NoteEvent(Note n, Period p, NoteValue v) {
+  NoteEvent(Note n, Period p, NoteValue v)
+  {
     note = n;
     period = p;
     value = v;
   }
 
-  NoteEvent(Note n) {
+  NoteEvent(Note n)
+  {
     note = n;
     period = 0;
     value = NoteValue::None;

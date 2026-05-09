@@ -2,7 +2,7 @@
 /**
  * @file IntervalNameLabels.h
  * @author pfburdette <paul.f.burdette@gmail.com>
- * @brief 
+ * @brief
  * @copyright This work is dedicated to the public domain under CC0 1.0.
  * To the extent possible under law, the author(s) have waived all copyright
  * and related or neighboring rights to this software.
@@ -10,9 +10,8 @@
  */
 #pragma once
 
-namespace Music
-{
-    // clang-format off
+namespace Music {
+// clang-format off
     // Interval Names
     static const char *i_P1     = "P1";
     static const char *i_A1     = "A1";
@@ -48,5 +47,5 @@ namespace Music
     static const char *i_jM7    = "jM7";
     static const char *i_M7     = "M7";
     static const char *i_A7     = "A7";
-    // clang-format on
+// clang-format on
 } // namespace Music

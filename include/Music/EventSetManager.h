@@ -11,26 +11,29 @@
 
 namespace Music {
 
-template <std::size_t MAX_DEGREES = Music::DEF_MAX_DEGREES,
-          std::size_t SCALE_DEGREES = Music::DEF_SCALE_DEGREES,
-          std::size_t MAX_EVENTS = Music::DEF_MAX_EVENTS,
-          typename EVENT_TYPE = Music::NoteEventSet<MAX_EVENTS>>
-class EventSetManager {
+template<std::size_t MAX_DEGREES = Music::DEF_MAX_DEGREES,
+         std::size_t SCALE_DEGREES = Music::DEF_SCALE_DEGREES,
+         std::size_t MAX_EVENTS = Music::DEF_MAX_EVENTS,
+         typename EVENT_TYPE = Music::NoteEventSet<MAX_EVENTS>>
+class EventSetManager
+{
   using MyNoteEvent = Music::NoteEvent;
   using MyChordEvent = Music::ChordEvent<MAX_DEGREES, SCALE_DEGREES>;
   using MyChordEventSet =
-      Music::ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-  using PersonaGenerateFn = std::size_t (*)(void *, const MyChordEventSet &,
-                                            EVENT_TYPE &);
+    Music::ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+  using PersonaGenerateFn = std::size_t (*)(void*,
+                                            const MyChordEventSet&,
+                                            EVENT_TYPE&);
 
-  template <typename TRole>
+  template<typename TRole>
   using MyPersona =
-      Music::Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+    Music::Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
 public:
   ///////////////////////////////////////////////////////////////////////////
   /// @brief
-  EventSetManager() {
+  EventSetManager()
+  {
     events_.Clear();
     eventText_.clear();
   }
@@ -38,18 +41,22 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @param persona
-  template <typename TRole> void SetPersona(MyPersona<TRole> &persona) {
+  template<typename TRole>
+  void SetPersona(MyPersona<TRole>& persona)
+  {
     personaContext_ = &persona;
-    personaGenerate_ = [](void *context, const MyChordEventSet &chordEvents,
-                          EVENT_TYPE &events) -> std::size_t {
-      auto *persona = static_cast<MyPersona<TRole> *>(context);
+    personaGenerate_ = [](void* context,
+                          const MyChordEventSet& chordEvents,
+                          EVENT_TYPE& events) -> std::size_t {
+      auto* persona = static_cast<MyPersona<TRole>*>(context);
       return persona->GenerateNoteEvents(chordEvents, events);
     };
   }
 
   ///////////////////////////////////////////////////////////////////////////
   /// @brief
-  void ClearPersona() {
+  void ClearPersona()
+  {
     personaContext_ = nullptr;
     personaGenerate_ = nullptr;
   }
@@ -58,12 +65,13 @@ public:
   /// @brief
   /// @param chordEvents
   /// @return
-  std::size_t MakeNoteEventsFromChords(const MyChordEventSet &chordEvents) {
+  std::size_t MakeNoteEventsFromChords(const MyChordEventSet& chordEvents)
+  {
     events_.Clear();
-    currentEvent_ = 0;
+    currentIndex_ = 0;
 
     if (personaGenerate_ == nullptr) {
-      return events_.Count();
+      return events_.size();
     }
 
     return personaGenerate_(personaContext_, chordEvents, events_);
@@ -72,30 +80,63 @@ public:
   ///////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const MyNoteEvent &GetCurrentNote() const {
-    return events_[currentEvent_];
+  [[nodiscard]] const MyNoteEvent& GetCurrentNote() const
+  {
+    return events_[currentIndex_];
   }
 
   ///////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const MyChordEvent &GetCurrentChord() const {
-    return events_[currentEvent_];
+  [[nodiscard]] const MyChordEvent& GetCurrentChord() const
+  {
+    return events_[currentIndex_];
   }
 
   ///////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const char *GetText() const { return eventText_.c_str(); }
+  [[nodiscard]] const char* GetText() const { return eventText_.c_str(); }
 
-  const EVENT_TYPE &GetEvents() { return events_; }
+  const EVENT_TYPE& GetEvents() { return events_; }
+
+  bool get_gate() const { return gate_; }
+  bool get_trigger() const { return trigger_; }
+
+  ///////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param pulse
+  void HandlePulse(int pulse)
+  {
+    currentIndex_ = events_.GetEventIndexForPulse(pulse);
+    if (currentIndex_ < 0 ||
+        currentIndex_ >= static_cast<int>(events_.size())) {
+      gate_ = false;
+      trigger_ = false;
+      return;
+    }
+
+    const NoteEvent& event = events_[currentIndex_];
+    if (IsEventRisingEdge(pulse)) {
+      gate_ = event.IsPitched();
+      trigger_ = gate_;
+    } else {
+      // Trigger is only on the rising edge of the of an event
+      trigger_ = false;
+
+      if (IsEventFallingEdge(pulse)) {
+        gate_ = false;
+      }
+    }
+  }
 
 protected:
   ///////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @param pulse
   /// @return
-  [[nodiscard]] bool IsEventRisingEdge(int pulse) const {
+  [[nodiscard]] bool IsEventRisingEdge(int pulse) const
+  {
     return GetEventPulseOffset(pulse) == 0;
   }
 
@@ -105,9 +146,10 @@ protected:
   /// @param articulation
   /// @return
   [[nodiscard]] bool IsEventFallingEdge(
-      int pulse,
-      Music::Articulation articulation = Music::Articulation::Normal) const {
-    if (events_.Count() == 0 || pulse < 0) {
+    int pulse,
+    Music::Articulation articulation = Music::Articulation::Normal) const
+  {
+    if (events_.size() == 0 || pulse < 0) {
       return false;
     }
 
@@ -123,9 +165,9 @@ protected:
       }
     }
 
-    const Music::NoteEvent &currentEvent = events_.GetEventForPulse(pulse);
-    const Music::NoteEvent &previousEvent =
-        events_.GetEventForPulse(previousPulse);
+    const Music::NoteEvent& currentEvent = events_.GetEventForPulse(pulse);
+    const Music::NoteEvent& previousEvent =
+      events_.GetEventForPulse(previousPulse);
 
     // Always release when the sequence transitions from note to rest.
     if (previousEvent.note != Music::REST && currentEvent.note == Music::REST) {
@@ -139,7 +181,7 @@ protected:
     }
 
     const int eventIdx = events_.GetEventIndexForPulse(pulse);
-    if (eventIdx < 0 || eventIdx >= static_cast<int>(events_.Count())) {
+    if (eventIdx < 0 || eventIdx >= static_cast<int>(events_.size())) {
       return false;
     }
 
@@ -169,8 +211,9 @@ protected:
   /// @brief
   /// @param pulse
   /// @return
-  [[nodiscard]] int GetEventPulseOffset(int pulse) const {
-    if (events_.Count() == 0 || pulse < 0) {
+  [[nodiscard]] int GetEventPulseOffset(int pulse) const
+  {
+    if (events_.size() == 0 || pulse < 0) {
       return -1;
     }
 
@@ -180,21 +223,23 @@ protected:
     }
 
     const int eventIdx = events_.GetEventIndexForPulse(pulse);
-    if (eventIdx < 0 || eventIdx >= static_cast<int>(events_.Count())) {
+    if (eventIdx < 0 || eventIdx >= static_cast<int>(events_.size())) {
       return -1;
     }
 
     const int eventStartPulse =
-        events_.GetEventStartPulse(static_cast<std::size_t>(eventIdx));
+      events_.GetEventStartPulse(static_cast<std::size_t>(eventIdx));
     return ((pulse % totalPulses) - eventStartPulse + totalPulses) %
            totalPulses;
   }
 
 private:
   EVENT_TYPE events_;
-  int currentEvent_{0};
-  void *personaContext_{nullptr};
+  int currentIndex_{ 0 };
+  void* personaContext_{ nullptr };
   PersonaGenerateFn personaGenerate_;
   MString<16> eventText_;
+  bool gate_{ false };
+  bool trigger_{ false };
 };
 } // namespace Music

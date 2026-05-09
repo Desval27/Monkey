@@ -10,9 +10,8 @@
  */
 #pragma once
 
-namespace Music
-{
-    // clang-format off
+namespace Music {
+// clang-format off
     // Note Names
     static const char *n_C          = "C";
     static const char *n_Cup_Db     = "C^/Db";
@@ -63,5 +62,5 @@ namespace Music
     static const char *n_Bs_C       = "B#/C";
     static const char *n_Cb         = "Cb";
     static const char *n_Cb_B       = "Cb/B";
-    // clang-format on
+// clang-format on
 } // namespace Music

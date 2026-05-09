@@ -13,24 +13,26 @@
 
 #ifdef USE_DEBUG
 #include <TTY.h>
+
 #include <iostream>
 #endif
-
-#include <algorithm>
-#include <cstddef>
-#include <cstdint>
 
 #include <Monkey.h>
 #include <Music/Music.h>
 #include <Music/MusicTemplates.h>
 
+#include <algorithm>
+#include <cstddef>
+#include <cstdint>
+
 namespace Music {
-template <std::size_t MAX_EVENTS>
-std::size_t BuildEuclid(int k, int n, int r,
-                        PatternEventSet<MAX_EVENTS> &pattern) {
+template<std::size_t MAX_EVENTS>
+std::size_t
+BuildEuclid(int k, int n, int r, PatternEventSet<MAX_EVENTS>& pattern)
+{
   bool buffer[DEF_MAX_EVENTS];
-  n = clamp(n, 1,
-            static_cast<int>(std::min(pattern.Capacity(), ArrayLen(buffer))));
+  n = clamp(
+    n, 1, static_cast<int>(std::min(pattern.Capacity(), ArrayLen(buffer))));
   k = clamp(k, 0, n);
 
   for (int i = 0; i < n; i++) {
@@ -56,7 +58,7 @@ std::size_t BuildEuclid(int k, int n, int r,
       pattern[i] = buffer[src];
     }
   }
-  return pattern.Count();
+  return pattern.size();
 }
 
 //
@@ -67,13 +69,18 @@ std::size_t BuildEuclid(int k, int n, int r,
  * @brief A pattern generator that produces no events. Useful for testing
  * and as a default generator.
  */
-template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS> class NullPatternGenerator {
+template<std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+class NullPatternGenerator
+{
 public:
-  static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
-                                     float density, NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS> &pattern) {
+  static std::size_t GeneratePattern(const TimeSignature& ts,
+                                     int bars,
+                                     float density,
+                                     NoteValue granularity,
+                                     PatternEventSet<MAX_EVENTS>& pattern)
+  {
     pattern.Clear();
-    return pattern.Count();
+    return pattern.size();
   }
 };
 
@@ -88,12 +95,16 @@ public:
  * generator can produce patterns with varying levels of activity, from
  * sparse to dense, depending on the density value provided.
  */
-template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
-class SimpleRandomPatternGenerator {
+template<std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+class SimpleRandomPatternGenerator
+{
 public:
-  static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
-                                     float density, NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS> &pattern) {
+  static std::size_t GeneratePattern(const TimeSignature& ts,
+                                     int bars,
+                                     float density,
+                                     NoteValue granularity,
+                                     PatternEventSet<MAX_EVENTS>& pattern)
+  {
     if (pattern.Capacity() == 0 || bars == 0 ||
         ts.beatValue == NoteValue::None || granularity == NoteValue::None) {
       return 0; // Sanity check
@@ -113,22 +124,26 @@ public:
     for (std::size_t i = 0; i < eventsToEmit; i++) {
       pattern.Emplace(randomRange(0.0F, 1.0F) < density);
     }
-    return pattern.Count();
+    return pattern.size();
   }
 };
 
 /**
  * @brief
  */
-template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
-class InversionPatternGenerator {
+template<std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+class InversionPatternGenerator
+{
 public:
-  static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
-                                     float density, NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS> &pattern) {
+  static std::size_t GeneratePattern(const TimeSignature& ts,
+                                     int bars,
+                                     float density,
+                                     NoteValue granularity,
+                                     PatternEventSet<MAX_EVENTS>& pattern)
+  {
     if (pattern.Capacity() == 0 || bars == 0 ||
         ts.beatValue == NoteValue::None || granularity == NoteValue::None ||
-        pattern.Count() == 0) {
+        pattern.size() == 0) {
       return 0; // Sanity check
     }
 
@@ -144,11 +159,11 @@ public:
 #endif
 
     // In case the bars/beats had changed from one version to the other.
-    std::size_t eventsToEmit = min(n, pattern.Count());
+    std::size_t eventsToEmit = min(n, pattern.size());
     for (std::size_t i = 0; i < eventsToEmit; i++) {
       pattern[i] = !pattern[i];
     }
-    return pattern.Count();
+    return pattern.size();
   }
 };
 
@@ -159,12 +174,16 @@ public:
  * those events as evenly as possible across the available slots defined by
  * the time signature and granularity.
  */
-template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
-class EuclidianPatternGenerator {
+template<std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+class EuclidianPatternGenerator
+{
 public:
-  static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
-                                     float density, NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS> &pattern) {
+  static std::size_t GeneratePattern(const TimeSignature& ts,
+                                     int bars,
+                                     float density,
+                                     NoteValue granularity,
+                                     PatternEventSet<MAX_EVENTS>& pattern)
+  {
     if (pattern.Capacity() == 0 || bars == 0 ||
         ts.beatValue == NoteValue::None || granularity == NoteValue::None) {
       return 0; // Sanity check
@@ -186,44 +205,47 @@ public:
   }
 };
 
-template <std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
-class RandomRandomPatternGenerator {
+template<std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+class RandomRandomPatternGenerator
+{
 public:
-  static std::size_t GeneratePattern(const TimeSignature &ts, int bars,
-                                     float density, NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS> &pattern) {
-
+  static std::size_t GeneratePattern(const TimeSignature& ts,
+                                     int bars,
+                                     float density,
+                                     NoteValue granularity,
+                                     PatternEventSet<MAX_EVENTS>& pattern)
+  {
     switch (randomRange(0, 2)) {
-    case 0:
-      pattern.Clear();
-      SimpleRandomPatternGenerator<MAX_EVENTS>::GeneratePattern(
-          ts, bars, density, granularity, pattern);
-      break;
-    case 1:
-      pattern.Clear();
-      EuclidianPatternGenerator<MAX_EVENTS>::GeneratePattern(
-          ts, bars, density, granularity, pattern);
-      break;
-    case 2:
-      if (pattern.Count() > 0) {
-        InversionPatternGenerator<MAX_EVENTS>::GeneratePattern(
-            ts, bars, density, granularity, pattern);
-      } else {
-        // Fallback
+      case 0:
         pattern.Clear();
         SimpleRandomPatternGenerator<MAX_EVENTS>::GeneratePattern(
+          ts, bars, density, granularity, pattern);
+        break;
+      case 1:
+        pattern.Clear();
+        EuclidianPatternGenerator<MAX_EVENTS>::GeneratePattern(
+          ts, bars, density, granularity, pattern);
+        break;
+      case 2:
+        if (pattern.size() > 0) {
+          InversionPatternGenerator<MAX_EVENTS>::GeneratePattern(
             ts, bars, density, granularity, pattern);
-      }
-      break;
-    default:
-      pattern.Clear();
-      break;
+        } else {
+          // Fallback
+          pattern.Clear();
+          SimpleRandomPatternGenerator<MAX_EVENTS>::GeneratePattern(
+            ts, bars, density, granularity, pattern);
+        }
+        break;
+      default:
+        pattern.Clear();
+        break;
     }
 #ifdef USE_DEBUG
     DebugPattern<MAX_EVENTS>(ts, granularity, pattern);
     std::cout << '\n';
 #endif
-    return pattern.Count();
+    return pattern.size();
   }
 };
 
