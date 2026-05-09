@@ -1,9 +1,10 @@
-#include <Monkey.h>
-
 #include <sstream>
 #include <string>
 
-#include "TestFramework.h"
+#include <monkey.hpp>
+#include <mstring.hpp>
+
+#include "test_framework.hpp"
 
 TEST_CASE("MString stores and exposes a null-terminated string")
 {

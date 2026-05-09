@@ -1,50 +1,50 @@
 
-#include <Music/Music.h>
+#include <music/music.hpp>
 
-#include "TestFramework.h"
+#include "test_framework.hpp"
 
-using Music::NoteEventSet;
-using Music::TimeSignature;
+using music::NoteEventSet;
+using music::TimeSignature;
 using MyNoteEventSet = NoteEventSet<>;
 
 TEST_CASE("Event size")
 {
-  TimeSignature ts(4, Music::NoteValue::Quarter);
+  TimeSignature ts(4, music::NoteValue::Quarter);
   MyNoteEventSet events;
   CHECK_EQ(events.size(), 0UL); // Should always start out empty
-  CHECK_EQ(events.IsEmpty(), true);
+  CHECK_EQ(events.is_empty(), true);
 
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Quarter);
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Quarter);
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Quarter);
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Quarter);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Quarter);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Quarter);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Quarter);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Quarter);
   CHECK_EQ(events.size(), 4UL);
 
-  events.Clear();
+  events.clear();
   CHECK_EQ(events.size(), 0UL);
-  CHECK_EQ(events.IsEmpty(), true);
+  CHECK_EQ(events.is_empty(), true);
 }
 
 TEST_CASE("Bars For Events")
 {
-  TimeSignature ts(4, Music::NoteValue::Quarter);
+  TimeSignature ts(4, music::NoteValue::Quarter);
   MyNoteEventSet events;
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Whole);
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Whole);
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Whole);
-  events.Emplace(Music::Note_P1, 0, Music::NoteValue::Whole);
-  CHECK_EQ(events.GetBarsForTimeSignature(ts), 4);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Whole);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Whole);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Whole);
+  events.emplace(music::Note_P1, 0, music::NoteValue::Whole);
+  CHECK_EQ(events.get_bars_for_time_signature(ts), 4);
 
-  TimeSignature ts2(6, Music::NoteValue::Eighth);
-  events.Clear();
+  TimeSignature ts2(6, music::NoteValue::Eighth);
+  events.clear();
   for (int i = 0; i < 12; i++)
-    events.Emplace(Music::Note_P1, 0, Music::NoteValue::Eighth);
-  CHECK_EQ(events.GetBarsForTimeSignature(ts2), 2);
+    events.emplace(music::Note_P1, 0, music::NoteValue::Eighth);
+  CHECK_EQ(events.get_bars_for_time_signature(ts2), 2);
 }
 
 TEST_CASE("Total Pulse size")
 {
-  TimeSignature ts(4, Music::NoteValue::Quarter);
+  TimeSignature ts(4, music::NoteValue::Quarter);
   MyNoteEventSet events;
 }
 

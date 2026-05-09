@@ -1,6 +1,6 @@
-#include <Music/EventSetManager.h>
-#include <Music/Music.h>
-#include <TTY.h>
+#include <music/event_set_manager.hpp>
+#include <music/music.hpp>
+#include <tty.h>
 #include <unistd.h>
 
 #include <cstdarg>
@@ -10,7 +10,7 @@
 #include <iostream>
 #include <string>
 
-using namespace Music;
+using namespace music;
 
 constexpr std::size_t MAX_DEGREES = 64;
 constexpr std::size_t MAX_EVENTS = 128;
@@ -23,17 +23,15 @@ constexpr float HALF = 0.5F;
 #define WEIGHT_MAP SCALE_WEIGHTS_7_UNIFORM
 
 using FRange = Range<float>;
-using MySetup = Music::Setup<MAX_DEGREES, SCALE_DEGREES>;
-using MyPitchEngine = Music::PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
-using MyScaleTable = Music::ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>;
+using MySetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
+using MyPitchEngine = PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
+using MyScaleTable = ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>;
 template<typename TRole>
-using MyPersona = Music::Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-using MyNoteManager =
-  Music::EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-using MyChordEventSet =
-  Music::ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-using MyPatternEventSet = Music::PatternEventSet<MAX_EVENTS>;
-using MyNoteEventSet = Music::NoteEventSet<MAX_EVENTS>;
+using MyPersona = Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+using MyNoteManager = EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+using MyChordEventSet = ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+using MyPatternEventSet = PatternEventSet<MAX_EVENTS>;
+using MyNoteEventSet = NoteEventSet<MAX_EVENTS>;
 
 // Testing Setup 4/4 time 12-EDO
 MySetup setup(4, NoteValue::Quarter, TWELVE_TONE, OCTAVE_DOUBLE);
@@ -46,7 +44,7 @@ struct RoleTypeA
   //  static constexpr const char Name[] = "Role A";
   const int octaveOffset;
   const FRange density;
-  const Music::NoteValue granularity = Music::NoteValue::Quarter;
+  const NoteValue granularity = NoteValue::Quarter;
 
   RoleTypeA(int octaveOffset, FRange density)
     : octaveOffset(octaveOffset)
@@ -59,7 +57,7 @@ struct RoleTypeB
   // static constexpr const char Name[] = "Role B";
   const int octaveOffset;
   const FRange density;
-  const Music::NoteValue granularity = Music::NoteValue::Eighth;
+  const NoteValue granularity = NoteValue::Eighth;
 
   RoleTypeB(int octaveOffset, FRange density)
     : octaveOffset(octaveOffset)
@@ -85,15 +83,15 @@ testThing()
   static MyNoteManager noteManager;
   const char* pName;
   const char* rName;
-  Music::NoteValue g;
+  NoteValue g;
 
   if (randomRange(0.0F, 1.0F) < HALF) {
-    noteManager.SetPersona(bob);
+    noteManager.set_persona(bob);
     pName = bob.GetPersonaName();
     rName = bob.GetRoleName();
     g = bob.GetGranularity();
   } else {
-    noteManager.SetPersona(mary);
+    noteManager.set_persona(mary);
     pName = mary.GetPersonaName();
     rName = mary.GetRoleName();
     g = mary.GetGranularity();
@@ -107,7 +105,7 @@ testThing()
   std::cout << TTY_CLEAR << "PERSONA: " << pName << ":" << rName
             << "\t\tSCALE: " << HEPATONIC_D12_SCALES[scaleIdx].name
             << "\t\tGRANULARITY: " << static_cast<unsigned int>(g) << " "
-            << GetNoteValueText(g) << '\n';
+            << get_note_value_text(g) << '\n';
 
   // Make Chord Progression
   GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
@@ -116,14 +114,14 @@ testThing()
   DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(setup, chords);
   std::cout << '\n';
 
-  noteManager.MakeNoteEventsFromChords(chords);
+  noteManager.make_note_events_from_chords(chords);
   DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(
-    setup.temperament, setup.timeSignature, noteManager.GetEvents());
+    setup.temperament, setup.timeSignature, noteManager.get_events());
 
   std::cout << '\n';
 
   NoteEventScore score =
-    ScoreNoteEvents(setup.temperament, noteManager.GetEvents());
+    ScoreNoteEvents(setup.temperament, noteManager.get_events());
   std::cout << TTY_FG_MAGENTA << "Event Score" << TTY_RESET << ": Overall    "
             << score.overall << '\n';
   std::cout << "           : Density    " << score.density << '\n';
@@ -154,27 +152,27 @@ main(int argc, char* argv[]) -> int
 #endif
 
 #if TEMPERAMENT_DEGREES == 12
-  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_12);
-  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
+  setup.temperament.attach_note_labels(NOTE_NAMES_12);
+  setup.temperament.attach_interval_labels(INTERVAL_NAMES_12);
 #elif TEMPERAMENT_DEGREES == 15
-  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_15);
-  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_15);
+  setup.temperament.attach_note_labels(NOTE_NAMES_15);
+  setup.temperament.attach_interval_labels(INTERVAL_NAMES_15);
 #elif TEMPERAMENT_DEGREES == 17
-  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_17);
-  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_17);
+  setup.temperament.attach_note_labels(NOTE_NAMES_17);
+  setup.temperament.attach_interval_labels(INTERVAL_NAMES_17);
 #elif TEMPERAMENT_DEGREES == 19
-  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_19);
-  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_19);
+  setup.temperament.attach_note_labels(NOTE_NAMES_19);
+  setup.temperament.attach_interval_labels(INTERVAL_NAMES_19);
 #elif TEMPERAMENT_DEGREES == 22
-  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_22);
-  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_22);
+  setup.temperament.attach_note_labels(NOTE_NAMES_22);
+  setup.temperament.attach_interval_labels(INTERVAL_NAMES_22);
 #else
 #error Unsupported TEMPERAMENT_DEGREES for music_demo
 #endif
 
-  pitchEngine.SetTemperament(&setup.temperament);
-  pitchEngine.SetScaleMap(&setup.scaleMap);
-  pitchEngine.SetRootHz(C4FREQ); // C4
+  pitchEngine.set_temperament(&setup.temperament);
+  pitchEngine.set_scale_map(&setup.scaleMap);
+  pitchEngine.set_root_hz(C4FREQ); // C4
 
   for (;;) {
     testThing();

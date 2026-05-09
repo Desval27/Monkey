@@ -1,10 +1,10 @@
-#include <Music/TimeSignature.h>
+#include <music/time_signature.hpp>
 
-#include "TestFramework.h"
+#include "test_framework.hpp"
 
-using Music::NoteValue;
-using Music::TimeSignature;
-using Music::TimeSignatureType;
+using music::NoteValue;
+using music::TimeSignature;
+using music::TimeSignatureType;
 
 static int
 TypeValue(TimeSignatureType type)
@@ -18,7 +18,7 @@ TEST_CASE("TimeSignature defaults to common time")
 
   CHECK_EQ(ts.beats, 4);
   CHECK_EQ(ts.beatValue, NoteValue::Quarter);
-  CHECK_EQ(TypeValue(ts.GetType()), TypeValue(TimeSignatureType::Common));
+  CHECK_EQ(TypeValue(ts.get_type()), TypeValue(TimeSignatureType::Common));
 }
 
 TEST_CASE("TimeSignature stores constructor values")
@@ -36,75 +36,75 @@ TEST_CASE("TimeSignature copy preserves meter")
 
   CHECK_EQ(copy.beats, 6);
   CHECK_EQ(copy.beatValue, NoteValue::Eighth);
-  CHECK_EQ(TypeValue(copy.GetType()), TypeValue(TimeSignatureType::Compound));
+  CHECK_EQ(TypeValue(copy.get_type()), TypeValue(TimeSignatureType::Compound));
 }
 
 TEST_CASE(
   "TimeSignature classifies common simple compound and irregular meters")
 {
-  CHECK_EQ(TypeValue(TimeSignature(4, NoteValue::Quarter).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(4, NoteValue::Quarter).get_type()),
            TypeValue(TimeSignatureType::Common));
-  CHECK_EQ(TypeValue(TimeSignature(3, NoteValue::Quarter).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(3, NoteValue::Quarter).get_type()),
            TypeValue(TimeSignatureType::Simple));
-  CHECK_EQ(TypeValue(TimeSignature(2, NoteValue::Quarter).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(2, NoteValue::Quarter).get_type()),
            TypeValue(TimeSignatureType::Simple));
-  CHECK_EQ(TypeValue(TimeSignature(6, NoteValue::Eighth).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(6, NoteValue::Eighth).get_type()),
            TypeValue(TimeSignatureType::Compound));
-  CHECK_EQ(TypeValue(TimeSignature(9, NoteValue::Eighth).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(9, NoteValue::Eighth).get_type()),
            TypeValue(TimeSignatureType::Compound));
-  CHECK_EQ(TypeValue(TimeSignature(12, NoteValue::Eighth).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(12, NoteValue::Eighth).get_type()),
            TypeValue(TimeSignatureType::Compound));
-  CHECK_EQ(TypeValue(TimeSignature(5, NoteValue::Quarter).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(5, NoteValue::Quarter).get_type()),
            TypeValue(TimeSignatureType::Irregular));
-  CHECK_EQ(TypeValue(TimeSignature(7, NoteValue::Eighth).GetType()),
+  CHECK_EQ(TypeValue(TimeSignature(7, NoteValue::Eighth).get_type()),
            TypeValue(TimeSignatureType::Irregular));
 }
 
 TEST_CASE("TimeSignature denominator is derived from beat value")
 {
-  CHECK_EQ(TimeSignature(4, NoteValue::Whole).GetDenominator(), 1);
-  CHECK_EQ(TimeSignature(4, NoteValue::Half).GetDenominator(), 2);
-  CHECK_EQ(TimeSignature(4, NoteValue::Quarter).GetDenominator(), 4);
-  CHECK_EQ(TimeSignature(6, NoteValue::Eighth).GetDenominator(), 8);
-  CHECK_EQ(TimeSignature(4, NoteValue::Sixteenth).GetDenominator(), 16);
+  CHECK_EQ(TimeSignature(4, NoteValue::Whole).get_denominator(), 1);
+  CHECK_EQ(TimeSignature(4, NoteValue::Half).get_denominator(), 2);
+  CHECK_EQ(TimeSignature(4, NoteValue::Quarter).get_denominator(), 4);
+  CHECK_EQ(TimeSignature(6, NoteValue::Eighth).get_denominator(), 8);
+  CHECK_EQ(TimeSignature(4, NoteValue::Sixteenth).get_denominator(), 16);
 }
 
 TEST_CASE("TimeSignature denominator is zero for missing beat value")
 {
   TimeSignature ts(4, NoteValue::None);
 
-  CHECK_EQ(ts.GetDenominator(), 0);
+  CHECK_EQ(ts.get_denominator(), 0);
 }
 
 TEST_CASE("TimeSignature pulses per bar multiplies beats by beat value")
 {
-  CHECK_EQ(TimeSignature(4, NoteValue::Quarter).GetPulsesPerBar(), 4 * PPQN);
-  CHECK_EQ(TimeSignature(6, NoteValue::Eighth).GetPulsesPerBar(), 3 * PPQN);
-  CHECK_EQ(TimeSignature(7, NoteValue::Eighth).GetPulsesPerBar(),
+  CHECK_EQ(TimeSignature(4, NoteValue::Quarter).get_pulses_per_bar(), 4 * PPQN);
+  CHECK_EQ(TimeSignature(6, NoteValue::Eighth).get_pulses_per_bar(), 3 * PPQN);
+  CHECK_EQ(TimeSignature(7, NoteValue::Eighth).get_pulses_per_bar(),
            7 * static_cast<int>(NoteValue::Eighth));
 }
 
 TEST_CASE("TimeSignature pulses per bar reflects invalid inputs without hiding "
           "them")
 {
-  CHECK_EQ(TimeSignature(0, NoteValue::Quarter).GetPulsesPerBar(), 0);
-  CHECK_EQ(TimeSignature(4, NoteValue::None).GetPulsesPerBar(), 0);
+  CHECK_EQ(TimeSignature(0, NoteValue::Quarter).get_pulses_per_bar(), 0);
+  CHECK_EQ(TimeSignature(4, NoteValue::None).get_pulses_per_bar(), 0);
 }
 
 TEST_CASE("TimeSignature is in threes")
 {
-  CHECK_EQ(TimeSignature(2, NoteValue::Half).InThrees(), false);
-  CHECK_EQ(TimeSignature(3, NoteValue::Half).InThrees(), true);
-  CHECK_EQ(TimeSignature(3, NoteValue::Quarter).InThrees(), true);
-  CHECK_EQ(TimeSignature(4, NoteValue::Quarter).InThrees(), false);
-  CHECK_EQ(TimeSignature(5, NoteValue::Quarter).InThrees(), false);
-  CHECK_EQ(TimeSignature(3, NoteValue::Eighth).InThrees(), true);
-  CHECK_EQ(TimeSignature(5, NoteValue::Eighth).InThrees(), false);
-  CHECK_EQ(TimeSignature(6, NoteValue::Eighth).InThrees(), true);
-  CHECK_EQ(TimeSignature(7, NoteValue::Eighth).InThrees(), false);
-  CHECK_EQ(TimeSignature(9, NoteValue::Eighth).InThrees(), true);
-  CHECK_EQ(TimeSignature(12, NoteValue::Eighth).InThrees(), true);
-  CHECK_EQ(TimeSignature(12, NoteValue::Sixteenth).InThrees(), true);
+  CHECK_EQ(TimeSignature(2, NoteValue::Half).in_threes(), false);
+  CHECK_EQ(TimeSignature(3, NoteValue::Half).in_threes(), true);
+  CHECK_EQ(TimeSignature(3, NoteValue::Quarter).in_threes(), true);
+  CHECK_EQ(TimeSignature(4, NoteValue::Quarter).in_threes(), false);
+  CHECK_EQ(TimeSignature(5, NoteValue::Quarter).in_threes(), false);
+  CHECK_EQ(TimeSignature(3, NoteValue::Eighth).in_threes(), true);
+  CHECK_EQ(TimeSignature(5, NoteValue::Eighth).in_threes(), false);
+  CHECK_EQ(TimeSignature(6, NoteValue::Eighth).in_threes(), true);
+  CHECK_EQ(TimeSignature(7, NoteValue::Eighth).in_threes(), false);
+  CHECK_EQ(TimeSignature(9, NoteValue::Eighth).in_threes(), true);
+  CHECK_EQ(TimeSignature(12, NoteValue::Eighth).in_threes(), true);
+  CHECK_EQ(TimeSignature(12, NoteValue::Sixteenth).in_threes(), true);
 }
 
 TEST_MAIN()

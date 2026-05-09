@@ -1,35 +1,37 @@
-#include <Monkey.h>
-#include <Music/Music.h>
-#include <Music/Tables.h>
+#include <monkey.hpp>
+#include <music/music.hpp>
+#include <music/music_tables.hpp>
 
 #include <cstdio>
 #include <cstdlib>
 #include <ctime>
 #include <iomanip>
 
+using namespace music;
+
 int
 main()
 {
-  using TempT = Music::Temperament<Music::DEF_MAX_DEGREES>;
-  using ScaleT = Music::ScaleMap<Music::HEPATONIC>;
-  using PitchT = Music::PitchEngine<Music::DEF_MAX_DEGREES, Music::HEPATONIC>;
+  using TempT = Temperament<DEF_MAX_DEGREES>;
+  using ScaleT = ScaleMap<HEPATONIC>;
+  using PitchT = PitchEngine<DEF_MAX_DEGREES, HEPATONIC>;
 
   TempT temperament;
-  temperament.MakeEqualDivision(12, 2.0f);
-  temperament.AttachNoteLabels(Music::NOTE_NAMES_12);
+  temperament.make_equal_division(12, 2.0F);
+  temperament.attach_note_labels(NOTE_NAMES_12);
 
   ScaleT scale;
-  scale.set_degrees(Music::IONIAN_D12);
+  scale.set_degrees(IONIAN_D12);
 
   // A4 = 440 Hz in 12-EDO where C is degree 0 and A is degree 9.
-  const Music::TuningReference refA4(Music::BASE_HZ, 9, 0);
+  const TuningReference refA4(BASE_HZ, 9, 0);
   const float rootC4Hz =
-    temperament.FrequencyFromReference(Music::TemperedPitch(0, 0), refA4);
+    temperament.frequency_from_reference(TemperedPitch(0, 0), refA4);
 
   PitchT engine;
-  engine.SetTemperament(&temperament);
-  engine.SetScaleMap(&scale);
-  engine.SetRootHz(rootC4Hz);
+  engine.set_temperament(&temperament);
+  engine.set_scale_map(&scale);
+  engine.set_root_hz(rootC4Hz);
 
   std::printf("Root derived from A4=440Hz: C4=%.4f Hz\n", rootC4Hz);
 
@@ -37,13 +39,14 @@ main()
     const float unitRandom = randomRange(0.0f, 0.999999f);
     int period = 0;
     const int16_t degree = scale.GetWeightedMappedDegree(
-      step, unitRandom, period, Music::SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
+      step, unitRandom, period, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
     const float freq = engine.FrequencyFromWeightedScaleIndex(
-      step, unitRandom, Music::SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
+      step, unitRandom, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
 
     char note[8];
     note[0] = '\0';
-    temperament.GetNoteLabel(static_cast<uint16_t>(degree), note, sizeof(note));
+    temperament.get_note_label(
+      static_cast<uint16_t>(degree), note, sizeof(note));
 
     std::cout << "Step " << std::setw(2) << step
               << ": unitRandom=" << std::fixed << std::setprecision(4)

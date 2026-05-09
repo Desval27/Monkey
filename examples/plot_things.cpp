@@ -1,4 +1,5 @@
-#include <Music/Music.h>
+#include <music/music.hpp>
+#include <music/pattern_generator.hpp>
 #include <unistd.h>
 
 #include <cstdarg>
@@ -8,7 +9,7 @@
 #include <iostream>
 #include <string>
 
-using namespace Music;
+using namespace music;
 
 constexpr int EVENT_POOL_SIZE = 5000;
 constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
@@ -24,15 +25,15 @@ DoThing()
 {
   const float density = randomRange(0.0F, 1.0F); // 0.50f;
   const NoteValue g =
-    GetRandomGranularity(NoteValue::Sixteenth, NoteValue::Whole);
+    get_random_granularity(NoteValue::Sixteenth, NoteValue::Whole);
   PatternEventSet<> pattern;
   NoteEventSet<> noteEvents;
 
-  EuclidianPatternGenerator<>::GeneratePattern(
+  EuclidianPatternGenerator<>::generate_pattern(
     setup.timeSignature, setup.bars, density, g, pattern);
 
   StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::
-    GenerateEvents(
+    generate_events(
       setup, pattern, chords, g, SCALE_WEIGHTS_7_UNIFORM, noteEvents);
   NoteEventScore score = ScoreNoteEvents(setup.temperament, noteEvents);
 
@@ -45,9 +46,9 @@ DoThing()
 int
 main(int argc, char* argv[])
 {
-  setup.temperament.AttachNoteLabels(Music::NOTE_NAMES_12);
-  setup.temperament.AttachIntervalLabels(Music::INTERVAL_NAMES_12);
-  setup.scaleMap.set_degrees(Music::IONIAN_D12);
+  setup.temperament.attach_note_labels(NOTE_NAMES_12);
+  setup.temperament.attach_interval_labels(INTERVAL_NAMES_12);
+  setup.scaleMap.set_degrees(IONIAN_D12);
 
   std::cout << "set title 'Density/Granularity vs Score'" << '\n';
   std::cout << "set xlabel 'Density/Granularity'" << '\n';
