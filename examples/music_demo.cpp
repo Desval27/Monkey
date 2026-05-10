@@ -26,12 +26,16 @@ using FRange = Range<float>;
 using MySetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
 using MyPitchEngine = PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
 using MyScaleTable = ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>;
+
 template<typename TRole>
 using MyPersona = Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-using MyNoteManager = EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-using MyChordEventSet = ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 using MyPatternEventSet = PatternEventSet<MAX_EVENTS>;
+using MyChordEventSet = ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+
 using MyNoteEventSet = NoteEventSet<MAX_EVENTS>;
+using MyChordManager =
+  EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS, MyChordEventSet>;
+using MyNoteManager = EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
 // Testing Setup 4/4 time 12-EDO
 MySetup setup(4, NoteValue::Quarter, TWELVE_TONE, OCTAVE_DOUBLE);
@@ -45,6 +49,7 @@ struct RoleTypeA
   const int octaveOffset;
   const FRange density;
   const NoteValue granularity = NoteValue::Quarter;
+  const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
 
   RoleTypeA(int octaveOffset, FRange density)
     : octaveOffset(octaveOffset)
@@ -58,17 +63,36 @@ struct RoleTypeB
   const int octaveOffset;
   const FRange density;
   const NoteValue granularity = NoteValue::Eighth;
+  const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
 
   RoleTypeB(int octaveOffset, FRange density)
     : octaveOffset(octaveOffset)
     , density(density) {};
 };
 
+struct RoleTypeC
+{
+  const MString<7> Name = "Role C";
+  // static constexpr const char Name[] = "Role B";
+  const int octaveOffset;
+  const FRange density;
+  const NoteValue granularity = NoteValue::Half;
+  template<std::size_t MAX_EVENTS>
+  using PatternGenerator = EuclidianPatternGenerator<MAX_EVENTS>;
+  const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
+
+  RoleTypeC(int octaveOffset, FRange density)
+    : octaveOffset(octaveOffset)
+    , density(density) {};
+};
+
 RoleTypeA role1(0, FRange(0.0F, HALF));
 RoleTypeB role2(0, FRange(HALF, 1.0F));
+RoleTypeC rolec(0, FRange(0.0F, 1.0F));
 
 MyPersona<RoleTypeA> bob("BOB", setup, role1);
 MyPersona<RoleTypeB> mary("MARY", setup, role2);
+MyPersona<RoleTypeC> clyde("CLYDE", setup, rolec);
 
 void
 doDebug(const char* format, va_list args)
@@ -79,11 +103,14 @@ doDebug(const char* format, va_list args)
 void
 testThing()
 {
-  static MyChordEventSet chords;
-  static MyNoteManager noteManager;
+  // static MyChordEventSet chords;
+  static MyNoteManager noteManager(setup);
+  static MyChordManager chordManager(setup);
   const char* pName;
   const char* rName;
   NoteValue g;
+
+  chordManager.set_persona(clyde);
 
   if (randomRange(0.0F, 1.0F) < HALF) {
     noteManager.set_persona(bob);
@@ -108,13 +135,14 @@ testThing()
             << get_note_value_text(g) << '\n';
 
   // Make Chord Progression
-  GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
-    setup, NoteValue::Whole, chords);
-
-  DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(setup, chords);
+  // GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
+  //   setup, NoteValue::Whole, chords);
+  chordManager.make_chord_events();
+  DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
+    setup, chordManager.get_events());
   std::cout << '\n';
 
-  noteManager.make_note_events_from_chords(chords);
+  noteManager.make_note_events_from_chords(chordManager.get_events());
   DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(
     setup.temperament, setup.timeSignature, noteManager.get_events());
 

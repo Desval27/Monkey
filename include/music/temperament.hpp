@@ -34,12 +34,18 @@ namespace music {
  * temperament.
  *
  */
-template<std::size_t MAX_DEGREES = 64>
+
+template<std::size_t MAX_DEGREES = DEF_MAX_DEGREES>
 class LabelSet
 {
 public:
   LabelSet() = default;
 
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param labels
+  /// @param count
+  /// @return
   bool attach(const char* const* labels, uint16_t count)
   {
     if ((labels == nullptr) || count == 0 || count > MAX_DEGREES) {
@@ -51,6 +57,12 @@ public:
     return true;
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @tparam N
+  /// @param index
+  /// @param out
+  /// @return
   template<std::size_t N>
   bool get(Degree index, MString<N>& out) const
   {
@@ -62,6 +74,12 @@ public:
     return out.set(src);
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param index
+  /// @param out
+  /// @param maxOut
+  /// @return
   bool get(Degree index, char* out, std::size_t maxOut) const
   {
     if ((_labels == nullptr) || index >= _count || (out == nullptr) ||

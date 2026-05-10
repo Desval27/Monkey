@@ -13,6 +13,7 @@
 #pragma once
 
 #include <music/music_config.hpp>
+#include <music/music_tables.hpp>
 #include <music/note.hpp>
 #include <music/scale_map.hpp>
 #include <music/temperament.hpp>

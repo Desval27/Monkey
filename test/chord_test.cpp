@@ -180,7 +180,7 @@ TEST_CASE("Chord naming uses the temperament period when provided")
   ScaleMap scale;
   Temperament<> temperament;
   music::Note tones[3] = {};
-  CHECK(temperament.make_equal_division(15, 2.0f));
+  CHECK(temperament.make_equal_division(15, 2.0F));
   CHECK(temperament.attach_interval_labels(music::INTERVAL_NAMES_15));
   scale.set_degrees(music::IONIAN_D15);
 

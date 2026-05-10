@@ -42,10 +42,10 @@ struct Role2
     , density(dl, dh) {};
 };
 
-MySetup setup(4, NoteValue::Quarter, 12.0f, 2.0f);
+MySetup setup(4, NoteValue::Quarter, 12.0F, 2.0F);
 
-const float dLow = 0.0f;
-const float dHigh = 0.9f;
+const float dLow = 0.0F;
+const float dHigh = 0.9F;
 Role1 role(-1, dLow, dHigh);
 Role2 roleWithoutPatternGenerator(0, dLow, dHigh);
 
@@ -92,10 +92,10 @@ TEST_CASE("Default Fallback Generator Syntax Test")
   CHECK_EQ(p.GenerateNoteEvents(chords, events), 0UL);
 }
 
-static_assert(std::is_same_v<typename Persona<Role1>::DefaultPatternGenerator,
+static_assert(std::is_same_v<Persona<Role1>::DefaultPatternGenerator,
                              EuclidianPatternGenerator<music::DEF_MAX_EVENTS>>);
 static_assert(
-  std::is_same_v<typename Persona<Role2>::DefaultPatternGenerator,
+  std::is_same_v<Persona<Role2>::DefaultPatternGenerator,
                  RandomRandomPatternGenerator<music::DEF_MAX_EVENTS>>);
 
 TEST_MAIN();

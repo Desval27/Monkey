@@ -40,6 +40,8 @@ struct PersonaPatternGeneratorSelector<
   using Type = typename TRole::template PatternGenerator<MAX_EVENTS>;
 };
 
+#define TESTING_WEIGHTS SCALE_WEIGHTS_7_UNIFORM
+
 //////////////////////////////////////////////////////////////////////////
 /// @brief
 /// @tparam TRole
@@ -82,6 +84,18 @@ public:
   // const char *GetRoleName() const { return role_.Name; }
 
   [[nodiscard]] const char* GetRoleName() const { return role_.Name.c_str(); }
+
+  //////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param granularity
+  /// @param chords
+  /// @return
+  std::size_t GenerateChordEvents(
+    ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords)
+  {
+    const NoteValue granularity = GetGranularity();
+    return GenerateStandardChordEvents(*setup_, granularity, chords);
+  }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
@@ -131,7 +145,7 @@ public:
       granularity,
       pattern_);
     return MyNoteGenerator::generate_events(
-      *setup_, pattern_, chords, granularity, SCALE_WEIGHTS_7_UNIFORM, events);
+      *setup_, pattern_, chords, granularity, GetWeightMap(), events);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -143,6 +157,11 @@ public:
   /// @brief
   /// @return
   NoteValue GetGranularity() { return role_.granularity; }
+
+  //////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @return
+  const WeightMap<SCALE_DEGREES>& GetWeightMap() { return role_.weight_map; }
 
 private:
   const MString<20> personaName_;

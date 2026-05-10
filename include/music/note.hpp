@@ -57,6 +57,34 @@ struct NoteEvent
    * @brief
    */
   [[nodiscard]] bool IsPitched() const { return note != REST; }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @tparam TEMPERAMENT_DEGREES
+  /// @tparam N
+  /// @param temperament
+  /// @param out
+  /// @return
+  template<std::size_t TEMPERAMENT_DEGREES, std::size_t N>
+  bool get_interval_name(const Temperament<TEMPERAMENT_DEGREES>& temperament,
+                         MString<N>& out) const
+  {
+    return temperament.get_interval_label(note, out);
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @tparam TEMPERAMENT_DEGREES
+  /// @tparam N
+  /// @param temperament
+  /// @param out
+  /// @return
+  template<std::size_t TEMPERAMENT_DEGREES, std::size_t N>
+  bool get_note_name(const Temperament<TEMPERAMENT_DEGREES>& temperament,
+                     MString<N>& out) const
+  {
+    return temperament.get_note_label(note, out);
+  }
 };
 
 } // namespace Music

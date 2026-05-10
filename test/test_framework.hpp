@@ -18,7 +18,10 @@ struct Failure : public std::exception
   {
   }
 
-  const char* what() const noexcept override { return _message.c_str(); }
+  [[nodiscard]] const char* what() const noexcept override
+  {
+    return _message.c_str();
+  }
 
 private:
   std::string _message;
