@@ -26,27 +26,31 @@ namespace music {
 static int
 weighted_index_from_row(const float* weights, std::size_t count)
 {
-  if (!weights || count == 0)
+  if ((weights == nullptr) || count == 0) {
     return 0;
-
-  float sum = 0.0f;
-  for (std::size_t i = 0; i < count; ++i) {
-    if (weights[i] > 0.0f)
-      sum += weights[i];
   }
 
-  if (sum <= 0.0f)
-    return 0;
+  float sum = 0.0F;
+  for (std::size_t i = 0; i < count; ++i) {
+    if (weights[i] > 0.0F) {
+      sum += weights[i];
+    }
+  }
 
-  const float unitRandom = randomRange(0.0f, 0.999999f);
+  if (sum <= 0.0F) {
+    return 0;
+  }
+
+  const float unitRandom = randomRange(0.0F, 0.999999F);
   const float pick = unitRandom * sum;
-  float accum = 0.0f;
+  float accum = 0.0F;
 
   for (std::size_t i = 0; i < count; ++i) {
-    const float w = (weights[i] > 0.0f) ? weights[i] : 0.0f;
+    const float w = (weights[i] > 0.0F) ? weights[i] : 0.0F;
     accum += w;
-    if (pick < accum)
+    if (pick < accum) {
       return static_cast<int>(i);
+    }
   }
 
   return static_cast<int>(count - 1);
@@ -62,8 +66,9 @@ get_random_granularity(NoteValue low, NoteValue high)
 {
   // This is really weird but it will be addressed later with some sort of
   // table.
-  if (low == NoteValue::None)
+  if (low == NoteValue::None) {
     return NoteValue::None;
+  }
 
   int div = static_cast<int>(high) / static_cast<int>(low);
   int tries = 0;
@@ -164,8 +169,9 @@ ScaleDegree
 get_weighted_next_chord(ScaleDegree fromDegree, HarmonicMode mode)
 {
   const int fromIndex = scale_degree_index(fromDegree, mode);
-  if (fromIndex < 0)
+  if (fromIndex < 0) {
     return get_weighted_starting_chord(mode);
+  }
 
   const ChordProbability* table = chord_probability_table_for_mode(mode);
   const int toIdx =

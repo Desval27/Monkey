@@ -13,17 +13,32 @@
 
 #include <cstddef>
 
+#include <music/event_set.hpp>
+#include <music/music_setup.hpp>
 #include <music/music_tables.hpp>
 #include <music/pitch_engine.hpp>
 
 namespace music {
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @tparam MAX_DEGREES
+/// @tparam SCALE_DEGREES
+/// @tparam MAX_EVENTS
 template<std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
          std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES,
          std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
 class NullNoteGenerator
 {
 public:
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param setup
+  /// @param pattern
+  /// @param chords
+  /// @param granularity
+  /// @param events
+  /// @return
   static std::size_t generate_pattern(
     const Setup<MAX_DEGREES, SCALE_DEGREES>& setup,
     const PatternEventSet<MAX_EVENTS>& pattern,
@@ -36,12 +51,26 @@ public:
   }
 };
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @tparam MAX_DEGREES
+/// @tparam SCALE_DEGREES
+/// @tparam MAX_EVENTS
 template<std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
          std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES,
          std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
 class StyleANoteGenerator
 {
 public:
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param setup
+  /// @param pattern
+  /// @param chords
+  /// @param granularity
+  /// @param weightMap
+  /// @param events
+  /// @return
   static std::size_t generate_events(
     const Setup<MAX_DEGREES, SCALE_DEGREES>& setup,
     const PatternEventSet<MAX_EVENTS>& pattern,
@@ -137,6 +166,66 @@ public:
       }
       // Otherwise we're just goint to lose it for now.
     }
+    return events.size();
+  }
+};
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @tparam MAX_DEGREES
+/// @tparam SCALE_DEGREES
+/// @tparam MAX_EVENTS
+template<std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
+         std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES,
+         std::size_t MAX_EVENTS = DEF_MAX_EVENTS>
+class PatternModifier
+{
+public:
+  static std::size_t repeat_two(const Setup<MAX_DEGREES, SCALE_DEGREES>& setup,
+                                NoteEventSet<MAX_EVENTS>& events)
+  {
+#ifdef USE_DEBUG
+    std::cout << __FILE__ << ":" << __LINE__ << " - " << __func__ << "\n";
+#endif
+    const int pulsesPerBar = setup.timeSignature.get_pulses_per_bar();
+    if (pulsesPerBar <= 0 || setup.bars <= 0 || (setup.bars % 2) != 0) {
+      return events.size();
+    }
+
+    const int middlePulse = (setup.bars / 2) * pulsesPerBar;
+    if (middlePulse <= 0 || events.get_total_event_pulses() < middlePulse) {
+      return events.size();
+    }
+
+    NoteEvent firstHalf[MAX_EVENTS];
+    std::size_t firstHalfCount = 0;
+    int pulseCursor = 0;
+    for (std::size_t i = 0; i < events.size() && pulseCursor < middlePulse;
+         i++) {
+      NoteEvent event = events[i];
+      const int eventPulses = static_cast<int>(event.value);
+      const int nextPulse = pulseCursor + eventPulses;
+
+      if (nextPulse > middlePulse) {
+        event.value = static_cast<NoteValue>(middlePulse - pulseCursor);
+      }
+
+      firstHalf[firstHalfCount++] = event;
+      pulseCursor = nextPulse;
+    }
+
+    if (firstHalfCount > (events.capacity() / 2)) {
+      return events.size();
+    }
+
+    events.clear();
+    for (std::size_t i = 0; i < firstHalfCount; i++) {
+      events.add(firstHalf[i]);
+    }
+    for (std::size_t i = 0; i < firstHalfCount; i++) {
+      events.add(firstHalf[i]);
+    }
+
     return events.size();
   }
 };

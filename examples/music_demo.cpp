@@ -48,6 +48,7 @@ struct RoleTypeA
   //  static constexpr const char Name[] = "Role A";
   const int octaveOffset;
   const FRange density;
+  const FRange repeat_probability{ 0.3F, 0.5F };
   const NoteValue granularity = NoteValue::Quarter;
   const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
 
@@ -62,6 +63,7 @@ struct RoleTypeB
   // static constexpr const char Name[] = "Role B";
   const int octaveOffset;
   const FRange density;
+  const FRange repeat_probability{ 0.0F, 0.0F };
   const NoteValue granularity = NoteValue::Eighth;
   const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
 
@@ -76,6 +78,7 @@ struct RoleTypeC
   // static constexpr const char Name[] = "Role B";
   const int octaveOffset;
   const FRange density;
+  const FRange repeat_probability{ 0.0F, 0.0F };
   const NoteValue granularity = NoteValue::Half;
   template<std::size_t MAX_EVENTS>
   using PatternGenerator = EuclidianPatternGenerator<MAX_EVENTS>;
@@ -116,12 +119,12 @@ testThing()
     noteManager.set_persona(bob);
     pName = bob.GetPersonaName();
     rName = bob.GetRoleName();
-    g = bob.GetGranularity();
+    g = bob.get_granularity();
   } else {
     noteManager.set_persona(mary);
     pName = mary.GetPersonaName();
     rName = mary.GetRoleName();
-    g = mary.GetGranularity();
+    g = mary.get_granularity();
   }
 
   const std::size_t scaleIdx = randomRange(static_cast<std::size_t>(0),

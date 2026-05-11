@@ -16,12 +16,17 @@ using MySetup = music::Setup<>;
 using MyChordEventSet = music::ChordEventSet<>;
 using FRange = Range<float>;
 
+template<std::size_t SCALE_DEGREES = music::DEF_SCALE_DEGREES>
 struct Role1
 {
   const MString<6> Name = "Role1";
   const int octaveOffset;
   const FRange density;
+  const FRange repeat_probability{ 0.0F, 0.0F };
   const NoteValue granularity = NoteValue::Quarter;
+  const music::WeightMap<SCALE_DEGREES>& weight_map =
+    music::SCALE_WEIGHTS_7_UNIFORM;
+
   template<std::size_t MAX_EVENTS>
   using PatternGenerator = EuclidianPatternGenerator<MAX_EVENTS>;
 
@@ -30,12 +35,16 @@ struct Role1
     , density(dl, dh) {};
 };
 
+template<std::size_t SCALE_DEGREES = music::DEF_SCALE_DEGREES>
 struct Role2
 {
   const MString<6> Name = "Role2";
   const int octaveOffset;
   const FRange density;
+  const FRange repeat_probability{ 0.0F, 0.0F };
   const NoteValue granularity = NoteValue::Quarter;
+  const music::WeightMap<SCALE_DEGREES>& weight_map =
+    music::SCALE_WEIGHTS_7_UNIFORM;
 
   Role2(int o, float dl, float dh)
     : octaveOffset(o)
@@ -46,30 +55,30 @@ MySetup setup(4, NoteValue::Quarter, 12.0F, 2.0F);
 
 const float dLow = 0.0F;
 const float dHigh = 0.9F;
-Role1 role(-1, dLow, dHigh);
-Role2 roleWithoutPatternGenerator(0, dLow, dHigh);
+Role1<> role(-1, dLow, dHigh);
+Role2<> roleWithoutPatternGenerator(0, dLow, dHigh);
 
 TEST_CASE("Persona Name Test")
 {
-  Persona<Role1> p("Persona", setup, role);
+  Persona<Role1<>> p("Persona", setup, role);
   CHECK_EQ(p.GetPersonaName(), "Persona");
 }
 
 TEST_CASE("Role Name Test")
 {
-  Persona<Role1> p("P", setup, role);
+  Persona<Role1<>> p("P", setup, role);
   CHECK_EQ(p.GetRoleName(), "Role1");
 }
 
 TEST_CASE("Density Test")
 {
-  Persona<Role1> p("P", setup, role);
+  Persona<Role1<>> p("P", setup, role);
   CHECK_IN_RANGE(p.get_density(), dLow, dHigh);
 }
 
 TEST_CASE("Generator Injection Syntax Test")
 {
-  Persona<Role1> p("P", setup, role);
+  Persona<Role1<>> p("P", setup, role);
   MyChordEventSet chords;
   music::NoteEventSet<> events;
   CHECK_EQ(p.GenerateNoteEvents<EuclidianPatternGenerator>(chords, events),
@@ -78,7 +87,7 @@ TEST_CASE("Generator Injection Syntax Test")
 
 TEST_CASE("Role Default Generator Syntax Test")
 {
-  Persona<Role1> p("P", setup, role);
+  Persona<Role1<>> p("P", setup, role);
   MyChordEventSet chords;
   music::NoteEventSet<> events;
   CHECK_EQ(p.GenerateNoteEvents(chords, events), 0UL);
@@ -86,16 +95,16 @@ TEST_CASE("Role Default Generator Syntax Test")
 
 TEST_CASE("Default Fallback Generator Syntax Test")
 {
-  Persona<Role2> p("P", setup, roleWithoutPatternGenerator);
+  Persona<Role2<>> p("P", setup, roleWithoutPatternGenerator);
   MyChordEventSet chords;
   music::NoteEventSet<> events;
   CHECK_EQ(p.GenerateNoteEvents(chords, events), 0UL);
 }
 
-static_assert(std::is_same_v<Persona<Role1>::DefaultPatternGenerator,
+static_assert(std::is_same_v<Persona<Role1<>>::DefaultPatternGenerator,
                              EuclidianPatternGenerator<music::DEF_MAX_EVENTS>>);
 static_assert(
-  std::is_same_v<Persona<Role2>::DefaultPatternGenerator,
+  std::is_same_v<Persona<Role2<>>::DefaultPatternGenerator,
                  RandomRandomPatternGenerator<music::DEF_MAX_EVENTS>>);
 
 TEST_MAIN();

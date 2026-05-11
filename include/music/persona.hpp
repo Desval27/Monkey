@@ -93,7 +93,7 @@ public:
   std::size_t GenerateChordEvents(
     ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords)
   {
-    const NoteValue granularity = GetGranularity();
+    const NoteValue granularity = get_granularity();
     return GenerateStandardChordEvents(*setup_, granularity, chords);
   }
 
@@ -136,7 +136,7 @@ public:
     NoteEventSet<MAX_EVENTS>& events)
   {
     const float density = get_density();
-    const NoteValue granularity = GetGranularity();
+    const NoteValue granularity = get_granularity();
 
     TPatternGenerator::generate_pattern(
       setup_->timeSignature,
@@ -144,19 +144,31 @@ public:
       density,
       granularity,
       pattern_);
-    return MyNoteGenerator::generate_events(
+    MyNoteGenerator::generate_events(
       *setup_, pattern_, chords, granularity, GetWeightMap(), events);
+
+    // Likelyhood of haveing it repeat sections
+    if (randomRange(0.0F, 1.0F) < get_repeat_probability()) {
+      return PatternModifier<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>::
+        repeat_two(*setup_, events);
+    }
+    return events.size();
   }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  float get_density() { return randomRange(role_.density); }
+  [[nodiscard]] float get_density() const { return randomRange(role_.density); }
+
+  [[nodiscard]] float get_repeat_probability() const
+  {
+    return randomRange(role_.repeat_probability);
+  }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  NoteValue GetGranularity() { return role_.granularity; }
+  [[nodiscard]] NoteValue get_granularity() const { return role_.granularity; }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
