@@ -13,10 +13,10 @@
 
 #include <cstddef>
 
-#include <music/event_set.hpp>
-#include <music/music_setup.hpp>
-#include <music/music_tables.hpp>
-#include <music/pitch_engine.hpp>
+#include <Music/event_set.hpp>
+#include <Music/music_setup.hpp>
+#include <Music/music_tables.hpp>
+#include <Music/pitch_engine.hpp>
 
 namespace music {
 
@@ -86,15 +86,14 @@ public:
 
     int pulses = 0;
     int chordPulses = 0;
-    int ppb = setup.timeSignature.get_pulses_per_bar();
+    int ppb = setup.time_signature.get_pulses_per_bar();
     std::size_t chordIdx = 0;
 
-    Note tones[20];
+    std::array<Note, 20> tones;
     std::size_t toneCount = chords[chordIdx].get_chord_tones(
-      setup.scaleMap,
+      setup.scale_map,
       static_cast<int>(setup.temperament.degrees_per_period()),
-      tones,
-      ArrayLen(tones));
+      tones);
 
     for (std::size_t i = 0; i < pattern.size() && !events.at_capacity(); i++,
                      pulses = pulses + granularity,
@@ -105,10 +104,9 @@ public:
         chordPulses = 0;
 
         toneCount = chords[chordIdx].get_chord_tones(
-          setup.scaleMap,
+          setup.scale_map,
           static_cast<int>(setup.temperament.degrees_per_period()),
-          tones,
-          ArrayLen(tones));
+          tones);
       }
 
       if (pattern[i]) {
@@ -121,8 +119,8 @@ public:
           int periodOffset = 0;
           float unitRandom = randomRange(0.0F, 0.999999F);
 
-          Note n =
-            setup.scaleMap.GetWeightedNote(unitRandom, periodOffset, weightMap);
+          Note n = setup.scale_map.get_weighted_note(
+            unitRandom, periodOffset, weightMap);
 
           // If our last event was the same note then (for now) just add
           // to the original duraton Or just a random occurance Unless
@@ -154,7 +152,7 @@ public:
 
     // Do we have any remainders?  If so then create a single rest
     // of that value if we have any additional event capacity.
-    int t = setup.bars * setup.timeSignature.get_pulses_per_bar();
+    int t = setup.bars * setup.time_signature.get_pulses_per_bar();
     int r = t - events.get_total_event_pulses();
     if (r > 0) {
       // Do we need to add a new event or just tack on to the last one
@@ -187,7 +185,7 @@ public:
 #ifdef USE_DEBUG
     std::cout << __FILE__ << ":" << __LINE__ << " - " << __func__ << "\n";
 #endif
-    const int pulsesPerBar = setup.timeSignature.get_pulses_per_bar();
+    const int pulsesPerBar = setup.time_signature.get_pulses_per_bar();
     if (pulsesPerBar <= 0 || setup.bars <= 0 || (setup.bars % 2) != 0) {
       return events.size();
     }

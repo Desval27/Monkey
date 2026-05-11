@@ -3,13 +3,13 @@
 #include <cstddef>
 #include <utility>
 
-#include <music/chord.hpp>
-#include <music/note.hpp>
-#include <music/time_signature.hpp>
+#include <Music/chord.hpp>
+#include <Music/note.hpp>
+#include <Music/time_signature.hpp>
 
 namespace music {
 
-template<typename T>
+template<typename TEventType>
 struct EventTraits;
 
 template<>
@@ -69,7 +69,7 @@ template<typename T, std::size_t MAX_EVENTS>
 class EventSet
 {
 public:
-  using EventType = T;
+  using TEventType = T;
 
   EventSet() = default;
 
@@ -78,7 +78,7 @@ public:
    * This effectively removes all stored events and allows for new events to be
    * added from an empty state.
    */
-  void clear() { eventCount_ = 0; }
+  void clear() { event_count_ = 0; }
 
   /**
    * @brief Checks if the event set has reached its maximum capacity. This
@@ -106,7 +106,7 @@ public:
    * correctly.
    * @return std::size_t The number of events currently stored in the set.
    */
-  [[nodiscard]] std::size_t size() const { return eventCount_; }
+  [[nodiscard]] std::size_t size() const { return event_count_; }
 
   /**
    * @brief Checks if the event set is empty, meaning that it contains no
@@ -116,7 +116,7 @@ public:
    * resetting the state of the set before adding new events.
    * @return bool True if the event set is empty, false otherwise.
    */
-  [[nodiscard]] bool is_empty() const { return eventCount_ == 0; }
+  [[nodiscard]] bool is_empty() const { return event_count_ == 0; }
 
   /**
    * @brief Calculates the number of bars that can be formed by the events in
@@ -240,13 +240,13 @@ public:
    * specified pulse position, or a reference to an empty event if the index is
    * invalid.
    */
-  [[nodiscard]] const T& get_event_for_pulse(int pulse) const
+  [[nodiscard]] const TEventType& get_event_for_pulse(int pulse) const
   {
     int index = get_event_index_for_pulse(pulse);
     if (index >= 0 && index < static_cast<int>(size())) {
       return events_[index];
     }
-    return emptyEvent_;
+    return empty_event_;
   }
 
   /**
@@ -262,7 +262,7 @@ public:
    * access to the events in the set. The caller should ensure that they do not
    * access beyond the current count of events.
    */
-  T* data() { return events_; }
+  TEventType* data() { return events_; }
 
   /**
    * @brief Provides direct access to the underlying array of events in the
@@ -277,7 +277,7 @@ public:
    * direct access to the events in the set. The caller should ensure that they
    * do not access beyond the current count of events.
    */
-  [[nodiscard]] const T* data() const { return events_; }
+  [[nodiscard]] const TEventType* data() const { return events_; }
 
   /**
    * @brief Provides indexed access to the events in the set. This operator
@@ -295,7 +295,7 @@ public:
    * operator returns a const reference, ensuring read-only access to the event
    * data when using a const reference to the EventSet.
    */
-  T& operator[](std::size_t index) { return events_[index]; }
+  TEventType& operator[](std::size_t index) { return events_[index]; }
 
   /**
    * @brief Provides indexed access to the events in the set. This operator
@@ -313,7 +313,10 @@ public:
    * returns a const reference, ensuring read-only access to the event data
    * when using a const reference to the EventSet.
    */
-  const T& operator[](std::size_t index) const { return events_[index]; }
+  const TEventType& operator[](std::size_t index) const
+  {
+    return events_[index];
+  }
 
   /**
    * @brief Adds a new event to the set if there is available capacity. This
@@ -333,13 +336,13 @@ public:
    * @return bool True if the event was successfully added to the set, false if
    * the event could not be added due to reaching capacity.
    */
-  bool add(const T& event)
+  bool add(const TEventType& event)
   {
-    if (eventCount_ >= MAX_EVENTS) {
+    if (event_count_ >= MAX_EVENTS) {
       return false;
     }
 
-    events_[eventCount_++] = event;
+    events_[event_count_++] = event;
     return true;
   }
 
@@ -367,11 +370,11 @@ public:
   template<typename... Args>
   bool emplace(Args&&... args)
   {
-    if (eventCount_ >= MAX_EVENTS) {
+    if (event_count_ >= MAX_EVENTS) {
       return false;
     }
 
-    events_[eventCount_++] = T(std::forward<Args>(args)...);
+    events_[event_count_++] = TEventType(std::forward<Args>(args)...);
     return true;
   }
 
@@ -391,13 +394,13 @@ public:
    */
   [[nodiscard]] float get_density() const
   {
-    int hitCount = 0;
+    int hit_count = 0;
     for (std::size_t i = 0; i < size(); i++) {
       if (is_hit(i)) {
-        hitCount++;
+        hit_count++;
       }
     }
-    return static_cast<float>(hitCount) / static_cast<float>(size());
+    return static_cast<float>(hit_count) / static_cast<float>(size());
   }
 
   /**
@@ -431,7 +434,7 @@ public:
    */
   Note& pitch(std::size_t index)
   {
-    return EventTraits<T>::pitch(events_[index]);
+    return EventTraits<TEventType>::pitch(events_[index]);
   }
 
   /**
@@ -456,7 +459,7 @@ public:
    */
   [[nodiscard]] const Note& pitch(std::size_t index) const
   {
-    return EventTraits<T>::pitch(events_[index]);
+    return EventTraits<TEventType>::pitch(events_[index]);
   }
 
   /**
@@ -481,7 +484,7 @@ public:
    */
   NoteValue& value(std::size_t index)
   {
-    return EventTraits<T>::value(events_[index]);
+    return EventTraits<TEventType>::value(events_[index]);
   }
 
   /**
@@ -505,7 +508,7 @@ public:
    */
   [[nodiscard]] const NoteValue& value(std::size_t index) const
   {
-    return EventTraits<T>::value(events_[index]);
+    return EventTraits<TEventType>::value(events_[index]);
   }
 
   /**
@@ -527,13 +530,13 @@ public:
    */
   [[nodiscard]] bool is_hit(std::size_t index) const
   {
-    return EventTraits<T>::is_hit(events_[index]);
+    return EventTraits<TEventType>::is_hit(events_[index]);
   }
 
 private:
-  T emptyEvent_{};
-  T events_[MAX_EVENTS];
-  std::size_t eventCount_{ 0 };
+  TEventType empty_event_{};
+  TEventType events_[MAX_EVENTS];
+  std::size_t event_count_{ 0 };
 };
 
 /**

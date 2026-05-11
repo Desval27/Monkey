@@ -5,12 +5,12 @@
 
 using music::NoteEventSet;
 using music::TimeSignature;
-using MyNoteEventSet = NoteEventSet<>;
+using TNoteEventSet = NoteEventSet<>;
 
 TEST_CASE("Event size")
 {
   TimeSignature ts(4, music::NoteValue::Quarter);
-  MyNoteEventSet events;
+  TNoteEventSet events;
   CHECK_EQ(events.size(), 0UL); // Should always start out empty
   CHECK_EQ(events.is_empty(), true);
 
@@ -28,7 +28,7 @@ TEST_CASE("Event size")
 TEST_CASE("Bars For Events")
 {
   TimeSignature ts(4, music::NoteValue::Quarter);
-  MyNoteEventSet events;
+  TNoteEventSet events;
   events.emplace(music::Note_P1, 0, music::NoteValue::Whole);
   events.emplace(music::Note_P1, 0, music::NoteValue::Whole);
   events.emplace(music::Note_P1, 0, music::NoteValue::Whole);
@@ -45,7 +45,7 @@ TEST_CASE("Bars For Events")
 TEST_CASE("Total Pulse size")
 {
   TimeSignature ts(4, music::NoteValue::Quarter);
-  MyNoteEventSet events;
+  TNoteEventSet events;
 }
 
 TEST_MAIN();

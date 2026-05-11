@@ -38,9 +38,9 @@ main()
   for (int step = 0; step < 16; ++step) {
     const float unitRandom = randomRange(0.0f, 0.999999f);
     int period = 0;
-    const int16_t degree = scale.GetWeightedMappedDegree(
+    const int16_t degree = scale.get_weighted_mapped_degree(
       step, unitRandom, period, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
-    const float freq = engine.FrequencyFromWeightedScaleIndex(
+    const float freq = engine.frequency_from_weighted_scale_index(
       step, unitRandom, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);
 
     char note[8];

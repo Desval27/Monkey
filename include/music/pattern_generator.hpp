@@ -20,9 +20,9 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <Music/music.hpp>
+#include <Music/music_templates.hpp>
 #include <monkey.hpp>
-#include <music/music.hpp>
-#include <music/music_templates.hpp>
 
 namespace music {
 
@@ -74,10 +74,10 @@ class NullPatternGenerator
 {
 public:
   static std::size_t generate_pattern(const TimeSignature& ts,
-                                     int bars,
-                                     float density,
-                                     NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS>& pattern)
+                                      int bars,
+                                      float density,
+                                      NoteValue granularity,
+                                      PatternEventSet<MAX_EVENTS>& pattern)
   {
     pattern.clear();
     return pattern.size();
@@ -100,10 +100,10 @@ class SimpleRandomPatternGenerator
 {
 public:
   static std::size_t generate_pattern(const TimeSignature& ts,
-                                     int bars,
-                                     float density,
-                                     NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS>& pattern)
+                                      int bars,
+                                      float density,
+                                      NoteValue granularity,
+                                      PatternEventSet<MAX_EVENTS>& pattern)
   {
     if (pattern.capacity() == 0 || bars == 0 ||
         ts.beatValue == NoteValue::None || granularity == NoteValue::None) {
@@ -136,10 +136,10 @@ class InversionPatternGenerator
 {
 public:
   static std::size_t generate_pattern(const TimeSignature& ts,
-                                     int bars,
-                                     float density,
-                                     NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS>& pattern)
+                                      int bars,
+                                      float density,
+                                      NoteValue granularity,
+                                      PatternEventSet<MAX_EVENTS>& pattern)
   {
     if (pattern.capacity() == 0 || bars == 0 ||
         ts.beatValue == NoteValue::None || granularity == NoteValue::None ||
@@ -179,10 +179,10 @@ class EuclidianPatternGenerator
 {
 public:
   static std::size_t generate_pattern(const TimeSignature& ts,
-                                     int bars,
-                                     float density,
-                                     NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS>& pattern)
+                                      int bars,
+                                      float density,
+                                      NoteValue granularity,
+                                      PatternEventSet<MAX_EVENTS>& pattern)
   {
     if (pattern.capacity() == 0 || bars == 0 ||
         ts.beatValue == NoteValue::None || granularity == NoteValue::None) {
@@ -210,10 +210,10 @@ class RandomRandomPatternGenerator
 {
 public:
   static std::size_t generate_pattern(const TimeSignature& ts,
-                                     int bars,
-                                     float density,
-                                     NoteValue granularity,
-                                     PatternEventSet<MAX_EVENTS>& pattern)
+                                      int bars,
+                                      float density,
+                                      NoteValue granularity,
+                                      PatternEventSet<MAX_EVENTS>& pattern)
   {
     switch (randomRange(0, 2)) {
       case 0:

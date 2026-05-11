@@ -12,17 +12,17 @@
 
 #include <array>
 
-#include <music/music_types.hpp>
-#include <music/labels/interval_name_labels.hpp>
-#include <music/labels/note_name_labels.hpp>
-#include <music/labels/note_value_labels.hpp>
-#include <music/labels/other_labels.hpp>
-#include <music/labels/scale_name_labels.hpp>
-#include <music/tones/tone12.hpp>
-#include <music/tones/tone15.hpp>
-#include <music/tones/tone17.hpp>
-#include <music/tones/tone19.hpp>
-#include <music/tones/tone22.hpp>
+#include <Music/labels/interval_name_labels.hpp>
+#include <Music/labels/note_name_labels.hpp>
+#include <Music/labels/note_value_labels.hpp>
+#include <Music/labels/other_labels.hpp>
+#include <Music/labels/scale_name_labels.hpp>
+#include <Music/music_types.hpp>
+#include <Music/tones/tone12.hpp>
+#include <Music/tones/tone15.hpp>
+#include <Music/tones/tone17.hpp>
+#include <Music/tones/tone19.hpp>
+#include <Music/tones/tone22.hpp>
 
 namespace music {
 // clang-format off
@@ -121,7 +121,6 @@ namespace music {
         {s_IONIAN_s2_s5, HarmonicMode::Major, IONIAN_s2_s5_D12},
         {s_LOCRIAN_bb3_bb7, HarmonicMode::Minor, LOCRIAN_bb3_bb7_D12}
     };
-    //constexpr std::size_t NUM_SCALES = ArrayLen(SCALE_TABLES);
 
 
     //     // Hexatonic Scales

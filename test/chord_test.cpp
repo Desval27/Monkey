@@ -86,11 +86,11 @@ TEST_CASE("Chord tones carry into the next period for wrapped triads")
 {
   ScaleMap scale;
   const music::DegreeMap<> ionian = { 0, 2, 4, 5, 7, 9, 11 };
-  music::Note tones[3] = {};
+  std::array<music::Note, 3> tones;
   scale.set_degrees(ionian);
 
   const std::size_t toneCount =
-    ChordEvent(11, NoteValue::Whole).get_chord_tones(scale, 12, tones, 3);
+    ChordEvent(11, NoteValue::Whole).get_chord_tones(scale, 12, tones);
 
   CHECK_EQ(toneCount, std::size_t(3));
   CHECK_EQ(tones[0], music::Note(11));
@@ -102,12 +102,12 @@ TEST_CASE("Chord extensions add scale-stacked chord tones")
 {
   ScaleMap scale;
   const music::DegreeMap<> ionian = { 0, 2, 4, 5, 7, 9, 11 };
-  music::Note tones[6] = {};
+  std::array<music::Note, 6> tones;
   scale.set_degrees(ionian);
 
   const ChordEvent chord(
     0, NoteValue::Whole, ChordExtension::Seventh | ChordExtension::Ninth);
-  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones, 6);
+  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones);
 
   CHECK_EQ(toneCount, std::size_t(5));
   CHECK_EQ(tones[0], music::Note(0));
@@ -122,14 +122,14 @@ TEST_CASE("Chord alterations adjust generated chord tones and names")
 {
   ScaleMap scale;
   const music::DegreeMap<> ionian = { 0, 2, 4, 5, 7, 9, 11 };
-  music::Note tones[5] = {};
+  std::array<music::Note, 5> tones;
   scale.set_degrees(ionian);
 
   const ChordEvent chord(7,
                          NoteValue::Whole,
                          ChordExtension::Seventh | ChordExtension::Ninth,
                          ChordAlteration::Sharp5 | ChordAlteration::Flat9);
-  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones, 5);
+  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones);
 
   CHECK_EQ(toneCount, std::size_t(5));
   CHECK_EQ(tones[0], music::Note(7));
@@ -144,11 +144,11 @@ TEST_CASE("Chord sus extensions replace the third")
 {
   ScaleMap scale;
   const music::DegreeMap<> ionian = { 0, 2, 4, 5, 7, 9, 11 };
-  music::Note tones[3] = {};
+  std::array<music::Note, 3> tones;
   scale.set_degrees(ionian);
 
   const ChordEvent chord(0, NoteValue::Whole, ChordExtension::Sus4);
-  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones, 3);
+  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones);
 
   CHECK_EQ(toneCount, std::size_t(3));
   CHECK_EQ(tones[0], music::Note(0));
@@ -161,12 +161,12 @@ TEST_CASE("Chord inversion rotates chord tones by period")
 {
   ScaleMap scale;
   const music::DegreeMap<> ionian = { 0, 2, 4, 5, 7, 9, 11 };
-  music::Note tones[4] = {};
+  std::array<music::Note, 4> tones;
   scale.set_degrees(ionian);
 
   const ChordEvent chord(
     0, NoteValue::Whole, ChordExtension::Seventh, ChordAlteration::None, 1);
-  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones, 4);
+  const std::size_t toneCount = chord.get_chord_tones(scale, 12, tones);
 
   CHECK_EQ(toneCount, std::size_t(4));
   CHECK_EQ(tones[0], music::Note(4));
@@ -179,7 +179,7 @@ TEST_CASE("Chord naming uses the temperament period when provided")
 {
   ScaleMap scale;
   Temperament<> temperament;
-  music::Note tones[3] = {};
+  std::array<music::Note, 3> tones;
   CHECK(temperament.make_equal_division(15, 2.0F));
   CHECK(temperament.attach_interval_labels(music::INTERVAL_NAMES_15));
   scale.set_degrees(music::IONIAN_D15);
@@ -189,7 +189,7 @@ TEST_CASE("Chord naming uses the temperament period when provided")
 
   const ChordEvent chord(14, NoteValue::Whole);
   const std::size_t toneCount = chord.get_chord_tones(
-    scale, static_cast<int>(temperament.degrees_per_period()), tones, 3);
+    scale, static_cast<int>(temperament.degrees_per_period()), tones);
 
   CHECK_EQ(toneCount, std::size_t(3));
   CHECK_EQ(tones[0], music::Note(14));

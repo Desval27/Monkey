@@ -22,11 +22,11 @@ TEST_CASE("ScaleMap default map behavior")
   CHECK_EQ(period, 0);
 
   period = 42;
-  CHECK_EQ(map.GetWeightedDegree(0.5f, period, weights), Degree(0));
+  CHECK_EQ(map.get_weighted_degree(0.5f, period, weights), Degree(0));
   CHECK_EQ(period, 0);
 
   period = 42;
-  CHECK_EQ(map.GetWeightedMappedDegree(3, 0.5f, period, weights), Degree(0));
+  CHECK_EQ(map.get_weighted_mapped_degree(3, 0.5f, period, weights), Degree(0));
   CHECK_EQ(period, 0);
 }
 
@@ -100,20 +100,20 @@ TEST_CASE("ScaleMap weighted selection respects weights and aliases")
 
   map.set_degrees(degrees);
 
-  CHECK_EQ(map.GetWeightedDegree(0.0f, period, singlePickWeights), Degree(4));
+  CHECK_EQ(map.get_weighted_degree(0.0f, period, singlePickWeights), Degree(4));
   CHECK_EQ(period, 0);
 
-  CHECK_EQ(map.GetWeightedDegree(0.5f, period, singlePickWeights), Degree(4));
+  CHECK_EQ(map.get_weighted_degree(0.5f, period, singlePickWeights), Degree(4));
   CHECK_EQ(period, 0);
 
-  CHECK_EQ(map.GetWeightedMappedDegree(8, 0.75f, period, singlePickWeights),
+  CHECK_EQ(map.get_weighted_mapped_degree(8, 0.75f, period, singlePickWeights),
            Degree(4));
   CHECK_EQ(period, 1);
 
-  CHECK_EQ(map.GetWeightedNote(0.25f, period, singlePickWeights), Degree(4));
+  CHECK_EQ(map.get_weighted_note(0.25f, period, singlePickWeights), Degree(4));
   CHECK_EQ(period, 0);
 
-  CHECK_EQ(map.GetWeightedNote(4, 0.25f, period, singlePickWeights), Degree(4));
+  CHECK_EQ(map.get_weighted_note(4, 0.25f, period, singlePickWeights), Degree(4));
   CHECK_EQ(period, 0);
 }
 
@@ -128,9 +128,9 @@ TEST_CASE("ScaleMap zero-sum weights fall back to uniform selection")
 
   map.set_degrees(degrees);
 
-  CHECK_EQ(map.GetWeightedDegree(-1.0f, period, zeroWeights), Degree(0));
-  CHECK_EQ(map.GetWeightedDegree(0.40f, period, zeroWeights), Degree(4));
-  CHECK_EQ(map.GetWeightedDegree(1.0f, period, zeroWeights), Degree(7));
+  CHECK_EQ(map.get_weighted_degree(-1.0f, period, zeroWeights), Degree(0));
+  CHECK_EQ(map.get_weighted_degree(0.40f, period, zeroWeights), Degree(4));
+  CHECK_EQ(map.get_weighted_degree(1.0f, period, zeroWeights), Degree(7));
 }
 
 TEST_CASE("ScaleMap truncates oversized degree arrays")

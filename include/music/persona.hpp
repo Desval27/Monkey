@@ -13,12 +13,12 @@
 
 #include <type_traits>
 
+#include <Music/event_set.hpp>
+#include <Music/pattern_generator.hpp>
+#include <Music/scale_map.hpp>
+#include <Music/temperament.hpp>
+#include <Music/time_signature.hpp>
 #include <monkey.hpp>
-#include <music/event_set.hpp>
-#include <music/pattern_generator.hpp>
-#include <music/scale_map.hpp>
-#include <music/temperament.hpp>
-#include <music/time_signature.hpp>
 
 namespace music {
 
@@ -40,7 +40,87 @@ struct PersonaPatternGeneratorSelector<
   using Type = typename TRole::template PatternGenerator<MAX_EVENTS>;
 };
 
-#define TESTING_WEIGHTS SCALE_WEIGHTS_7_UNIFORM
+///////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @tparam SCALE_DEGREES
+template<std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES>
+  requires(SCALE_DEGREES >= PENTATONIC && SCALE_DEGREES <= HEPATONIC)
+struct StockPersonaRole
+{
+  const MString<10> label = "STOCK ROLE";
+  const NoteValue granularity = NoteValue::Quarter;
+  const int period_offset = 0;
+  const Range<float> density{ 0.0F, ALMOST_ONE };
+  const Range<float> repeat_probability{ 0.0F, 0.0F };
+  const WeightMap<SCALE_DEGREES>& weight_map;
+
+  /////////////////////////////////////////////////////////////////////////////
+  StockPersonaRole(NoteValue granularity = NoteValue::Whole)
+    : granularity(granularity)
+    , period_offset(0)
+    , density(0.0, ALMOST_ONE)
+    , repeat_probability(0.0, ALMOST_ONE)
+    , weight_map(get_default_weight_map())
+  {
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param granularity
+  /// @param period_offset
+  /// @param density_low
+  /// @param density_high
+  /// @param repeat_low
+  /// @param repeat_high
+  StockPersonaRole(NoteValue granularity,
+                   int period_offset,
+                   float density_low,
+                   float density_high,
+                   float repeat_low = 0.0F,
+                   float repeat_high = 0.0F)
+    : granularity(granularity)
+    , period_offset(period_offset)
+    , density(density_low, density_high)
+    , repeat_probability(repeat_low, repeat_high)
+    , weight_map(get_default_weight_map())
+  {
+  }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param granularity
+  /// @param period_offset
+  /// @param density_low
+  /// @param density_high
+  /// @param weight_map
+  /// @param repeat_low
+  /// @param repeat_high
+  StockPersonaRole(NoteValue granularity,
+                   int period_offset,
+                   const WeightMap<SCALE_DEGREES>& weight_map,
+                   float density_low,
+                   float density_high,
+                   float repeat_low = 0.0F,
+                   float repeat_high = 0.0F)
+    : granularity(granularity)
+    , period_offset(period_offset)
+    , density(density_low, density_high)
+    , repeat_probability(repeat_low, repeat_high)
+    , weight_map(weight_map)
+  {
+  }
+
+  static const WeightMap<SCALE_DEGREES>& get_default_weight_map()
+  {
+    if constexpr (SCALE_DEGREES == PENTATONIC) {
+      return SCALE_WEIGHTS_5_UNIFORM;
+    } else if constexpr (SCALE_DEGREES == HEXATONIC) {
+      return SCALE_WEIGHTS_6_UNIFORM;
+    } else if constexpr (SCALE_DEGREES == HEPATONIC) {
+      return SCALE_WEIGHTS_7_UNIFORM;
+    }
+  }
+};
 
 //////////////////////////////////////////////////////////////////////////
 /// @brief
@@ -53,10 +133,10 @@ template<typename TRole,
 class Persona
 {
 public:
-  using MySetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
-  using MyNoteGenerator =
+  using TSetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
+  using TNoteGenerator =
     StyleANoteGenerator<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-  using DefaultPatternGenerator =
+  using TDefaultPatternGenerator =
     typename PersonaPatternGeneratorSelector<TRole, MAX_EVENTS>::Type;
 
   //////////////////////////////////////////////////////////////////////////
@@ -65,7 +145,7 @@ public:
   /// @param t
   /// @param s
   /// @param role
-  Persona(const char* personaName, const MySetup& setup, const TRole& role)
+  Persona(const char* personaName, const TSetup& setup, const TRole& role)
     : personaName_(personaName)
     , setup_(&setup)
     , role_(role) {};
@@ -83,7 +163,7 @@ public:
   /// @return
   // const char *GetRoleName() const { return role_.Name; }
 
-  [[nodiscard]] const char* GetRoleName() const { return role_.Name.c_str(); }
+  [[nodiscard]] const char* GetRoleName() const { return role_.label.c_str(); }
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
@@ -106,8 +186,8 @@ public:
     const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
     NoteEventSet<MAX_EVENTS>& events)
   {
-    return GenerateNoteEventsWithGenerator<DefaultPatternGenerator>(chords,
-                                                                    events);
+    return GenerateNoteEventsWithGenerator<TDefaultPatternGenerator>(chords,
+                                                                     events);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -139,12 +219,12 @@ public:
     const NoteValue granularity = get_granularity();
 
     TPatternGenerator::generate_pattern(
-      setup_->timeSignature,
-      chords.get_bars_for_time_signature(setup_->timeSignature),
+      setup_->time_signature,
+      chords.get_bars_for_time_signature(setup_->time_signature),
       density,
       granularity,
       pattern_);
-    MyNoteGenerator::generate_events(
+    TNoteGenerator::generate_events(
       *setup_, pattern_, chords, granularity, GetWeightMap(), events);
 
     // Likelyhood of haveing it repeat sections
@@ -177,7 +257,7 @@ public:
 
 private:
   const MString<20> personaName_;
-  const MySetup* setup_;
+  const TSetup* setup_;
   const TRole& role_;
   PatternEventSet<MAX_EVENTS> pattern_;
 };

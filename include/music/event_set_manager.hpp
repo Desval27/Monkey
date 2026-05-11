@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <type_traits>
 
-#include <music/event_set.hpp>
-#include <music/persona.hpp>
+#include <Music/event_set.hpp>
+#include <Music/persona.hpp>
 
 namespace music {
 
@@ -23,24 +23,24 @@ class EventSetManager
   /////////////////////////////////////////////////////////////////////////////
   // Aliases because I'm lazy
   /////////////////////////////////////////////////////////////////////////////
-  using MySetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
-  using MyNoteEvent = NoteEvent;
-  using MyNoteEventSet = NoteEventSet<MAX_EVENTS>;
-  using MyChordEvent = ChordEvent<MAX_DEGREES, SCALE_DEGREES>;
-  using MyChordEventSet = ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-  using MyEvent = typename EVENT_TYPE::EventType;
-  using PersonaGenerateFn = std::size_t (*)(void*,
-                                            const MyChordEventSet&,
-                                            EVENT_TYPE&);
-  using PersonaChordsFn = std::size_t (*)(void*, EVENT_TYPE&);
+  using TSetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
+  using TNoteEvent = NoteEvent;
+  using TNoteEventSet = NoteEventSet<MAX_EVENTS>;
+  using TChordEvent = ChordEvent<MAX_DEGREES, SCALE_DEGREES>;
+  using TChordEventSet = ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+  using TEvent = typename EVENT_TYPE::TEventType;
+  using TPersonaGenerateFn = std::size_t (*)(void*,
+                                             const TChordEventSet&,
+                                             EVENT_TYPE&);
+  using TPersonaChordsFn = std::size_t (*)(void*, EVENT_TYPE&);
 
   template<typename TRole>
-  using MyPersona = Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+  using TPersona = Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
 public:
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
-  EventSetManager(const MySetup& setup)
+  EventSetManager(const TSetup& setup)
     : setup_(&setup)
 
   {
@@ -52,24 +52,24 @@ public:
   /// @brief
   /// @param persona
   template<typename TRole>
-  void set_persona(MyPersona<TRole>& persona)
+  void set_persona(TPersona<TRole>& persona)
   {
     personaContext_ = &persona;
 
-    if constexpr (std::is_same_v<EVENT_TYPE, MyNoteEventSet>) {
+    if constexpr (std::is_same_v<EVENT_TYPE, TNoteEventSet>) {
       personaGenerate_ = [](void* context,
-                            const MyChordEventSet& chordEvents,
+                            const TChordEventSet& chordEvents,
                             EVENT_TYPE& events) -> std::size_t {
-        auto* persona = static_cast<MyPersona<TRole>*>(context);
+        auto* persona = static_cast<TPersona<TRole>*>(context);
         return persona->GenerateNoteEvents(chordEvents, events);
       };
     } else {
       personaGenerate_ = nullptr;
     }
 
-    if constexpr (std::is_same_v<EVENT_TYPE, MyChordEventSet>) {
+    if constexpr (std::is_same_v<EVENT_TYPE, TChordEventSet>) {
       personaChords_ = [](void* context, EVENT_TYPE& events) -> std::size_t {
-        auto* persona = static_cast<MyPersona<TRole>*>(context);
+        auto* persona = static_cast<TPersona<TRole>*>(context);
         return persona->GenerateChordEvents(events);
       };
     } else {
@@ -90,7 +90,7 @@ public:
   /// @brief
   /// @param chordEvents
   /// @return
-  std::size_t make_note_events_from_chords(const MyChordEventSet& chordEvents)
+  std::size_t make_note_events_from_chords(const TChordEventSet& chordEvents)
   {
     events_.clear();
     currentIndex_ = 0;
@@ -120,7 +120,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const MyNoteEvent& get_current_note() const
+  [[nodiscard]] const TNoteEvent& get_current_note() const
   {
     return events_[currentIndex_];
   }
@@ -128,7 +128,7 @@ public:
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const MyChordEvent& get_current_chord() const
+  [[nodiscard]] const TChordEvent& get_current_chord() const
   {
     return events_[currentIndex_];
   }
@@ -218,18 +218,18 @@ protected:
       }
     }
 
-    const MyEvent& currentEvent = events_.get_event_for_pulse(pulse);
-    const MyEvent& previousEvent = events_.get_event_for_pulse(previousPulse);
+    const TEvent& currentEvent = events_.get_event_for_pulse(pulse);
+    const TEvent& previousEvent = events_.get_event_for_pulse(previousPulse);
 
     // Always release when the sequence transitions from note to rest.
-    if (EventTraits<MyEvent>::is_hit(previousEvent) &&
-        !EventTraits<MyEvent>::is_hit(currentEvent)) {
+    if (EventTraits<TEvent>::is_hit(previousEvent) &&
+        !EventTraits<TEvent>::is_hit(currentEvent)) {
       return true;
     }
 
     // Legato keeps the gate high between adjacent note events_.
     if (articulation == Articulation::Legato ||
-        !EventTraits<MyEvent>::is_hit(currentEvent)) {
+        !EventTraits<TEvent>::is_hit(currentEvent)) {
       return false;
     }
 
@@ -288,12 +288,12 @@ protected:
   }
 
 private:
-  const MySetup* setup_;
+  const TSetup* setup_;
   EVENT_TYPE events_;
   int currentIndex_{ 0 };
   void* personaContext_{ nullptr };
-  PersonaGenerateFn personaGenerate_{ nullptr };
-  PersonaChordsFn personaChords_{ nullptr };
+  TPersonaGenerateFn personaGenerate_{ nullptr };
+  TPersonaChordsFn personaChords_{ nullptr };
   MString<16> eventText_;
   bool gate_{ false };
   bool trigger_{ false };
@@ -302,11 +302,11 @@ private:
   /// @brief
   void update_event_text()
   {
-    if constexpr (std::is_same_v<EVENT_TYPE, MyChordEventSet>) {
+    if constexpr (std::is_same_v<EVENT_TYPE, TChordEventSet>) {
       //      get_current_chord().get_chord_name(events_.
       get_current_chord().get_chord_name(
-        setup_->scaleMap, setup_->temperament, eventText_);
-    } else if constexpr (std::is_same_v<EVENT_TYPE, MyNoteEventSet>) {
+        setup_->scale_map, setup_->temperament, eventText_);
+    } else if constexpr (std::is_same_v<EVENT_TYPE, TNoteEventSet>) {
       auto& n = get_current_note();
       if (n.IsPitched()) {
         n.get_interval_name(setup_->temperament, eventText_);

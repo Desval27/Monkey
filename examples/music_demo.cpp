@@ -1,5 +1,5 @@
-#include <music/event_set_manager.hpp>
-#include <music/music.hpp>
+#include <Music/event_set_manager.hpp>
+#include <Music/music.hpp>
 #include <tty.h>
 #include <unistd.h>
 
@@ -22,80 +22,36 @@ constexpr float HALF = 0.5F;
 #define MY_SCALE HEPATONIC_D12_SCALES[0]
 #define WEIGHT_MAP SCALE_WEIGHTS_7_UNIFORM
 
-using FRange = Range<float>;
-using MySetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
-using MyPitchEngine = PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
-using MyScaleTable = ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>;
+using TSetup = Setup<MAX_DEGREES, SCALE_DEGREES>;
+using TPitchEngine = PitchEngine<MAX_DEGREES, SCALE_DEGREES>;
+using TScaleTable = ScaleTable<TEMPERAMENT_DEGREES, SCALE_DEGREES>;
 
 template<typename TRole>
-using MyPersona = Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
-using MyPatternEventSet = PatternEventSet<MAX_EVENTS>;
-using MyChordEventSet = ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+using TPersona = Persona<TRole, MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+using TPatternEventSet = PatternEventSet<MAX_EVENTS>;
+using TChordEventSet = ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
 
-using MyNoteEventSet = NoteEventSet<MAX_EVENTS>;
-using MyChordManager =
-  EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS, MyChordEventSet>;
+using TNoteEventSet = NoteEventSet<MAX_EVENTS>;
+using TChordManager =
+  EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS, TChordEventSet>;
 using MyNoteManager = EventSetManager<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>;
+using TStockPersonaRole = StockPersonaRole<SCALE_DEGREES>;
 
 // Testing Setup 4/4 time 12-EDO
-MySetup setup(4, NoteValue::Quarter, TWELVE_TONE, OCTAVE_DOUBLE);
-MyPitchEngine pitchEngine;
+TSetup setup(4, NoteValue::Quarter, TWELVE_TONE, OCTAVE_DOUBLE);
+TPitchEngine pitchEngine;
 
-// Different Test Personas
-struct RoleTypeA
-{
-  const MString<7> Name = "Role A";
-  //  static constexpr const char Name[] = "Role A";
-  const int octaveOffset;
-  const FRange density;
-  const FRange repeat_probability{ 0.3F, 0.5F };
-  const NoteValue granularity = NoteValue::Quarter;
-  const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
+TStockPersonaRole roleChords;
+TStockPersonaRole roleSimple(NoteValue::Half,
+                             0,
+                             SCALE_WEIGHTS_7_TONIC_HEAVY,
+                             0.4F,
+                             0.8F);
+TStockPersonaRole roleBusy(NoteValue::Eighth, 0, 0.1F, 0.9F, 0.3F, 0.6F);
 
-  RoleTypeA(int octaveOffset, FRange density)
-    : octaveOffset(octaveOffset)
-    , density(density) {};
-};
-
-struct RoleTypeB
-{
-  const MString<7> Name = "Role B";
-  // static constexpr const char Name[] = "Role B";
-  const int octaveOffset;
-  const FRange density;
-  const FRange repeat_probability{ 0.0F, 0.0F };
-  const NoteValue granularity = NoteValue::Eighth;
-  const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
-
-  RoleTypeB(int octaveOffset, FRange density)
-    : octaveOffset(octaveOffset)
-    , density(density) {};
-};
-
-struct RoleTypeC
-{
-  const MString<7> Name = "Role C";
-  // static constexpr const char Name[] = "Role B";
-  const int octaveOffset;
-  const FRange density;
-  const FRange repeat_probability{ 0.0F, 0.0F };
-  const NoteValue granularity = NoteValue::Half;
-  template<std::size_t MAX_EVENTS>
-  using PatternGenerator = EuclidianPatternGenerator<MAX_EVENTS>;
-  const WeightMap<SCALE_DEGREES> weight_map = WEIGHT_MAP;
-
-  RoleTypeC(int octaveOffset, FRange density)
-    : octaveOffset(octaveOffset)
-    , density(density) {};
-};
-
-RoleTypeA role1(0, FRange(0.0F, HALF));
-RoleTypeB role2(0, FRange(HALF, 1.0F));
-RoleTypeC rolec(0, FRange(0.0F, 1.0F));
-
-MyPersona<RoleTypeA> bob("BOB", setup, role1);
-MyPersona<RoleTypeB> mary("MARY", setup, role2);
-MyPersona<RoleTypeC> clyde("CLYDE", setup, rolec);
+TPersona<TStockPersonaRole> clyde("CLYDE", setup, roleChords);
+TPersona<TStockPersonaRole> bob("BOB", setup, roleSimple);
+TPersona<TStockPersonaRole> mary("MARY", setup, roleBusy);
 
 void
 doDebug(const char* format, va_list args)
@@ -106,9 +62,9 @@ doDebug(const char* format, va_list args)
 void
 testThing()
 {
-  // static MyChordEventSet chords;
+  // static TChordEventSet chords;
   static MyNoteManager noteManager(setup);
-  static MyChordManager chordManager(setup);
+  static TChordManager chordManager(setup);
   const char* pName;
   const char* rName;
   NoteValue g;
@@ -129,7 +85,7 @@ testThing()
 
   const std::size_t scaleIdx = randomRange(static_cast<std::size_t>(0),
                                            ArrayLen(HEPATONIC_D12_SCALES) - 1);
-  setup.scaleMap.set_scale(HEPATONIC_D12_SCALES[scaleIdx]);
+  setup.scale_map.set_scale(HEPATONIC_D12_SCALES[scaleIdx]);
 
   // std::cout << std::string(80, '-') << '\n';
   std::cout << TTY_CLEAR << "PERSONA: " << pName << ":" << rName
@@ -147,7 +103,7 @@ testThing()
 
   noteManager.make_note_events_from_chords(chordManager.get_events());
   DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(
-    setup.temperament, setup.timeSignature, noteManager.get_events());
+    setup.temperament, setup.time_signature, noteManager.get_events());
 
   std::cout << '\n';
 
@@ -172,11 +128,11 @@ main(int argc, char* argv[]) -> int
 
 #if false
   for (const auto& t : EQUAL_TEMPERAMENT_TABLE) {
-    std::cout << "Name: " << t.name << "\tDegrees: " << t.degreesInPeriod
+    std::cout << "Name: " << t.name << "\tDegrees: " << t.degrees_in_period
               << "\n";
-    for (int i = 0; i < t.degreesInPeriod; i++) {
-      std::cout << "\tInterval: " << t.intervalLabels[i]
-                << "\tNote: " << t.noteLabels[i] << "\n";
+    for (int i = 0; i < t.degrees_in_period; i++) {
+      std::cout << "\tInterval: " << t.interval_labels[i]
+                << "\tNote: " << t.note_labels[i] << "\n";
     }
   }
   return 0;
@@ -202,7 +158,7 @@ main(int argc, char* argv[]) -> int
 #endif
 
   pitchEngine.set_temperament(&setup.temperament);
-  pitchEngine.set_scale_map(&setup.scaleMap);
+  pitchEngine.set_scale_map(&setup.scale_map);
   pitchEngine.set_root_hz(C4FREQ); // C4
 
   for (;;) {

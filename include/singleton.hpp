@@ -11,13 +11,13 @@
  */
 #pragma once
 
-template<typename T>
+template<typename TEventType>
 class Singleton
 {
 public:
-  static auto get_instance() -> T&
+  static auto get_instance() -> TEventType&
   {
-    static T instance;
+    static TEventType instance;
     return instance;
   }
 

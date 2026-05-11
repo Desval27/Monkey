@@ -14,8 +14,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <music/event_set.hpp>
-#include <music/music_setup.hpp>
+#include <Music/event_set.hpp>
+#include <Music/music_setup.hpp>
 
 namespace music {
 
@@ -111,4 +111,4 @@ DebugChordEvents(
 
 } // namespace Music
 
-#include <music/music_templates.hpp>
+#include <Music/music_templates.hpp>

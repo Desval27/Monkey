@@ -14,8 +14,8 @@
 #include <array>
 #include <cstdint>
 
+#include <Music/music_config.hpp>
 #include <mstring.hpp>
-#include <music/music_config.hpp>
 
 namespace music {
 
@@ -92,27 +92,6 @@ enum class Ornament : uint8_t
   Turn,
 };
 
-// enum class NoteCommand : uint8_t
-// {
-//   None,
-
-// };
-
-// inline NoteCommand
-// operator|(NoteCommand lhs, NoteCommand rhs)
-// {
-//   using T = std::underlying_type_t<NoteCommand>;
-//   return static_cast<NoteCommand>(static_cast<T>(lhs) |
-//   static_cast<T>(rhs));
-// }
-
-// inline bool
-// has_flag(NoteCommand mask, NoteCommand flag)
-// {
-//   using T = std::underlying_type_t<NoteCommand>;
-//   return (static_cast<T>(mask) & static_cast<T>(flag)) != 0;
-// }
-
 /**
  * @brief Represents a type of musical scale based on the number of degrees it
  * contains. This enumeration provides a way to classify scales according to
@@ -150,14 +129,12 @@ using WeightMap = std::array<float, N>;
 // Core Music Constants
 ///////////////////////////////////////////////////////////////////////////////
 constexpr float BASE_HZ = 440.0F; // A4 = 440Hz
-
+constexpr float FREQ_C0 = 16.35F;
 constexpr float C4FREQ = 261.6256F;
 constexpr Period MIN_PERIOD = -1;
 constexpr Period MAX_PERIOD = 10;
-
 constexpr int TWELVE_TONE = 12;
 constexpr float OCTAVE_DOUBLE = 2.0F;
-
 constexpr float ALMOST_ONE = 0.999999F;
 
 // for convience for now.
@@ -228,23 +205,29 @@ struct TemperedPitch
             ///< periodic structure of the tuning system. This value can be
             ///< used to determine the pitch's relationship to other pitches
             ///< in terms of octave equivalence and overall pitch height.
-  float fineCents; ///< The fine-tuning adjustment in cents, allowing for
-                   ///< precise tuning of the pitch beyond the standard scale
-                   ///< degrees and periods. This value can be used to achieve
-                   ///< microtonal adjustments or to fine-tune pitches for
-                   ///< specific musical contexts.
+  float fine_cents; ///< The fine-tuning adjustment in cents, allowing for
+                    ///< precise tuning of the pitch beyond the standard scale
+                    ///< degrees and periods. This value can be used to achieve
+                    ///< microtonal adjustments or to fine-tune pitches for
+                    ///< specific musical contexts.
 
+  /////////////////////////////////////////////////////////////////////////////
   TemperedPitch()
     : degree(0)
     , period(0)
-    , fineCents(0.0F)
+    , fine_cents(0.0F)
   {
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param d
+  /// @param p
+  /// @param fc
   TemperedPitch(Degree d, Period p, float fc = 0.0F)
     : degree(d)
     , period(p)
-    , fineCents(fc)
+    , fine_cents(fc)
   {
   }
 };
@@ -254,24 +237,24 @@ struct TemperedPitch
  */
 struct TuningReference
 {
-  float referenceHz; ///< The reference frequency in Hertz (Hz) for the tuning
-                     ///< system.
-  Degree referenceDegree; ///< The reference scale degree associated with the
-                          ///< reference frequency, indicating its position
-                          ///< within the musical scale.
+  float reference_hz; ///< The reference frequency in Hertz (Hz) for the tuning
+                      ///< system.
+  Degree reference_degree; ///< The reference scale degree associated with the
+                           ///< reference frequency, indicating its position
+                           ///< within the musical scale.
   Period
-    referencePeriod; ///< The reference period associated with the reference
-                     ///< frequency, indicating its position within the
-                     ///< periodic structure of the tuning system.
+    reference_period; ///< The reference period associated with the reference
+                      ///< frequency, indicating its position within the
+                      ///< periodic structure of the tuning system.
 
   /**
    * @brief Construct a new Tuning Reference object
    *
    */
   TuningReference()
-    : referenceHz(BASE_HZ)
-    , referenceDegree(0)
-    , referencePeriod(0)
+    : reference_hz(BASE_HZ)
+    , reference_degree(0)
+    , reference_period(0)
   {
   }
 
@@ -286,9 +269,9 @@ struct TuningReference
    * system.
    */
   TuningReference(float hz, Degree d, Period p)
-    : referenceHz(hz)
-    , referenceDegree(d)
-    , referencePeriod(p)
+    : reference_hz(hz)
+    , reference_degree(d)
+    , reference_period(p)
   {
   }
 };
@@ -339,10 +322,10 @@ struct ADSREnvelope
 ////////////////////////////////////////////////////////////////////////////////
 struct EqualTemperamentTable
 {
-  int degreesInPeriod;
+  int degrees_in_period;
   const MString<6> name;
-  const char* const* noteLabels;
-  const char* const* intervalLabels;
+  const char* const* note_labels;
+  const char* const* interval_labels;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -350,12 +333,12 @@ template<std::size_t DEGREES, std::size_t SCALE_TYPE>
 struct ScaleTable
 {
   const char* name;
-  HarmonicMode harmonicMode;
+  HarmonicMode harmonic_mode;
   const DegreeMap<SCALE_TYPE>& degrees;
 
   [[nodiscard]] bool is_minor() const
   {
-    return harmonicMode == HarmonicMode::Minor;
+    return harmonic_mode == HarmonicMode::Minor;
   }
 };
 

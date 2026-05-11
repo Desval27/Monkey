@@ -30,7 +30,7 @@ DoThing()
   NoteEventSet<> noteEvents;
 
   EuclidianPatternGenerator<>::generate_pattern(
-    setup.timeSignature, setup.bars, density, g, pattern);
+    setup.time_signature, setup.bars, density, g, pattern);
 
   StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::
     generate_events(
@@ -48,7 +48,7 @@ main(int argc, char* argv[])
 {
   setup.temperament.attach_note_labels(NOTE_NAMES_12);
   setup.temperament.attach_interval_labels(INTERVAL_NAMES_12);
-  setup.scaleMap.set_degrees(IONIAN_D12);
+  setup.scale_map.set_degrees(IONIAN_D12);
 
   std::cout << "set title 'Density/Granularity vs Score'" << '\n';
   std::cout << "set xlabel 'Density/Granularity'" << '\n';

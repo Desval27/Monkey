@@ -11,7 +11,7 @@
  */
 #pragma once
 
-#include <music/music_types.hpp>
+#include <Music/music_types.hpp>
 
 namespace music {
 

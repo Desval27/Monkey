@@ -7,8 +7,8 @@
 #include <tty.h>
 #endif
 
-#include <music/music.hpp>
-#include <music/note_generator.hpp>
+#include <Music/music.hpp>
+#include <Music/note_generator.hpp>
 
 namespace music {
 template<std::size_t MAX_DEGREES,
@@ -28,23 +28,23 @@ GenerateWeightedChordEvents(
 
   const std::size_t totalEvents =
     (static_cast<std::size_t>(setup.bars) *
-     static_cast<std::size_t>(setup.timeSignature.beats) *
-     static_cast<std::size_t>(setup.timeSignature.beatValue)) /
+     static_cast<std::size_t>(setup.time_signature.beats) *
+     static_cast<std::size_t>(setup.time_signature.beatValue)) /
     static_cast<std::size_t>(granularity);
   const std::size_t chordsToEmit = min(totalEvents, chords.capacity());
   ScaleDegree degree =
-    get_weighted_starting_chord(setup.scaleMap.get_harmonic_mode());
-  const bool hasScale = (setup.scaleMap.size() >= SCALE_CHORD_COUNT);
+    get_weighted_starting_chord(setup.scale_map.get_harmonic_mode());
+  const bool hasScale = (setup.scale_map.size() >= SCALE_CHORD_COUNT);
 
   chords.clear();
   for (std::size_t i = 0; i < chordsToEmit; ++i) {
     const int degreeIndex =
-      scale_degree_index(degree, setup.scaleMap.get_harmonic_mode());
+      scale_degree_index(degree, setup.scale_map.get_harmonic_mode());
     Note rootOffset = scale_degree_to_semitone(degree);
     if (hasScale && degreeIndex >= 0) {
       int scalePeriodOffset = 0;
       rootOffset = static_cast<Note>(
-        setup.scaleMap.get_mapped_degree(degreeIndex, scalePeriodOffset));
+        setup.scale_map.get_mapped_degree(degreeIndex, scalePeriodOffset));
     }
 
     ChordExtension extensions =
@@ -52,7 +52,7 @@ GenerateWeightedChordEvents(
     chords.emplace(tonic + rootOffset, granularity, extensions);
 
     degree =
-      get_weighted_next_chord(degree, setup.scaleMap.get_harmonic_mode());
+      get_weighted_next_chord(degree, setup.scale_map.get_harmonic_mode());
   }
   return chords.size();
 }
@@ -95,12 +95,9 @@ GenerateEventsFromPattern(
   int ppb = ts.get_pulses_per_bar();
   std::size_t chordIdx = 0;
 
-  Note tones[20];
+  std::array<Note, 20> tones;
   std::size_t toneCount = chords[chordIdx].get_chord_tones(
-    scale,
-    static_cast<int>(temperament.degrees_per_period()),
-    tones,
-    ArrayLen(tones));
+    scale, static_cast<int>(temperament.degrees_per_period()), tones);
 
   for (std::size_t i = 0; i < pattern.size() && !events.at_capacity(); i++,
                    pulses = pulses + granularity,
@@ -111,10 +108,7 @@ GenerateEventsFromPattern(
       chordPulses = 0;
 
       toneCount = chords[chordIdx].get_chord_tones(
-        scale,
-        static_cast<int>(temperament.degrees_per_period()),
-        tones,
-        ArrayLen(tones));
+        scale, static_cast<int>(temperament.degrees_per_period()), tones);
     }
 
     if (pattern[i]) {
@@ -146,134 +140,135 @@ ScoreNoteEvents(const Temperament<MAX_DEGREES>& t,
     return score;
   }
 
-  int totalPulses = 0;
-  int pitchedPulses = 0;
-  int restPulses = 0;
-  int pitchedEventCount = 0;
-  int shortPitchedEvents = 0;
-  int longPitchedEvents = 0;
-  int repeatedNotes = 0;
-  int repeatedDurations = 0;
-  int phraseCount = 0;
-  int consonantPhraseStarts = 0;
-  int consonantPhraseEnds = 0;
-  int stepMoves = 0;
-  int hugeLeaps = 0;
-  int transitionCount = 0;
+  int total_pulses = 0;
+  int pitched_pulses = 0;
+  int rest_pulses = 0;
+  int pitched_event_count = 0;
+  int short_pitched_events = 0;
+  int long_pitched_events = 0;
+  int repeated_notes = 0;
+  int repeated_durations = 0;
+  int phrase_count = 0;
+  int consonant_phrase_starts = 0;
+  int consonant_phrase_ends = 0;
+  int step_moves = 0;
+  int huge_leaps = 0;
+  int transition_count = 0;
 
-  const int longThreshold = static_cast<int>(NoteValue::Half);
-  const int shortThreshold = static_cast<int>(NoteValue::Eighth);
+  const int long_threshold = static_cast<int>(NoteValue::Half);
+  const int short_threshold = static_cast<int>(NoteValue::Eighth);
 
-  Note previousPitchedNote = REST;
-  NoteValue previousPitchedDuration = NoteValue::None;
-  bool inPhrase = false;
+  Note pervious_pitched_note = REST;
+  NoteValue previous_pitched_duration = NoteValue::None;
+  bool in_phrase = false;
 
   for (std::size_t i = 0; i < events.size(); i++) {
-    int eventPulses = static_cast<int>(events[i].value);
-    totalPulses += eventPulses;
+    int event_pulses = static_cast<int>(events[i].value);
+    total_pulses += event_pulses;
 
     if (!events[i].IsPitched()) {
-      restPulses += eventPulses;
-      inPhrase = false;
+      rest_pulses += event_pulses;
+      in_phrase = false;
       continue;
     }
 
-    pitchedPulses += eventPulses;
-    pitchedEventCount++;
+    pitched_pulses += event_pulses;
+    pitched_event_count++;
 
-    if (!inPhrase) {
-      phraseCount++;
+    if (!in_phrase) {
+      phrase_count++;
       if (t.is_consonant(t.get_note_distance(0, events[i].note))) {
-        consonantPhraseStarts++;
+        consonant_phrase_starts++;
       }
-      inPhrase = true;
+      in_phrase = true;
     }
 
-    if (eventPulses <= shortThreshold) {
-      shortPitchedEvents++;
+    if (event_pulses <= short_threshold) {
+      short_pitched_events++;
     }
-    if (eventPulses >= longThreshold) {
-      longPitchedEvents++;
+    if (event_pulses >= long_threshold) {
+      long_pitched_events++;
     }
 
-    if (previousPitchedNote != REST) {
+    if (pervious_pitched_note != REST) {
       const int interval =
-        t.get_note_distance(previousPitchedNote, events[i].note);
-      if (events[i].note == previousPitchedNote) {
-        repeatedNotes++;
+        t.get_note_distance(pervious_pitched_note, events[i].note);
+      if (events[i].note == pervious_pitched_note) {
+        repeated_notes++;
       } else if (interval <= 2) {
-        stepMoves++;
+        step_moves++;
       } else if (interval >= 7) {
         if (interval >= 10) {
-          hugeLeaps++;
+          huge_leaps++;
         }
       }
 
-      if (events[i].value == previousPitchedDuration) {
-        repeatedDurations++;
+      if (events[i].value == previous_pitched_duration) {
+        repeated_durations++;
       }
 
-      transitionCount++;
+      transition_count++;
     }
 
-    const bool nextStartsNewPhrase = (i + 1 >= events.size()) ||
-                                     !events[i + 1].IsPitched() ||
-                                     eventPulses >= longThreshold;
+    const bool next_starts_new_phrase = (i + 1 >= events.size()) ||
+                                        !events[i + 1].IsPitched() ||
+                                        event_pulses >= long_threshold;
 
-    if (nextStartsNewPhrase &&
+    if (next_starts_new_phrase &&
         t.is_consonant(t.get_note_distance(0, events[i].note))) {
-      consonantPhraseEnds++;
+      consonant_phrase_ends++;
     }
 
-    previousPitchedNote = events[i].note;
-    previousPitchedDuration = events[i].value;
+    pervious_pitched_note = events[i].note;
+    previous_pitched_duration = events[i].value;
   }
 
-  if (pitchedPulses == 0 || totalPulses == 0) {
+  if (pitched_pulses == 0 || total_pulses == 0) {
     return score;
   }
 
-  const int densityPct =
-    static_cast<int>((pitchedPulses * 100UL) / totalPulses);
-  const int restPct = static_cast<int>((restPulses * 100UL) / totalPulses);
-  const int phraseStartPct =
-    phraseCount > 0
-      ? static_cast<int>((consonantPhraseStarts * 100UL) / phraseCount)
+  const int density_pct =
+    static_cast<int>((pitched_pulses * 100UL) / total_pulses);
+  const int rest_pct = static_cast<int>((rest_pulses * 100UL) / total_pulses);
+  const int phrase_start_pct =
+    phrase_count > 0
+      ? static_cast<int>((consonant_phrase_starts * 100UL) / phrase_count)
       : 0;
-  const int phraseEndPct =
-    phraseCount > 0
-      ? static_cast<int>((consonantPhraseEnds * 100UL) / phraseCount)
+  const int phrase_end_pct =
+    phrase_count > 0
+      ? static_cast<int>((consonant_phrase_ends * 100UL) / phrase_count)
       : 0;
-  const int repeatPct =
-    transitionCount > 0
-      ? static_cast<int>(((repeatedNotes + repeatedDurations) * 100UL) /
-                         (transitionCount * 2UL))
+  const int repeat_pct =
+    transition_count > 0
+      ? static_cast<int>(((repeated_notes + repeated_durations) * 100UL) /
+                         (transition_count * 2UL))
       : 0;
-  const int stepPct =
-    transitionCount > 0
-      ? static_cast<int>((stepMoves * 100UL) / transitionCount)
+  const int step_pct =
+    transition_count > 0
+      ? static_cast<int>((step_moves * 100UL) / transition_count)
       : 0;
-  const int hugeLeapPct =
-    transitionCount > 0
-      ? static_cast<int>((hugeLeaps * 100UL) / transitionCount)
+  const int huge_leap_pct =
+    transition_count > 0
+      ? static_cast<int>((huge_leaps * 100UL) / transition_count)
       : 0;
-  const int phraseDensity =
-    pitchedEventCount > 0
-      ? static_cast<int>((phraseCount * 100UL) / pitchedEventCount)
+  const int phrase_density =
+    pitched_event_count > 0
+      ? static_cast<int>((phrase_count * 100UL) / pitched_event_count)
       : 0;
-  const int rhythmicContrast =
-    (shortPitchedEvents + longPitchedEvents) > 0
-      ? static_cast<int>((min(shortPitchedEvents, longPitchedEvents) * 200UL) /
-                         (shortPitchedEvents + longPitchedEvents))
+  const int rhythmic_contrast =
+    (short_pitched_events + long_pitched_events) > 0
+      ? static_cast<int>(
+          (min(short_pitched_events, long_pitched_events) * 200UL) /
+          (short_pitched_events + long_pitched_events))
       : 0;
 
-  score.density = clamp(100 - (abs(densityPct - 55) * 2), 0, 100);
-  score.rests = clamp(100 - (abs(restPct - 25) * 2), 0, 100);
-  score.cadence = clamp((phraseStartPct + (phraseEndPct * 2)) / 3, 0, 100);
-  score.repetition = clamp(100 - (abs(repeatPct - 30) * 2), 0, 100);
-  score.contour = clamp(100 - abs(stepPct - 65) - (hugeLeapPct * 2), 0, 100);
-  score.phrase = clamp(100 - (abs(phraseDensity - 35) * 2), 0, 100);
-  score.rhythm = clamp(rhythmicContrast, 0, 100);
+  score.density = clamp(100 - (abs(density_pct - 55) * 2), 0, 100);
+  score.rests = clamp(100 - (abs(rest_pct - 25) * 2), 0, 100);
+  score.cadence = clamp((phrase_start_pct + (phrase_end_pct * 2)) / 3, 0, 100);
+  score.repetition = clamp(100 - (abs(repeat_pct - 30) * 2), 0, 100);
+  score.contour = clamp(100 - abs(step_pct - 65) - (huge_leap_pct * 2), 0, 100);
+  score.phrase = clamp(100 - (abs(phrase_density - 35) * 2), 0, 100);
+  score.rhythm = clamp(rhythmic_contrast, 0, 100);
 
   score.overall =
     ((score.density * 20U) + (score.rests * 10U) + (score.cadence * 25U) +
@@ -322,14 +317,14 @@ DebugNoteEvents(const Temperament<MAX_DEGREES>& t,
 
   int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
   int v = 0;
-  char noteLabel[8];
+  MString<8> note_label;
   for (std::size_t i = 0; i < events.size(); i++) {
     if (!events[i].IsPitched()) {
       std::cout << TTY_FAINT;
     }
 
-    t.get_note_label(events[i].note, noteLabel, sizeof(noteLabel));
-    std::cout << std::right << std::setw(6) << noteLabel
+    t.get_note_label(events[i].note, note_label);
+    std::cout << std::right << std::setw(6) << note_label
               << static_cast<int>(events[i].period) << "-" << std::left
               << std::setw(6) << get_note_value_text(events[i].value);
 
@@ -352,30 +347,30 @@ DebugChordEvents(
   const Setup<MAX_DEGREES, SCALE_DEGREES>& setup,
   const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords)
 {
-  int vPerBar =
-    setup.timeSignature.beats * static_cast<int>(setup.timeSignature.beatValue);
+  int vPerBar = setup.time_signature.beats *
+                static_cast<int>(setup.time_signature.beatValue);
   int v = 0;
-  char noteLabel[8];
+  char note_label[8];
   MString<16> chordName;
   std::cout << TTY_FG_GREEN << "CHORD EVENTS" << TTY_RESET
             << " Density: " << chords.get_density() << std::endl;
   for (std::size_t i = 0; i < chords.size(); i++) {
-    Note tones[8];
+    std::array<Note, 8> tones;
     std::size_t toneCount = chords[i].get_chord_tones(
-      setup.scaleMap,
+      setup.scale_map,
       static_cast<int>(setup.temperament.degrees_per_period()),
-      tones,
-      ArrayLen(tones));
+      tones);
 
     if (v % vPerBar == 0) {
       std::cout << "| ";
     }
-    chords[i].get_chord_name(setup.scaleMap, setup.temperament, chordName);
+    chords[i].get_chord_name(setup.scale_map, setup.temperament, chordName);
     std::cout << chordName << " (";
 
     for (std::size_t j = 0; j < toneCount; j++) {
-      setup.temperament.get_note_label(tones[j], noteLabel, sizeof(noteLabel));
-      std::cout << noteLabel;
+      setup.temperament.get_note_label(
+        tones[j], note_label, sizeof(note_label));
+      std::cout << note_label;
       if (j < toneCount - 1) {
         std::cout << "|";
       }

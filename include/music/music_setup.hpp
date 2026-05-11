@@ -12,39 +12,52 @@
 
 #pragma once
 
-#include <music/music_config.hpp>
-#include <music/music_tables.hpp>
-#include <music/note.hpp>
-#include <music/scale_map.hpp>
-#include <music/temperament.hpp>
-#include <music/time_signature.hpp>
+#include <Music/music_config.hpp>
+#include <Music/music_tables.hpp>
+#include <Music/note.hpp>
+#include <Music/scale_map.hpp>
+#include <Music/temperament.hpp>
+#include <Music/time_signature.hpp>
 
 namespace music {
 
+///////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @tparam MAX_DEGREES
+/// @tparam SCALE_DEGREES
 template<std::size_t MAX_DEGREES = DEF_MAX_DEGREES,
          std::size_t SCALE_DEGREES = DEF_SCALE_DEGREES>
 struct Setup
 {
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @param beats
+  /// @param beatValue
+  /// @param degreesPerPeriod
+  /// @param periodRatio
   Setup(int beats,
         NoteValue beatValue,
         uint16_t degreesPerPeriod,
         float periodRatio)
-    : timeSignature(beats, beatValue)
-    , tuningReference(BASE_HZ, Note_M6, 0)
+    : time_signature(beats, beatValue)
+    , tuning_reference(BASE_HZ, Note_M6, 0)
     , temperament(degreesPerPeriod, periodRatio)
     , bars(8)
   {
   }
+
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
   Setup()
     : Setup(4, NoteValue::Quarter, TWELVE_TONE, OCTAVE_DOUBLE)
   {
   }
 
-  const TimeSignature timeSignature;
-  const TuningReference tuningReference;
+  const TimeSignature time_signature;
+  const TuningReference tuning_reference;
 
   Temperament<MAX_DEGREES> temperament;
-  ScaleMap<SCALE_DEGREES> scaleMap;
+  ScaleMap<SCALE_DEGREES> scale_map;
   int bars;
 };
 

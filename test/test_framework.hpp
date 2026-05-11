@@ -190,9 +190,9 @@ CheckGe(const A& actual,
   }
 }
 
-template<typename T, typename L, typename U>
+template<typename TEventType, typename L, typename U>
 inline void
-CheckInRange(const T& actual,
+CheckInRange(const TEventType& actual,
              const L& lower,
              const U& upper,
              const char* actualExpr,

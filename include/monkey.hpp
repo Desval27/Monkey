@@ -51,9 +51,9 @@ dprintf(const char* format, ...);
  * @param valueB The second value.
  * @return The minimum of the two values.
  */
-template<typename T>
-constexpr const T
-min(const T& valueA, const T& valueB)
+template<typename TEventType>
+constexpr const TEventType
+min(const TEventType& valueA, const TEventType& valueB)
 {
   return (valueA < valueB) ? valueA : valueB;
 }
@@ -64,9 +64,9 @@ min(const T& valueA, const T& valueB)
  * @param valueB The second value.
  * @return The maximum of the two values.
  */
-template<typename T>
-constexpr T
-max(const T& valueA, const T& valueB)
+template<typename TEventType>
+constexpr TEventType
+max(const TEventType& valueA, const TEventType& valueB)
 {
   return (valueA > valueB) ? valueA : valueB;
 }
@@ -80,9 +80,9 @@ max(const T& valueA, const T& valueB)
  * @param high The upper bound of the range.
  * @return The clamped value.
  */
-template<typename T>
-constexpr T
-clamp(const T& value, const T& low, const T& high)
+template<typename TEventType>
+constexpr TEventType
+clamp(const TEventType& value, const TEventType& low, const TEventType& high)
 {
   return (value < low) ? low : (value > high) ? high : value;
 }
@@ -97,14 +97,14 @@ clamp(const T& value, const T& low, const T& high)
  * @note If count is less than or equal to 0, the function returns 0 to avoid
  * division by zero.
  */
-template<typename T>
-constexpr T
-wrap(const T value, const T& count)
+template<typename TEventType>
+constexpr TEventType
+wrap(const TEventType value, const TEventType& count)
 {
   if (count <= 0) {
     return 0;
   }
-  const T r = value % count;
+  const TEventType r = value % count;
   return (r < 0) ? (r + count) : r;
 }
 
@@ -120,9 +120,9 @@ wrap(const T value, const T& count)
  * @note If low is greater than high, the function returns low to avoid an
  * infinite loop.
  */
-template<typename T>
-constexpr const T
-wrap(const T value, const T& low, const T& high)
+template<typename TEventType>
+constexpr const TEventType
+wrap(const TEventType value, const TEventType& low, const TEventType& high)
 {
   return (value < low) ? high : (value > high) ? low : value;
 }
@@ -141,19 +141,19 @@ wrap(const T value, const T& low, const T& high)
  * exponent. If base is zero and exp is negative, the behavior is undefined
  * (division by zero).
  */
-template<typename T>
-constexpr const T
-fastPow(T base, int exp)
+template<typename TEventType>
+constexpr const TEventType
+fastPow(TEventType base, int exp)
 {
   // Optional: Ensure that T is a floating-point type at compile time
   // static_assert(std::is_floating_point<T>::value, "T must be a
   // floating-point type");
 
   if (exp == 0) {
-    return static_cast<T>(1.0);
+    return static_cast<TEventType>(1.0);
   }
 
-  T result = static_cast<T>(1.0);
+  TEventType result = static_cast<TEventType>(1.0);
   bool neg = (exp < 0);
   int e = neg ? -exp : exp;
 
@@ -165,7 +165,7 @@ fastPow(T base, int exp)
     e >>= 1;
   }
 
-  return neg ? (static_cast<T>(1.0) / result) : result;
+  return neg ? (static_cast<TEventType>(1.0) / result) : result;
 }
 
 #ifndef bitRead
@@ -191,18 +191,18 @@ fastPow(T base, int exp)
  * @tparam T The type of the values in the range. Must support comparison
  * operators.
  */
-template<typename T>
+template<typename TEventType>
 struct Range
 {
   Range()
     : low(0)
     , high(0) {};
-  Range(T low, T high)
+  Range(TEventType low, TEventType high)
     : low(low)
     , high(high) {};
 
-  T low;  ///< The lower bound of the range.
-  T high; ///< The upper bound of the range.
+  TEventType low;  ///< The lower bound of the range.
+  TEventType high; ///< The upper bound of the range.
 };
 
 /**
@@ -212,21 +212,21 @@ struct Range
  * @tparam T The type of the values in the range. Must support comparison
  * operators.
  */
-template<typename T>
+template<typename TEventType>
 struct RangeWithDefault
 {
   RangeWithDefault()
     : low(0)
     , high(0)
     , def(0) {};
-  RangeWithDefault(T low, T high, T def)
+  RangeWithDefault(TEventType low, TEventType high, TEventType def)
     : low(low)
     , high(high)
     , def(def) {};
 
-  T low;  ///< The lower bound of the range.
-  T high; ///< The upper bound of the range.
-  T def;  ///< The default value for the range.
+  TEventType low;  ///< The lower bound of the range.
+  TEventType high; ///< The upper bound of the range.
+  TEventType def;  ///< The default value for the range.
 };
 
 #ifdef DAISY_PLATFORM
@@ -249,17 +249,17 @@ randomRange(const T& low, const T& high)
  * is greater than high, the function will return a value in the range [high,
  * low].
  */
-template<typename T>
-T
-randomRange(T low, T high)
+template<typename TEventType>
+TEventType
+randomRange(TEventType low, TEventType high)
 {
   static thread_local std::mt19937 gen{ std::random_device{}() };
 
-  if constexpr (std::is_integral_v<T>) {
-    std::uniform_int_distribution<T> dist(low, high);
+  if constexpr (std::is_integral_v<TEventType>) {
+    std::uniform_int_distribution<TEventType> dist(low, high);
     return dist(gen);
   } else {
-    std::uniform_real_distribution<T> dist(low, high);
+    std::uniform_real_distribution<TEventType> dist(low, high);
     return dist(gen);
   }
 }
@@ -274,9 +274,9 @@ randomRange(T low, T high)
  * @return A random number of type T between range.low and range.high
  * (inclusive). If
  */
-template<typename T>
-T
-randomRange(const Range<T>& range)
+template<typename TEventType>
+TEventType
+randomRange(const Range<TEventType>& range)
 {
   return randomRange(range.low, range.high);
 }
@@ -289,9 +289,97 @@ randomRange(const Range<T>& range)
  * and can be used in compile-time contexts.
  * @param arr A reference to a C-style array of any type and size.
  */
-template<typename T, std::size_t N>
+template<typename TEventType, std::size_t N>
 constexpr std::size_t
-ArrayLen(const T (& /*unused*/)[N])
+ArrayLen(const TEventType (& /*unused*/)[N])
 {
   return N;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @param values
+/// @param count
+/// @return
+template<typename TEventType>
+TEventType
+min_value(const TEventType values[], std::size_t count)
+{
+  if ((values == nullptr) || count == 0) {
+    return 0;
+  }
+
+  int best = values[0];
+  for (std::size_t i = 1; i < count; ++i) {
+    best = std::min(values[i], best);
+  }
+  return best;
+}
+
+/////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @param values
+/// @param count
+/// @return
+template<typename TEventType>
+TEventType
+max_value(const TEventType values[], std::size_t count)
+{
+  if ((values == nullptr) || count == 0) {
+    return 0;
+  }
+
+  int best = values[0];
+  for (std::size_t i = 1; i < count; ++i) {
+    best = std::max(values[i], best);
+  }
+  return best;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @tparam T
+/// @param values
+/// @param count
+/// @param limit
+/// @return
+template<typename TEventType>
+TEventType
+greatest_value_less_than(const TEventType values[],
+                         std::size_t count,
+                         TEventType limit)
+{
+  int best = 0;
+  bool found = false;
+  for (std::size_t i = 0; i < count; ++i) {
+    if (values[i] < limit && (!found || values[i] > best)) {
+      best = values[i];
+      found = true;
+    }
+  }
+  return found ? best : limit;
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/// @brief
+/// @tparam T
+/// @param values
+/// @param count
+/// @param limit
+/// @return
+template<typename TEventType>
+TEventType
+least_value_greater_than(const TEventType values[],
+                         std::size_t count,
+                         TEventType limit)
+{
+  int best = 0;
+  bool found = false;
+  for (std::size_t i = 0; i < count; ++i) {
+    if (values[i] > limit && (!found || values[i] < best)) {
+      best = values[i];
+      found = true;
+    }
+  }
+  return found ? best : limit;
 }
