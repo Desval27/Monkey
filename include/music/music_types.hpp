@@ -14,7 +14,7 @@
 #include <array>
 #include <cstdint>
 
-#include <Music/music_config.hpp>
+#include <music/music_config.hpp>
 #include <mstring.hpp>
 
 namespace music {

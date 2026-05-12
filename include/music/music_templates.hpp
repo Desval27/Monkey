@@ -7,8 +7,8 @@
 #include <tty.h>
 #endif
 
-#include <Music/music.hpp>
-#include <Music/note_generator.hpp>
+#include <music/music.hpp>
+#include <music/note_generator.hpp>
 
 namespace music {
 template<std::size_t MAX_DEGREES,

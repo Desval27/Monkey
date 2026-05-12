@@ -15,9 +15,9 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <Music/note_value.hpp>
-#include <Music/scale_map.hpp>
-#include <Music/temperament.hpp>
+#include <music/note_value.hpp>
+#include <music/scale_map.hpp>
+#include <music/temperament.hpp>
 
 namespace music {
 

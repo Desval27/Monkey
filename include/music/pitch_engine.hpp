@@ -15,10 +15,10 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <Music/music_config.hpp>
-#include <Music/music_types.hpp>
-#include <Music/scale_map.hpp>
-#include <Music/temperament.hpp>
+#include <music/music_config.hpp>
+#include <music/music_types.hpp>
+#include <music/scale_map.hpp>
+#include <music/temperament.hpp>
 
 namespace music {
 

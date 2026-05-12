@@ -1,5 +1,5 @@
-#include <Music/event_set_manager.hpp>
-#include <Music/music.hpp>
+#include <music/event_set_manager.hpp>
+#include <music/music.hpp>
 #include <tty.h>
 #include <unistd.h>
 

@@ -3,9 +3,9 @@
 #include <cstddef>
 #include <utility>
 
-#include <Music/chord.hpp>
-#include <Music/note.hpp>
-#include <Music/time_signature.hpp>
+#include <music/chord.hpp>
+#include <music/note.hpp>
+#include <music/time_signature.hpp>
 
 namespace music {
 

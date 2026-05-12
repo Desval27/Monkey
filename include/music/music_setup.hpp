@@ -12,12 +12,12 @@
 
 #pragma once
 
-#include <Music/music_config.hpp>
-#include <Music/music_tables.hpp>
-#include <Music/note.hpp>
-#include <Music/scale_map.hpp>
-#include <Music/temperament.hpp>
-#include <Music/time_signature.hpp>
+#include <music/music_config.hpp>
+#include <music/music_tables.hpp>
+#include <music/note.hpp>
+#include <music/scale_map.hpp>
+#include <music/temperament.hpp>
+#include <music/time_signature.hpp>
 
 namespace music {
 

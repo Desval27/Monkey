@@ -23,8 +23,8 @@
 #include <cstring>
 #include <type_traits>
 
-#include <Music/music_helpers.hpp>
-#include <Music/music_types.hpp>
+#include <music/music_helpers.hpp>
+#include <music/music_types.hpp>
 #include <monkey.hpp>
 
 namespace music {

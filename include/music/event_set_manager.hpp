@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <type_traits>
 
-#include <Music/event_set.hpp>
-#include <Music/persona.hpp>
+#include <music/event_set.hpp>
+#include <music/persona.hpp>
 
 namespace music {
 

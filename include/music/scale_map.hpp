@@ -14,7 +14,7 @@
 #include <array>
 #include <cstddef>
 
-#include <Music/music_types.hpp>
+#include <music/music_types.hpp>
 #include <monkey.hpp>
 
 namespace music {

@@ -12,9 +12,9 @@
 
 #include <array>
 
-#include <Music/labels/interval_name_labels.hpp>
-#include <Music/labels/note_name_labels.hpp>
-#include <Music/music_types.hpp>
+#include <music/labels/interval_name_labels.hpp>
+#include <music/labels/note_name_labels.hpp>
+#include <music/music_types.hpp>
 
 namespace music {
 //////////////////////////////////////////////////////////////////////////////////////////////////

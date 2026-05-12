@@ -13,11 +13,11 @@
 
 #include <type_traits>
 
-#include <Music/event_set.hpp>
-#include <Music/pattern_generator.hpp>
-#include <Music/scale_map.hpp>
-#include <Music/temperament.hpp>
-#include <Music/time_signature.hpp>
+#include <music/event_set.hpp>
+#include <music/pattern_generator.hpp>
+#include <music/scale_map.hpp>
+#include <music/temperament.hpp>
+#include <music/time_signature.hpp>
 #include <monkey.hpp>
 
 namespace music {

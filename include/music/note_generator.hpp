@@ -13,10 +13,10 @@
 
 #include <cstddef>
 
-#include <Music/event_set.hpp>
-#include <Music/music_setup.hpp>
-#include <Music/music_tables.hpp>
-#include <Music/pitch_engine.hpp>
+#include <music/event_set.hpp>
+#include <music/music_setup.hpp>
+#include <music/music_tables.hpp>
+#include <music/pitch_engine.hpp>
 
 namespace music {
 

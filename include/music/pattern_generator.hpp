@@ -20,8 +20,8 @@
 #include <cstddef>
 #include <cstdint>
 
-#include <Music/music.hpp>
-#include <Music/music_templates.hpp>
+#include <music/music.hpp>
+#include <music/music_templates.hpp>
 #include <monkey.hpp>
 
 namespace music {
