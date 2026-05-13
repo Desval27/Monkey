@@ -11,8 +11,8 @@
  */
 #pragma once
 
-#include <cstddef>
 #include <cmath>
+#include <cstddef>
 
 namespace music {
 
@@ -21,9 +21,9 @@ namespace music {
 #define TUNING_PROGMEM PROGMEM
 #define TUNING_PGM_READ_PTR(addr) ((const char*)pgm_read_ptr(addr))
 static inline char*
-tuning_copy_string(char* dst, const char* src, std::size_t maxLen)
+tuning_copy_string(char* dst, const char* src, std::size_t max_len)
 {
-  if (!dst || maxLen == 0)
+  if (!dst || max_len == 0)
     return dst;
   if (!src) {
     dst[0] = '\0';
@@ -31,23 +31,23 @@ tuning_copy_string(char* dst, const char* src, std::size_t maxLen)
   }
 
   std::size_t i = 0;
-  for (; (i + 1) < maxLen; ++i) {
+  for (; (i + 1) < max_len; ++i) {
     const char c = (char)pgm_read_byte(src + i);
     dst[i] = c;
     if (c == '\0')
       return dst;
   }
 
-  dst[maxLen - 1] = '\0';
+  dst[max_len - 1] = '\0';
   return dst;
 }
 #else
 #define TUNING_PROGMEM
 #define TUNING_PGM_READ_PTR(addr) (*(addr))
 static inline char*
-tuning_copy_string(char* dst, const char* src, std::size_t maxLen)
+tuning_copy_string(char* dst, const char* src, std::size_t max_len)
 {
-  if ((dst == nullptr) || maxLen == 0) {
+  if ((dst == nullptr) || max_len == 0) {
     return dst;
   }
   if (src == nullptr) {
@@ -56,7 +56,7 @@ tuning_copy_string(char* dst, const char* src, std::size_t maxLen)
   }
 
   std::size_t i = 0;
-  for (; (i + 1) < maxLen && src[i] != '\0'; ++i) {
+  for (; (i + 1) < max_len && src[i] != '\0'; ++i) {
     dst[i] = src[i];
   }
 

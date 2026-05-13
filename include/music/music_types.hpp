@@ -14,8 +14,8 @@
 #include <array>
 #include <cstdint>
 
-#include <music/music_config.hpp>
 #include <mstring.hpp>
+#include <music/music_config.hpp>
 
 namespace music {
 
@@ -169,15 +169,15 @@ constexpr Note Note_M7 = 11;
  */
 struct PitchRef
 {
-  float baseHz = BASE_HZ; ///< The reference frequency in Hertz (Hz) for the
-                          ///< tuning system, typically representing a standard
-                          ///< pitch such as A4 = 440Hz.
-  Degree baseDegree =
+  float base_hz = BASE_HZ; ///< The reference frequency in Hertz (Hz) for the
+                           ///< tuning system, typically representing a standard
+                           ///< pitch such as A4 = 440Hz.
+  Degree base_degree =
     0; ///< The reference scale degree associated with the reference
        ///< frequency, indicating its position within the musical scale.
        ///< This value can be used to determine the pitch's relationship to
        ///< other pitches in terms of intervals and harmonic function.
-  Period basePeriod =
+  Period base_period =
     0; ///< The reference period associated with the reference frequency,
        ///< indicating its position within the periodic structure of the
        ///< tuning system. This value can be used to determine the pitch's

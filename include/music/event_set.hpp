@@ -154,12 +154,12 @@ public:
    */
   [[nodiscard]] int get_event_start_pulse(std::size_t index) const
   {
-    int pulseCursor = 0;
+    int pulse_cursor = 0;
     const std::size_t end = index < size() ? index : size();
     for (std::size_t i = 0; i < end; i++) {
-      pulseCursor += static_cast<int>(value(i));
+      pulse_cursor += static_cast<int>(value(i));
     }
-    return pulseCursor;
+    return pulse_cursor;
   }
 
   /**
@@ -175,11 +175,11 @@ public:
    */
   [[nodiscard]] int get_total_event_pulses() const
   {
-    int totalPulses = 0;
+    int total_pulses = 0;
     for (std::size_t i = 0; i < size(); i++) {
-      totalPulses += static_cast<int>(value(i));
+      total_pulses += static_cast<int>(value(i));
     }
-    return totalPulses;
+    return total_pulses;
   }
 
   /**
@@ -204,22 +204,22 @@ public:
       return -1;
     }
 
-    int totalPulses = get_total_event_pulses();
+    int total_pulses = get_total_event_pulses();
 
-    if (totalPulses <= 0) {
+    if (total_pulses <= 0) {
       return -1;
     }
 
-    const int normalizedPulse = pulse % totalPulses;
+    const int normalized_pulse = pulse % total_pulses;
 
-    int pulseCursor = 0;
+    int pulse_cursor = 0;
     for (std::size_t i = 0; i < size(); i++) {
       const int span = static_cast<int>(value(i));
-      if (normalizedPulse < (pulseCursor + span)) {
+      if (normalized_pulse < (pulse_cursor + span)) {
         return static_cast<int>(i);
       }
 
-      pulseCursor += span;
+      pulse_cursor += span;
     }
 
     return static_cast<int>(size() - 1);

@@ -23,9 +23,9 @@
 #include <cstring>
 #include <type_traits>
 
+#include <monkey.hpp>
 #include <music/music_helpers.hpp>
 #include <music/music_types.hpp>
-#include <monkey.hpp>
 
 namespace music {
 
@@ -432,7 +432,7 @@ public:
       return period_multipliers_[period - MIN_PERIOD];
     }
 
-    return fastPow(period_ratio_, period);
+    return fast_pow(period_ratio_, period);
   }
 
   /**
@@ -597,7 +597,7 @@ private:
   void rebuild_period_multipliers()
   {
     for (Period p = MIN_PERIOD; p <= MAX_PERIOD; ++p) {
-      period_multipliers_[p - MIN_PERIOD] = fastPow(period_ratio_, p);
+      period_multipliers_[p - MIN_PERIOD] = fast_pow(period_ratio_, p);
     }
   }
 

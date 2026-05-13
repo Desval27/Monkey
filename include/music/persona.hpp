@@ -13,12 +13,12 @@
 
 #include <type_traits>
 
+#include <monkey.hpp>
 #include <music/event_set.hpp>
 #include <music/pattern_generator.hpp>
 #include <music/scale_map.hpp>
 #include <music/temperament.hpp>
 #include <music/time_signature.hpp>
-#include <monkey.hpp>
 
 namespace music {
 
@@ -145,17 +145,17 @@ public:
   /// @param t
   /// @param s
   /// @param role
-  Persona(const char* personaName, const TSetup& setup, const TRole& role)
-    : personaName_(personaName)
+  Persona(const char* persona_name, const TSetup& setup, const TRole& role)
+    : persona_name_(persona_name)
     , setup_(&setup)
     , role_(role) {};
 
   //////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const char* GetPersonaName() const
+  [[nodiscard]] const char* get_persona_name() const
   {
-    return personaName_.c_str();
+    return persona_name_.c_str();
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -170,11 +170,11 @@ public:
   /// @param granularity
   /// @param chords
   /// @return
-  std::size_t GenerateChordEvents(
+  std::size_t generate_chord_events(
     ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords)
   {
     const NoteValue granularity = get_granularity();
-    return GenerateStandardChordEvents(*setup_, granularity, chords);
+    return generate_standard_chord_events(*setup_, granularity, chords);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -186,8 +186,8 @@ public:
     const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
     NoteEventSet<MAX_EVENTS>& events)
   {
-    return GenerateNoteEventsWithGenerator<TDefaultPatternGenerator>(chords,
-                                                                     events);
+    return generate_note_events_with_generator<TDefaultPatternGenerator>(
+      chords, events);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -200,7 +200,7 @@ public:
     const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
     NoteEventSet<MAX_EVENTS>& events)
   {
-    return GenerateNoteEventsWithGenerator<TPatternGenerator<MAX_EVENTS>>(
+    return generate_note_events_with_generator<TPatternGenerator<MAX_EVENTS>>(
       chords, events);
   }
 
@@ -211,7 +211,7 @@ public:
   /// @param events
   /// @return
   template<typename TPatternGenerator>
-  std::size_t GenerateNoteEventsWithGenerator(
+  std::size_t generate_note_events_with_generator(
     const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
     NoteEventSet<MAX_EVENTS>& events)
   {
@@ -228,7 +228,7 @@ public:
       *setup_, pattern_, chords, granularity, GetWeightMap(), events);
 
     // Likelyhood of haveing it repeat sections
-    if (randomRange(0.0F, 1.0F) < get_repeat_probability()) {
+    if (random_range(0.0F, 1.0F) < get_repeat_probability()) {
       return PatternModifier<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>::
         repeat_two(*setup_, events);
     }
@@ -238,11 +238,14 @@ public:
   //////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] float get_density() const { return randomRange(role_.density); }
+  [[nodiscard]] float get_density() const
+  {
+    return random_range(role_.density);
+  }
 
   [[nodiscard]] float get_repeat_probability() const
   {
-    return randomRange(role_.repeat_probability);
+    return random_range(role_.repeat_probability);
   }
 
   //////////////////////////////////////////////////////////////////////////
@@ -256,7 +259,7 @@ public:
   const WeightMap<SCALE_DEGREES>& GetWeightMap() { return role_.weight_map; }
 
 private:
-  const MString<20> personaName_;
+  const MString<20> persona_name_;
   const TSetup* setup_;
   const TRole& role_;
   PatternEventSet<MAX_EVENTS> pattern_;

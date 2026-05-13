@@ -17,7 +17,7 @@ TEST_CASE("TimeSignature defaults to common time")
   TimeSignature ts;
 
   CHECK_EQ(ts.beats, 4);
-  CHECK_EQ(ts.beatValue, NoteValue::Quarter);
+  CHECK_EQ(ts.beat_value, NoteValue::Quarter);
   CHECK_EQ(TypeValue(ts.get_type()), TypeValue(TimeSignatureType::Common));
 }
 
@@ -26,7 +26,7 @@ TEST_CASE("TimeSignature stores constructor values")
   TimeSignature ts(7, NoteValue::Eighth);
 
   CHECK_EQ(ts.beats, 7);
-  CHECK_EQ(ts.beatValue, NoteValue::Eighth);
+  CHECK_EQ(ts.beat_value, NoteValue::Eighth);
 }
 
 TEST_CASE("TimeSignature copy preserves meter")
@@ -35,7 +35,7 @@ TEST_CASE("TimeSignature copy preserves meter")
   TimeSignature copy(original);
 
   CHECK_EQ(copy.beats, 6);
-  CHECK_EQ(copy.beatValue, NoteValue::Eighth);
+  CHECK_EQ(copy.beat_value, NoteValue::Eighth);
   CHECK_EQ(TypeValue(copy.get_type()), TypeValue(TimeSignatureType::Compound));
 }
 

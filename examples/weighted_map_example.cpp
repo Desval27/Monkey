@@ -36,7 +36,7 @@ main()
   std::printf("Root derived from A4=440Hz: C4=%.4f Hz\n", rootC4Hz);
 
   for (int step = 0; step < 16; ++step) {
-    const float unitRandom = randomRange(0.0f, 0.999999f);
+    const float unitRandom = random_range(0.0f, 0.999999f);
     int period = 0;
     const int16_t degree = scale.get_weighted_mapped_degree(
       step, unitRandom, period, SCALE_WEIGHTS_7_CHORD_TONE_HEAVY);

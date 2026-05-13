@@ -71,20 +71,20 @@ testThing()
 
   chordManager.set_persona(clyde);
 
-  if (randomRange(0.0F, 1.0F) < HALF) {
+  if (random_range(0.0F, 1.0F) < HALF) {
     noteManager.set_persona(bob);
-    pName = bob.GetPersonaName();
+    pName = bob.get_persona_name();
     rName = bob.GetRoleName();
     g = bob.get_granularity();
   } else {
     noteManager.set_persona(mary);
-    pName = mary.GetPersonaName();
+    pName = mary.get_persona_name();
     rName = mary.GetRoleName();
     g = mary.get_granularity();
   }
 
-  const std::size_t scaleIdx = randomRange(static_cast<std::size_t>(0),
-                                           ArrayLen(HEPATONIC_D12_SCALES) - 1);
+  const std::size_t scaleIdx = random_range(
+    static_cast<std::size_t>(0), array_len(HEPATONIC_D12_SCALES) - 1);
   setup.scale_map.set_scale(HEPATONIC_D12_SCALES[scaleIdx]);
 
   // std::cout << std::string(80, '-') << '\n';
@@ -94,21 +94,21 @@ testThing()
             << get_note_value_text(g) << '\n';
 
   // Make Chord Progression
-  // GenerateStandardChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
+  // generate_standard_chord_events<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
   //   setup, NoteValue::Whole, chords);
   chordManager.make_chord_events();
-  DebugChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
+  debug_chord_events<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
     setup, chordManager.get_events());
   std::cout << '\n';
 
   noteManager.make_note_events_from_chords(chordManager.get_events());
-  DebugNoteEvents<MAX_DEGREES, MAX_EVENTS>(
+  debug_note_events<MAX_DEGREES, MAX_EVENTS>(
     setup.temperament, setup.time_signature, noteManager.get_events());
 
   std::cout << '\n';
 
   NoteEventScore score =
-    ScoreNoteEvents(setup.temperament, noteManager.get_events());
+    score_note_events(setup.temperament, noteManager.get_events());
   std::cout << TTY_FG_MAGENTA << "Event Score" << TTY_RESET << ": Overall    "
             << score.overall << '\n';
   std::cout << "           : Density    " << score.density << '\n';

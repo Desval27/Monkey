@@ -41,7 +41,7 @@ weighted_index_from_row(const float* weights, std::size_t count)
     return 0;
   }
 
-  const float unitRandom = randomRange(0.0F, 0.999999F);
+  const float unitRandom = random_range(0.0F, 0.999999F);
   const float pick = unitRandom * sum;
   float accum = 0.0F;
 
@@ -74,7 +74,7 @@ get_random_granularity(NoteValue low, NoteValue high)
   int tries = 0;
   NoteValue v;
   do {
-    int cnt = randomRange(1, div);
+    int cnt = random_range(1, div);
     v = static_cast<NoteValue>(low * cnt);
     tries++;
   } while (is_note_value_weird(v) && tries <= 100);
@@ -162,20 +162,20 @@ get_weighted_starting_chord(HarmonicMode mode)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 /// @brief
-/// @param fromDegree
+/// @param from_degree
 /// @param mode
 /// @return
 ScaleDegree
-get_weighted_next_chord(ScaleDegree fromDegree, HarmonicMode mode)
+get_weighted_next_chord(ScaleDegree from_degree, HarmonicMode mode)
 {
-  const int fromIndex = scale_degree_index(fromDegree, mode);
+  const int fromIndex = scale_degree_index(from_degree, mode);
   if (fromIndex < 0) {
     return get_weighted_starting_chord(mode);
   }
 
   const ChordProbability* table = chord_probability_table_for_mode(mode);
   const int toIdx =
-    weighted_index_from_row(table[fromIndex].toDegree, SCALE_CHORD_COUNT);
+    weighted_index_from_row(table[fromIndex].to_degree, SCALE_CHORD_COUNT);
   return scale_degree_from_index(toIdx, mode);
 }
 

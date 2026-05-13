@@ -143,7 +143,7 @@ wrap(const TEventType value, const TEventType& low, const TEventType& high)
  */
 template<typename TEventType>
 constexpr const TEventType
-fastPow(TEventType base, int exp)
+fast_pow(TEventType base, int exp)
 {
   // Optional: Ensure that T is a floating-point type at compile time
   // static_assert(std::is_floating_point<T>::value, "T must be a
@@ -168,21 +168,21 @@ fastPow(TEventType base, int exp)
   return neg ? (static_cast<TEventType>(1.0) / result) : result;
 }
 
-#ifndef bitRead
-#define bitRead(value, bit) (((value) >> (bit)) & 0x01)
+#ifndef bit_read
+#define bit_read(value, bit) (((value) >> (bit)) & 0x01)
 #endif
-#ifndef bitSet
-#define bitSet(value, bit) ((value) |= (1UL << (bit)))
+#ifndef bit_set
+#define bit_set(value, bit) ((value) |= (1UL << (bit)))
 #endif
-#ifndef bitClear
-#define bitClear(value, bit) ((value) &= ~(1UL << (bit)))
+#ifndef bit_clear
+#define bit_clear(value, bit) ((value) &= ~(1UL << (bit)))
 #endif
-#ifndef bitToggle
-#define bitToggle(value, bit) ((value) ^= (1UL << (bit)))
+#ifndef bit_toggle
+#define bit_toggle(value, bit) ((value) ^= (1UL << (bit)))
 #endif
-#ifndef bitWrite
-#define bitWrite(value, bit, bitvalue)                                         \
-  ((bitvalue) ? bitSet(value, bit) : bitClear(value, bit))
+#ifndef bit_write
+#define bit_write(value, bit, bit_value)                                       \
+  ((bit_value) ? bitSet(value, bit) : bitClear(value, bit))
 #endif
 
 /**
@@ -232,7 +232,7 @@ struct RangeWithDefault
 #ifdef DAISY_PLATFORM
 template<typename T>
 constexpr const T
-randomRange(const T& low, const T& high)
+random_range(const T& low, const T& high)
 {
   return low +
          static_cast<T>(rand()) / (static_cast<T>(RAND_MAX / (high - low)));
@@ -251,7 +251,7 @@ randomRange(const T& low, const T& high)
  */
 template<typename TEventType>
 TEventType
-randomRange(TEventType low, TEventType high)
+random_range(TEventType low, TEventType high)
 {
   static thread_local std::mt19937 gen{ std::random_device{}() };
 
@@ -276,9 +276,9 @@ randomRange(TEventType low, TEventType high)
  */
 template<typename TEventType>
 TEventType
-randomRange(const Range<TEventType>& range)
+random_range(const Range<TEventType>& range)
 {
-  return randomRange(range.low, range.high);
+  return random_range(range.low, range.high);
 }
 
 /**
@@ -291,45 +291,51 @@ randomRange(const Range<TEventType>& range)
  */
 template<typename TEventType, std::size_t N>
 constexpr std::size_t
-ArrayLen(const TEventType (& /*unused*/)[N])
+array_len(const TEventType (& /*unused*/)[N])
 {
   return N;
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 /// @brief
+/// @tparam T
+/// @tparam N
 /// @param values
 /// @param count
 /// @return
-template<typename TEventType>
-TEventType
-min_value(const TEventType values[], std::size_t count)
+template<typename T, std::size_t N>
+T
+min_value(const std::array<T, N>& values, std::size_t count)
 {
-  if ((values == nullptr) || count == 0) {
+  count = std::min(count, values.size());
+  if (count == 0) {
     return 0;
   }
 
-  int best = values[0];
+  T best = values[0];
   for (std::size_t i = 1; i < count; ++i) {
     best = std::min(values[i], best);
   }
   return best;
 }
 
-/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
 /// @brief
+/// @tparam T
+/// @tparam N
 /// @param values
 /// @param count
 /// @return
-template<typename TEventType>
-TEventType
-max_value(const TEventType values[], std::size_t count)
+template<typename T, std::size_t N>
+T
+max_value(const std::array<T, N>& values, std::size_t count)
 {
-  if ((values == nullptr) || count == 0) {
+  count = std::min(count, values.size());
+  if (count == 0) {
     return 0;
   }
 
-  int best = values[0];
+  T best = values[0];
   for (std::size_t i = 1; i < count; ++i) {
     best = std::max(values[i], best);
   }
@@ -339,17 +345,19 @@ max_value(const TEventType values[], std::size_t count)
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief
 /// @tparam T
+/// @tparam N
 /// @param values
 /// @param count
 /// @param limit
 /// @return
-template<typename TEventType>
-TEventType
-greatest_value_less_than(const TEventType values[],
+template<typename T, std::size_t N>
+T
+greatest_value_less_than(const std::array<T, N>& values,
                          std::size_t count,
-                         TEventType limit)
+                         T limit)
 {
-  int best = 0;
+  count = std::min(count, values.size());
+  T best = 0;
   bool found = false;
   for (std::size_t i = 0; i < count; ++i) {
     if (values[i] < limit && (!found || values[i] > best)) {
@@ -363,17 +371,19 @@ greatest_value_less_than(const TEventType values[],
 ///////////////////////////////////////////////////////////////////////////////
 /// @brief
 /// @tparam T
+/// @tparam N
 /// @param values
 /// @param count
 /// @param limit
 /// @return
-template<typename TEventType>
-TEventType
-least_value_greater_than(const TEventType values[],
+template<typename T, std::size_t N>
+T
+least_value_greater_than(const std::array<T, N>& values,
                          std::size_t count,
-                         TEventType limit)
+                         T limit)
 {
-  int best = 0;
+  count = std::min(count, values.size());
+  T best = 0;
   bool found = false;
   for (std::size_t i = 0; i < count; ++i) {
     if (values[i] > limit && (!found || values[i] < best)) {

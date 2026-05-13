@@ -54,7 +54,7 @@ struct TimeSignature
   /**
    * @brief Note value that counts as one beat.
    */
-  NoteValue beatValue; // e.g., Quarter for 4/4 time, Eighth for 6/8 time
+  NoteValue beat_value; // e.g., Quarter for 4/4 time, Eighth for 6/8 time
 
   /**
    * @brief Constructs a time signature from beats per bar and beat unit.
@@ -64,7 +64,7 @@ struct TimeSignature
    */
   TimeSignature(int b, NoteValue v)
     : beats(b)
-    , beatValue(v) {};
+    , beat_value(v) {};
 
   /**
    * @brief Constructs a common 4/4 time signature.
@@ -84,16 +84,16 @@ struct TimeSignature
    */
   [[nodiscard]] TimeSignatureType get_type() const
   {
-    if (beats == 4 && beatValue == NoteValue::Quarter) {
+    if (beats == 4 && beat_value == NoteValue::Quarter) {
       return TimeSignatureType::Common;
     }
 
-    if ((beats == 3 || beats == 2) && beatValue == NoteValue::Quarter) {
+    if ((beats == 3 || beats == 2) && beat_value == NoteValue::Quarter) {
       return TimeSignatureType::Simple;
     }
 
     if ((beats == 6 || beats == 9 || beats == 12) &&
-        beatValue == NoteValue::Eighth) {
+        beat_value == NoteValue::Eighth) {
       return TimeSignatureType::Compound;
     }
 
@@ -118,8 +118,8 @@ struct TimeSignature
    */
   [[nodiscard]] int get_denominator() const
   {
-    if (static_cast<int>(beatValue) != 0) {
-      return (4 * PPQN) / static_cast<int>(beatValue);
+    if (static_cast<int>(beat_value) != 0) {
+      return (4 * PPQN) / static_cast<int>(beat_value);
     }
     return 0; // Avoid division by zero, though this case should be handled
               // more gracefully in practice.
@@ -131,7 +131,7 @@ struct TimeSignature
    */
   [[nodiscard]] int get_pulses_per_bar() const
   {
-    return (beats * static_cast<int>(beatValue));
+    return (beats * static_cast<int>(beat_value));
   }
 };
 

@@ -68,7 +68,7 @@ public:
   /// @param pattern
   /// @param chords
   /// @param granularity
-  /// @param weightMap
+  /// @param weight_map
   /// @param events
   /// @return
   static std::size_t generate_events(
@@ -76,7 +76,7 @@ public:
     const PatternEventSet<MAX_EVENTS>& pattern,
     const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
     NoteValue granularity,
-    const WeightMap<SCALE_DEGREES>& weightMap,
+    const WeightMap<SCALE_DEGREES>& weight_map,
     NoteEventSet<MAX_EVENTS>& events)
   {
     events.clear();
@@ -85,25 +85,25 @@ public:
     }
 
     int pulses = 0;
-    int chordPulses = 0;
+    int chord_pulses = 0;
     int ppb = setup.time_signature.get_pulses_per_bar();
-    std::size_t chordIdx = 0;
+    std::size_t chord_index = 0;
 
     std::array<Note, 20> tones;
-    std::size_t toneCount = chords[chordIdx].get_chord_tones(
+    std::size_t tone_count = chords[chord_index].get_chord_tones(
       setup.scale_map,
       static_cast<int>(setup.temperament.degrees_per_period()),
       tones);
 
     for (std::size_t i = 0; i < pattern.size() && !events.at_capacity(); i++,
                      pulses = pulses + granularity,
-                     chordPulses = chordPulses + granularity) {
-      if (chordPulses >= static_cast<int>(chords[chordIdx].value) &&
-          chordIdx < chords.size() - 1) {
-        chordIdx++;
-        chordPulses = 0;
+                     chord_pulses = chord_pulses + granularity) {
+      if (chord_pulses >= static_cast<int>(chords[chord_index].value) &&
+          chord_index < chords.size() - 1) {
+        chord_index++;
+        chord_pulses = 0;
 
-        toneCount = chords[chordIdx].get_chord_tones(
+        tone_count = chords[chord_index].get_chord_tones(
           setup.scale_map,
           static_cast<int>(setup.temperament.degrees_per_period()),
           tones);
@@ -111,16 +111,16 @@ public:
 
       if (pattern[i]) {
         // Is this at the start of a bar?  Then start with a chord tone
-        if ((pulses % ppb == 0) && (randomRange(0.0F, 1.0F) < 0.6F)) {
+        if ((pulses % ppb == 0) && (random_range(0.0F, 1.0F) < 0.6F)) {
           // Start with a random chord tone.
-          int idx = randomRange(0, static_cast<int>(toneCount) - 1);
+          int idx = random_range(0, static_cast<int>(tone_count) - 1);
           events.emplace(tones[0], 0, granularity);
         } else {
-          int periodOffset = 0;
-          float unitRandom = randomRange(0.0F, 0.999999F);
+          int period_offset = 0;
+          float unit_random = random_range(0.0F, ALMOST_ONE);
 
           Note n = setup.scale_map.get_weighted_note(
-            unitRandom, periodOffset, weightMap);
+            unit_random, period_offset, weight_map);
 
           // If our last event was the same note then (for now) just add
           // to the original duraton Or just a random occurance Unless
@@ -128,12 +128,12 @@ public:
           // new note value leads to something odd (dotted dotted, etc.)
           if ((pulses % ppb != 0) && (events.size() > 1) &&
               ((events[events.size() - 1].note == n) ||
-               (randomRange(0.0F, 1.0F) < 0.4F)) &&
+               (random_range(0.0F, 1.0F) < 0.4F)) &&
               !is_note_value_weird(static_cast<NoteValue>(
                 events[events.size() - 1].value + granularity))) {
             events[events.size() - 1].value += granularity;
           } else {
-            events.emplace(n, periodOffset, granularity);
+            events.emplace(n, period_offset, granularity);
           }
         }
       } else {
@@ -185,43 +185,43 @@ public:
 #ifdef USE_DEBUG
     std::cout << __FILE__ << ":" << __LINE__ << " - " << __func__ << "\n";
 #endif
-    const int pulsesPerBar = setup.time_signature.get_pulses_per_bar();
-    if (pulsesPerBar <= 0 || setup.bars <= 0 || (setup.bars % 2) != 0) {
+    const int pulses_per_bar = setup.time_signature.get_pulses_per_bar();
+    if (pulses_per_bar <= 0 || setup.bars <= 0 || (setup.bars % 2) != 0) {
       return events.size();
     }
 
-    const int middlePulse = (setup.bars / 2) * pulsesPerBar;
-    if (middlePulse <= 0 || events.get_total_event_pulses() < middlePulse) {
+    const int middle_pulse = (setup.bars / 2) * pulses_per_bar;
+    if (middle_pulse <= 0 || events.get_total_event_pulses() < middle_pulse) {
       return events.size();
     }
 
-    NoteEvent firstHalf[MAX_EVENTS];
-    std::size_t firstHalfCount = 0;
-    int pulseCursor = 0;
-    for (std::size_t i = 0; i < events.size() && pulseCursor < middlePulse;
+    NoteEvent first_half[MAX_EVENTS];
+    std::size_t first_half_count = 0;
+    int pulse_cursor = 0;
+    for (std::size_t i = 0; i < events.size() && pulse_cursor < middle_pulse;
          i++) {
       NoteEvent event = events[i];
-      const int eventPulses = static_cast<int>(event.value);
-      const int nextPulse = pulseCursor + eventPulses;
+      const int event_pulses = static_cast<int>(event.value);
+      const int next_pulse = pulse_cursor + event_pulses;
 
-      if (nextPulse > middlePulse) {
-        event.value = static_cast<NoteValue>(middlePulse - pulseCursor);
+      if (next_pulse > middle_pulse) {
+        event.value = static_cast<NoteValue>(middle_pulse - pulse_cursor);
       }
 
-      firstHalf[firstHalfCount++] = event;
-      pulseCursor = nextPulse;
+      first_half[first_half_count++] = event;
+      pulse_cursor = next_pulse;
     }
 
-    if (firstHalfCount > (events.capacity() / 2)) {
+    if (first_half_count > (events.capacity() / 2)) {
       return events.size();
     }
 
     events.clear();
-    for (std::size_t i = 0; i < firstHalfCount; i++) {
-      events.add(firstHalf[i]);
+    for (std::size_t i = 0; i < first_half_count; i++) {
+      events.add(first_half[i]);
     }
-    for (std::size_t i = 0; i < firstHalfCount; i++) {
-      events.add(firstHalf[i]);
+    for (std::size_t i = 0; i < first_half_count; i++) {
+      events.add(first_half[i]);
     }
 
     return events.size();

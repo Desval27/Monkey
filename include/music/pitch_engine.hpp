@@ -97,15 +97,15 @@ public:
    *
    * If no scale map is configured, the scale index is treated as a direct
    * temperament degree. Otherwise it is mapped through the active scale map,
-   * and the mapped period offset is added to @p extraPeriod.
+   * and the mapped period offset is added to @p extra_period.
    *
-   * @param scaleIndex Index within the current scale map.
-   * @param extraPeriod Additional period offset applied after scale mapping.
+   * @param scale_index Index within the current scale map.
+   * @param extra_period Additional period offset applied after scale mapping.
    * @param fine_cents Fine tuning offset in cents.
    * @return get_frequency in Hz.
    */
-  [[nodiscard]] float frequency_from_scale_index(int scaleIndex,
-                                                 int extraPeriod = 0,
+  [[nodiscard]] float frequency_from_scale_index(int scale_index,
+                                                 int extra_period = 0,
                                                  float fine_cents = 0.0F) const
   {
     if (temperament_ == nullptr) {
@@ -114,13 +114,13 @@ public:
 
     if ((scale_map_ == nullptr) || scale_map_->size() == 0) {
       return temperament_->frequency_from_root(
-        root_hz_, scaleIndex, extraPeriod, fine_cents);
+        root_hz_, scale_index, extra_period, fine_cents);
     }
 
-    int scalePeriod = 0;
-    Degree degree = scale_map_->get_mapped_degree(scaleIndex, scalePeriod);
+    int scale_period = 0;
+    Degree degree = scale_map_->get_mapped_degree(scale_index, scale_period);
     return temperament_->frequency_from_root(
-      root_hz_, degree, scalePeriod + extraPeriod, fine_cents);
+      root_hz_, degree, scale_period + extra_period, fine_cents);
   }
 
   /**
@@ -128,21 +128,21 @@ public:
    * Hz.
    *
    * The random input is expected in the half-open range [0, 1). If no scale
-   * map is configured, @p scaleIndex is treated as a direct temperament
+   * map is configured, @p scale_index is treated as a direct temperament
    * degree.
    *
-   * @param scaleIndex Base scale index used to determine the period offset.
-   * @param unitRandom Unit random value used for weighted selection.
+   * @param scale_index Base scale index used to determine the period offset.
+   * @param unit_random Unit random value used for weighted selection.
    * @param weights Per-degree weights used by the scale map.
-   * @param extraPeriod Additional period offset applied after scale mapping.
+   * @param extra_period Additional period offset applied after scale mapping.
    * @param fine_cents Fine tuning offset in cents.
    * @return get_frequency in Hz.
    */
   template<std::size_t N>
-  float frequency_from_weighted_scale_index(int scaleIndex,
-                                            float unitRandom,
+  float frequency_from_weighted_scale_index(int scale_index,
+                                            float unit_random,
                                             const WeightMap<N>& weights,
-                                            int extraPeriod = 0,
+                                            int extra_period = 0,
                                             float fine_cents = 0.0F) const
   {
     if (!temperament_) {
@@ -151,41 +151,41 @@ public:
 
     if (!scale_map_ || scale_map_->size() == 0) {
       return temperament_->frequency_from_root(
-        root_hz_, scaleIndex, extraPeriod, fine_cents);
+        root_hz_, scale_index, extra_period, fine_cents);
     }
 
-    int scalePeriod;
+    int scale_period;
     Degree degree = scale_map_->get_weighted_mapped_degree(
-      scaleIndex, unitRandom, scalePeriod, weights);
+      scale_index, unit_random, scale_period, weights);
     return temperament_->frequency_from_root(
-      root_hz_, degree, scalePeriod + extraPeriod, fine_cents);
+      root_hz_, degree, scale_period + extra_period, fine_cents);
   }
 
   /**
    * @brief Applies a random shaping curve, then performs weighted pitch
    * lookup.
    *
-   * @param scaleIndex Base scale index used to determine the period offset.
-   * @param unitRandom Unit random value used for weighted selection.
-   * @param shape Curve applied to @p unitRandom before selection.
+   * @param scale_index Base scale index used to determine the period offset.
+   * @param unit_random Unit random value used for weighted selection.
+   * @param shape Curve applied to @p unit_random before selection.
    * @param weights Per-degree weights used by the scale map.
-   * @param extraPeriod Additional period offset applied after scale mapping.
+   * @param extra_period Additional period offset applied after scale mapping.
    * @param fine_cents Fine tuning offset in cents.
    * @return get_frequency in Hz.
    */
   template<std::size_t N>
-  float frequency_from_weighted_scale_index(int scaleIndex,
-                                            float unitRandom,
+  float frequency_from_weighted_scale_index(int scale_index,
+                                            float unit_random,
                                             RandomShape shape,
                                             const WeightMap<N>& weights,
-                                            int extraPeriod = 0,
+                                            int extra_period = 0,
                                             float fine_cents = 0.0F) const
   {
     return frequency_from_weighted_scale_index(
-      scaleIndex,
-      shape_unit_random(unitRandom, shape),
+      scale_index,
+      shape_unit_random(unit_random, shape),
       weights,
-      extraPeriod,
+      extra_period,
       fine_cents);
   }
 
@@ -194,13 +194,13 @@ public:
    *
    * The returned value is clamped to the half-open range [0, 1).
    *
-   * @param unitRandom Source random value.
+   * @param unit_random Source random value.
    * @param shape Bias curve to apply.
    * @return Shaped unit random value.
    */
-  static float shape_unit_random(float unitRandom, RandomShape shape)
+  static float shape_unit_random(float unit_random, RandomShape shape)
   {
-    float r = clamp_unit(unitRandom);
+    float r = clamp_unit(unit_random);
     switch (shape) {
       case RandomShape::BiasedLow:
         return r * r;
@@ -248,7 +248,7 @@ private:
       return 0.0F;
     }
     if (v >= 1.0F) {
-      return 0.999999F;
+      return ALMOST_ONE;
     }
     return v;
   }

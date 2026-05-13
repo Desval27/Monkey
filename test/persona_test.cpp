@@ -61,7 +61,7 @@ Role2<> roleWithoutPatternGenerator(0, dLow, dHigh);
 TEST_CASE("Persona Name Test")
 {
   Persona<Role1<>> p("Persona", setup, role);
-  CHECK_EQ(p.GetPersonaName(), "Persona");
+  CHECK_EQ(p.get_persona_name(), "Persona");
 }
 
 TEST_CASE("Role Name Test")

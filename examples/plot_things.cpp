@@ -15,7 +15,7 @@ constexpr int EVENT_POOL_SIZE = 5000;
 constexpr ScaleType SCALE_TYPE = ScaleType::HEPATONIC;
 
 #define PALETTE IONIAN_D15
-#define PALETTE_LEN ArrayLen(PALETTE)
+#define PALETTE_LEN array_len(PALETTE)
 
 Setup<DEF_MAX_DEGREES, SCALE_TYPE> setup;
 ChordEventSet<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS> chords;
@@ -23,7 +23,7 @@ ChordEventSet<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS> chords;
 void
 DoThing()
 {
-  const float density = randomRange(0.0F, 1.0F); // 0.50f;
+  const float density = random_range(0.0F, 1.0F); // 0.50f;
   const NoteValue g =
     get_random_granularity(NoteValue::Sixteenth, NoteValue::Whole);
   PatternEventSet<> pattern;
@@ -35,7 +35,7 @@ DoThing()
   StyleANoteGenerator<DEF_MAX_DEGREES, SCALE_TYPE, DEF_MAX_EVENTS>::
     generate_events(
       setup, pattern, chords, g, SCALE_WEIGHTS_7_UNIFORM, noteEvents);
-  NoteEventScore score = ScoreNoteEvents(setup.temperament, noteEvents);
+  NoteEventScore score = score_note_events(setup.temperament, noteEvents);
 
   float v1 = density;
   float v2 = static_cast<float>(score.rests) / 100.0F;
@@ -58,7 +58,7 @@ main(int argc, char* argv[])
   std::cout << "$MyData << EOD" << '\n';
   // std::cout << "plot '-' using 2:1 with points" << std::endl;
 
-  GenerateStandardChordEvents(setup, NoteValue::Whole, chords);
+  generate_standard_chord_events(setup, NoteValue::Whole, chords);
   for (int i = 0; i < EVENT_POOL_SIZE; i++) {
     DoThing();
   }

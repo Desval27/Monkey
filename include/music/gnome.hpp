@@ -30,7 +30,7 @@ namespace music {
  *
  * Invalid configurations are treated as idle:
  * - `ts.beats <= 0`
- * - `ts.beatValue == NoteValue::None`
+ * - `ts.beat_value == NoteValue::None`
  * - `bars <= 0`
  */
 class Gnome
@@ -128,9 +128,8 @@ public:
    */
   bool rising_beat_edge() const
   {
-    const int pulsesPerBeat = pulses_per_beat();
-    return (pulsesPerBeat > 0) && (pulse_ >= 0) &&
-           ((pulse_ % pulsesPerBeat) == 0);
+    const int pbb = pulses_per_beat();
+    return (pbb > 0) && (pulse_ >= 0) && ((pulse_ % pbb) == 0);
   }
 
   /**
@@ -163,8 +162,14 @@ private:
   int bar_;
   int pulse_;
 
-  int pulses_per_beat() const { return static_cast<int>(ts_->beatValue); }
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @return
+  int pulses_per_beat() const { return static_cast<int>(ts_->beat_value); }
 
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @return
   bool is_valid() const
   {
     return ts_ && (ts_->beats > 0) && (pulses_per_beat() > 0) && (bars_ > 0);

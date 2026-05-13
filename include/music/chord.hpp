@@ -203,8 +203,7 @@ struct ChordEvent
   template<std::size_t N>
   std::size_t get_chord_tones(const ScaleMap<SCALE_DEGREES>& scale,
                               int degrees_per_period,
-                              std::array<Note, N>& notes)
-    const
+                              std::array<Note, N>& notes) const
   {
     if (notes.size() == 0 || scale.size() == 0 || degrees_per_period <= 0) {
       return 0;
@@ -215,35 +214,35 @@ struct ChordEvent
       return 0;
     }
 
-    int rootPeriodOffset = 0;
-    if (scale.get_mapped_degree(root_index, rootPeriodOffset) != root) {
+    int root_period_offset = 0;
+    if (scale.get_mapped_degree(root_index, root_period_offset) != root) {
       return 0;
     }
 
-    const int thirdSpan = has_flag(extensions, ChordExtension::Sus4)   ? 3
-                          : has_flag(extensions, ChordExtension::Sus2) ? 1
-                                                                       : 2;
+    const int third_span = has_flag(extensions, ChordExtension::Sus4)   ? 3
+                           : has_flag(extensions, ChordExtension::Sus2) ? 1
+                                                                        : 2;
 
-    std::size_t toneCount = 0;
+    std::size_t tone_count = 0;
     add_scale_tone(
-      scale, root_index, 0, 0, degrees_per_period, toneCount, notes);
+      scale, root_index, 0, 0, degrees_per_period, tone_count, notes);
     add_scale_tone(
-      scale, root_index, thirdSpan, 0, degrees_per_period, toneCount, notes);
+      scale, root_index, third_span, 0, degrees_per_period, tone_count, notes);
     add_scale_tone(scale,
                    root_index,
                    4,
                    fifth_alteration(),
                    degrees_per_period,
-                   toneCount,
+                   tone_count,
                    notes);
 
     if (has_flag(extensions, ChordExtension::Sixth)) {
       add_scale_tone(
-        scale, root_index, 5, 0, degrees_per_period, toneCount, notes);
+        scale, root_index, 5, 0, degrees_per_period, tone_count, notes);
     }
     if (has_flag(extensions, ChordExtension::Seventh)) {
       add_scale_tone(
-        scale, root_index, 6, 0, degrees_per_period, toneCount, notes);
+        scale, root_index, 6, 0, degrees_per_period, tone_count, notes);
     }
     if (has_flag(extensions, ChordExtension::Ninth)) {
       add_scale_tone(scale,
@@ -251,7 +250,7 @@ struct ChordEvent
                      8,
                      ninth_alteration(),
                      degrees_per_period,
-                     toneCount,
+                     tone_count,
                      notes);
     }
     if (has_flag(extensions, ChordExtension::Eleventh)) {
@@ -260,7 +259,7 @@ struct ChordEvent
                      10,
                      eleventh_alteration(),
                      degrees_per_period,
-                     toneCount,
+                     tone_count,
                      notes);
     }
     if (has_flag(extensions, ChordExtension::Thirteenth)) {
@@ -269,13 +268,13 @@ struct ChordEvent
                      12,
                      thirteenth_alteration(),
                      degrees_per_period,
-                     toneCount,
+                     tone_count,
                      notes);
     }
 
-    apply_inversion(notes, toneCount, degrees_per_period);
+    apply_inversion(notes, tone_count, degrees_per_period);
 
-    return toneCount;
+    return tone_count;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -295,19 +294,19 @@ struct ChordEvent
       return out.set("?");
     }
 
-    int periodOffset = 0;
-    if (scale.get_mapped_degree(root_index, periodOffset) != root) {
+    int period_offset = 0;
+    if (scale.get_mapped_degree(root_index, period_offset) != root) {
       return out.set("?");
     }
 
     std::array<Note, 8> tones;
-    const std::size_t toneCount =
+    const std::size_t tone_count =
       get_chord_tones(scale, degrees_per_period, tones);
     return build_chord_name_from_tones(scale,
                                        root_index,
                                        root,
                                        tones,
-                                       toneCount,
+                                       tone_count,
                                        degrees_per_period,
                                        extensions,
                                        alterations,
@@ -332,39 +331,37 @@ struct ChordEvent
       return out.set("?");
     }
 
-    int periodOffset = 0;
-    if (scale.get_mapped_degree(root_index, periodOffset) != root) {
+    int period_offset = 0;
+    if (scale.get_mapped_degree(root_index, period_offset) != root) {
       return out.set("?");
     }
 
     std::array<Note, 8> tones;
-    const std::size_t toneCount =
-      get_chord_tones(scale,
-                      static_cast<int>(temperament.degrees_per_period()),
-                      tones);
-    if (toneCount < 3) {
+    const std::size_t tone_count = get_chord_tones(
+      scale, static_cast<int>(temperament.degrees_per_period()), tones);
+    if (tone_count < 3) {
       return out.set("?");
     }
 
-    MString<8> thirdLabel;
-    MString<8> fifthLabel;
-    Note qualityFifth = tones[2];
+    MString<8> third_label;
+    MString<8> fifth_label;
+    Note quality_fifth = tones[2];
     if (has_flag(alterations, ChordAlteration::Flat5)) {
-      qualityFifth = static_cast<Note>(qualityFifth + 1);
+      quality_fifth = static_cast<Note>(quality_fifth + 1);
     } else if (has_flag(alterations, ChordAlteration::Sharp5)) {
-      qualityFifth = static_cast<Note>(qualityFifth - 1);
+      quality_fifth = static_cast<Note>(quality_fifth - 1);
     }
 
     if (!temperament.get_interval_label(
           static_cast<Degree>(
             wrap(static_cast<int>(tones[1] - root),
                  static_cast<int>(temperament.degrees_per_period()))),
-          thirdLabel) ||
+          third_label) ||
         !temperament.get_interval_label(
           static_cast<Degree>(
-            wrap(static_cast<int>(qualityFifth - root),
+            wrap(static_cast<int>(quality_fifth - root),
                  static_cast<int>(temperament.degrees_per_period()))),
-          fifthLabel)) {
+          fifth_label)) {
       return get_chord_name(
         scale, out, static_cast<int>(temperament.degrees_per_period()));
     }
@@ -373,34 +370,34 @@ struct ChordEvent
       has_flag(extensions, ChordExtension::Sus4) ? ChordQuality::Suspended4
       : has_flag(extensions, ChordExtension::Sus2)
         ? ChordQuality::Suspended2
-        : classify_chord_quality_from_interval_labels(thirdLabel, fifthLabel);
+        : classify_chord_quality_from_interval_labels(third_label, fifth_label);
     if (quality == ChordQuality::Unknown) {
-      const int lowerThird =
+      const int lower_third =
         wrap(static_cast<int>(tones[1] - root),
              static_cast<int>(temperament.degrees_per_period()));
-      const int upperThird =
+      const int upper_third =
         wrap(static_cast<int>(tones[2] - tones[1]),
              static_cast<int>(temperament.degrees_per_period()));
 
-      std::array<int, SCALE_CHORD_COUNT> allThirds = {};
-      std::size_t thirdCount = 0;
+      std::array<int, SCALE_CHORD_COUNT> all_thirds = {};
+      std::size_t third_count = 0;
       for (std::size_t i = 0; i < scale.size() && i < SCALE_CHORD_COUNT; ++i) {
-        int firstPeriod = 0;
-        int thirdPeriod = 0;
-        const Degree first = scale.get_mapped_degree(i, firstPeriod);
-        const Degree third = scale.get_mapped_degree(i + 2, thirdPeriod);
-        allThirds[thirdCount++] =
-          (third +
-           (thirdPeriod * static_cast<int>(temperament.degrees_per_period()))) -
+        int first_period = 0;
+        int third_period = 0;
+        const Degree first = scale.get_mapped_degree(i, first_period);
+        const Degree third = scale.get_mapped_degree(i + 2, third_period);
+        all_thirds[third_count++] =
+          (third + (third_period *
+                    static_cast<int>(temperament.degrees_per_period()))) -
           (first +
-           (firstPeriod * static_cast<int>(temperament.degrees_per_period())));
+           (first_period * static_cast<int>(temperament.degrees_per_period())));
       }
 
       quality = classify_chord_quality_from_third_stack(
-        lowerThird,
-        upperThird,
-        min_value(allThirds, thirdCount),
-        max_value(allThirds, thirdCount));
+        lower_third,
+        upper_third,
+        min_value(all_thirds, third_count),
+        max_value(all_thirds, third_count));
     }
 
     if (!build_chord_name_from_quality(root_index, quality, out)) {
@@ -432,7 +429,7 @@ private:
   /// @param scale_index
   /// @param chord_root
   /// @param tones
-  /// @param toneCount
+  /// @param tone_count
   /// @param degrees_per_period
   /// @param extensions
   /// @param alterations
@@ -443,43 +440,40 @@ private:
                                           int scale_index,
                                           Note chord_root,
                                           const std::array<Note, N1>& tones,
-                                          std::size_t toneCount,
+                                          std::size_t tone_count,
                                           int degrees_per_period,
                                           ChordExtension extensions,
                                           ChordAlteration alterations,
                                           MString<N2>& out)
   {
-    std::array<Note, 3> qualityTones = {};
-    if (toneCount >= 3) {
+    std::array<Note, 3> quality_tones = {};
+    if (tone_count >= 3) {
       for (std::size_t i = 0; i < 3; ++i) {
-        qualityTones[i] = tones[i];
+        quality_tones[i] = tones[i];
       }
 
       if (has_flag(alterations, ChordAlteration::Flat5)) {
-        qualityTones[2] = static_cast<Note>(qualityTones[2] + 1);
+        quality_tones[2] = static_cast<Note>(quality_tones[2] + 1);
       } else if (has_flag(alterations, ChordAlteration::Sharp5)) {
-        qualityTones[2] = static_cast<Note>(qualityTones[2] - 1);
+        quality_tones[2] = static_cast<Note>(quality_tones[2] - 1);
       }
-
     }
 
-    const ChordQuality quality = has_flag(extensions, ChordExtension::Sus4)
-                                   ? ChordQuality::Suspended4
-                                 : has_flag(extensions, ChordExtension::Sus2)
-                                   ? ChordQuality::Suspended2
-                                 : toneCount >= 3
-                                   ? classify_chord_quality(scale,
-                                                            scale_index,
-                                                            chord_root,
-                                                            qualityTones,
-                                                            qualityTones.size(),
-                                                            degrees_per_period)
-                                   : classify_chord_quality(scale,
-                                                            scale_index,
-                                                            chord_root,
-                                                            tones,
-                                                            toneCount,
-                                                            degrees_per_period);
+    const ChordQuality quality =
+      has_flag(extensions, ChordExtension::Sus4)   ? ChordQuality::Suspended4
+      : has_flag(extensions, ChordExtension::Sus2) ? ChordQuality::Suspended2
+      : tone_count >= 3 ? classify_chord_quality(scale,
+                                                 scale_index,
+                                                 chord_root,
+                                                 quality_tones,
+                                                 quality_tones.size(),
+                                                 degrees_per_period)
+                        : classify_chord_quality(scale,
+                                                 scale_index,
+                                                 chord_root,
+                                                 tones,
+                                                 tone_count,
+                                                 degrees_per_period);
 
     switch (quality) {
       default: {
@@ -539,35 +533,36 @@ private:
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @param notes
-  /// @param toneCount
+  /// @param tone_count
   /// @param degrees_per_period
   template<std::size_t N>
   void apply_inversion(std::array<Note, N>& notes,
-                       std::size_t toneCount,
+                       std::size_t tone_count,
                        int degrees_per_period) const
   {
-    toneCount = std::min(toneCount, notes.size());
-    if (toneCount < 2 || inversion == 0) {
+    tone_count = std::min(tone_count, notes.size());
+    if (tone_count < 2 || inversion == 0) {
       return;
     }
 
     if (inversion > 0) {
-      const std::size_t turns = static_cast<std::size_t>(inversion) % toneCount;
+      const std::size_t turns =
+        static_cast<std::size_t>(inversion) % tone_count;
       for (std::size_t i = 0; i < turns; ++i) {
         const Note moved = static_cast<Note>(notes[0] + degrees_per_period);
-        for (std::size_t j = 1; j < toneCount; ++j) {
+        for (std::size_t j = 1; j < tone_count; ++j) {
           notes[j - 1] = notes[j];
         }
-        notes[toneCount - 1] = moved;
+        notes[tone_count - 1] = moved;
       }
       return;
     }
 
-    const std::size_t turns = static_cast<std::size_t>(-inversion) % toneCount;
+    const std::size_t turns = static_cast<std::size_t>(-inversion) % tone_count;
     for (std::size_t i = 0; i < turns; ++i) {
       const Note moved =
-        static_cast<Note>(notes[toneCount - 1] - degrees_per_period);
-      for (std::size_t j = toneCount - 1; j > 0; --j) {
+        static_cast<Note>(notes[tone_count - 1] - degrees_per_period);
+      for (std::size_t j = tone_count - 1; j > 0; --j) {
         notes[j] = notes[j - 1];
       }
       notes[0] = moved;
@@ -581,7 +576,7 @@ private:
   /// @param scale_span
   /// @param alteration
   /// @param degrees_per_period
-  /// @param toneCount
+  /// @param tone_count
   /// @param notes
   template<std::size_t N>
   static void add_scale_tone(const ScaleMap<SCALE_DEGREES>& scale,
@@ -589,125 +584,135 @@ private:
                              int scale_span,
                              int alteration,
                              int degrees_per_period,
-                             std::size_t& toneCount,
+                             std::size_t& tone_count,
                              std::array<Note, N>& notes)
   {
-    if (toneCount >= notes.size()) {
+    if (tone_count >= notes.size()) {
       return;
     }
 
-    int periodOffset = 0;
+    int period_offset = 0;
     const Note mapped = static_cast<Note>(
-      scale.get_mapped_degree(root_index + scale_span, periodOffset));
-    notes[toneCount++] = static_cast<Note>(
-      mapped + (periodOffset * degrees_per_period) + alteration);
+      scale.get_mapped_degree(root_index + scale_span, period_offset));
+    notes[tone_count++] = static_cast<Note>(
+      mapped + (period_offset * degrees_per_period) + alteration);
   }
 
+  /////////////////////////////////////////////////////////////////////////////
+  /// @brief
+  /// @tparam N
+  /// @param scale
+  /// @param scale_index
+  /// @param chord_root
+  /// @param tones
+  /// @param tone_count
+  /// @param degrees_per_period
+  /// @return
   template<std::size_t N>
   static ChordQuality classify_chord_quality(
     const ScaleMap<SCALE_DEGREES>& scale,
     int scale_index,
     Note chord_root,
     const std::array<Note, N>& tones,
-    std::size_t toneCount,
+    std::size_t tone_count,
     int degrees_per_period)
   {
-    toneCount = std::min(toneCount, tones.size());
-    if (toneCount < 3 || degrees_per_period <= 0 || scale.size() < 3) {
+    tone_count = std::min(tone_count, tones.size());
+    if (tone_count < 3 || degrees_per_period <= 0 || scale.size() < 3) {
       return ChordQuality::Unknown;
     }
 
-    std::array<int, SCALE_CHORD_COUNT> thirdIntervals = {};
-    std::array<int, SCALE_CHORD_COUNT> fifthIntervals = {};
-    std::size_t thirdCount = 0;
-    std::size_t fifthCount = 0;
+    std::array<int, SCALE_CHORD_COUNT> third_intervals = {};
+    std::array<int, SCALE_CHORD_COUNT> fifth_intervals = {};
+    std::size_t third_count = 0;
+    std::size_t fifth_count = 0;
 
     for (std::size_t i = 0; i < scale.size() && i < SCALE_CHORD_COUNT; ++i) {
-      thirdIntervals[thirdCount++] =
+      third_intervals[third_count++] =
         get_scale_span_interval(scale, i, 2, degrees_per_period);
-      fifthIntervals[fifthCount++] =
+      fifth_intervals[fifth_count++] =
         get_scale_span_interval(scale, i, 4, degrees_per_period);
     }
 
-    const int minorThird = min_value(thirdIntervals, thirdCount);
-    const int majorThird = max_value(thirdIntervals, thirdCount);
+    const int minor_third = min_value(third_intervals, third_count);
+    const int major_third = max_value(third_intervals, third_count);
 
-    const int triadThird =
+    const int triad_third =
       wrap(static_cast<int>(tones[1] - chord_root), degrees_per_period);
-    const int triadFifth =
+    const int triad_fifth =
       wrap(static_cast<int>(tones[2] - chord_root), degrees_per_period);
 
-    const int diminishedFifth =
-      greatest_value_less_than(fifthIntervals, fifthCount, triadFifth);
-    const int augmentedFifth =
-      least_value_greater_than(fifthIntervals, fifthCount, triadFifth);
+    const int diminished_fifth =
+      greatest_value_less_than(fifth_intervals, fifth_count, triad_fifth);
+    const int augmented_fifth =
+      least_value_greater_than(fifth_intervals, fifth_count, triad_fifth);
 
-    int perfectFifth = triadFifth;
-    bool foundPerfectFifth = false;
-    for (std::size_t i = 0; i < fifthCount; ++i) {
-      const int candidate = fifthIntervals[i];
-      if (candidate > diminishedFifth &&
-          (!foundPerfectFifth || candidate < perfectFifth)) {
-        perfectFifth = candidate;
-        foundPerfectFifth = true;
+    int perfect_fifth = triad_fifth;
+    bool found_perfect_fifth = false;
+    for (std::size_t i = 0; i < fifth_count; ++i) {
+      const int candidate = fifth_intervals[i];
+      if (candidate > diminished_fifth &&
+          (!found_perfect_fifth || candidate < perfect_fifth)) {
+        perfect_fifth = candidate;
+        found_perfect_fifth = true;
       }
     }
 
-    if (triadThird == majorThird && triadFifth == perfectFifth) {
+    if (triad_third == major_third && triad_fifth == perfect_fifth) {
       return ChordQuality::Major;
     }
-    if (triadThird == minorThird && triadFifth == perfectFifth) {
+    if (triad_third == minor_third && triad_fifth == perfect_fifth) {
       return ChordQuality::Minor;
     }
-    if (triadThird == minorThird && triadFifth == diminishedFifth) {
+    if (triad_third == minor_third && triad_fifth == diminished_fifth) {
       return ChordQuality::Diminished;
     }
-    if (triadThird == majorThird && triadFifth == augmentedFifth) {
+    if (triad_third == major_third && triad_fifth == augmented_fifth) {
       return ChordQuality::Augmented;
     }
 
-    const int upperThird =
+    const int upper_third =
       wrap(static_cast<int>(tones[2] - tones[1]), degrees_per_period);
     (void)scale_index;
     return classify_chord_quality_from_third_stack(
-      triadThird, upperThird, minorThird, majorThird);
+      triad_third, upper_third, minor_third, major_third);
   }
 
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
-  /// @param thirdLabel
-  /// @param fifthLabel
+  /// @param third_label
+  /// @param fifth_label
   /// @return
   static ChordQuality classify_chord_quality_from_interval_labels(
-    const char* thirdLabel,
-    const char* fifthLabel)
+    const char* third_label,
+    const char* fifth_label)
   {
-    if ((thirdLabel == nullptr) || (fifthLabel == nullptr)) {
+    if ((third_label == nullptr) || (fifth_label == nullptr)) {
       return ChordQuality::Unknown;
     }
 
-    if (matches_interval_label(thirdLabel, "M3") &&
-        matches_interval_label(fifthLabel, "P5")) {
+    if (matches_interval_label(third_label, "M3") &&
+        matches_interval_label(fifth_label, "P5")) {
       return ChordQuality::Major;
     }
-    if (matches_interval_label(thirdLabel, "m3") &&
-        matches_interval_label(fifthLabel, "P5")) {
+    if (matches_interval_label(third_label, "m3") &&
+        matches_interval_label(fifth_label, "P5")) {
       return ChordQuality::Minor;
     }
-    if (matches_interval_label(thirdLabel, "m3") &&
-        matches_interval_label(fifthLabel, "d5")) {
+    if (matches_interval_label(third_label, "m3") &&
+        matches_interval_label(fifth_label, "d5")) {
       return ChordQuality::Diminished;
     }
-    if (matches_interval_label(thirdLabel, "M3") &&
-        matches_interval_label(fifthLabel, "A5")) {
+    if (matches_interval_label(third_label, "M3") &&
+        matches_interval_label(fifth_label, "A5")) {
       return ChordQuality::Augmented;
     }
-    if (matches_interval_label(thirdLabel, "M2") &&
-        matches_interval_label(fifthLabel, "P5")) {
+    if (matches_interval_label(third_label, "M2") &&
+        matches_interval_label(fifth_label, "P5")) {
       return ChordQuality::Suspended2;
     }
-    if (matches_interval_label(thirdLabel, "P4") &&
-        matches_interval_label(fifthLabel, "P5")) {
+    if (matches_interval_label(third_label, "P4") &&
+        matches_interval_label(fifth_label, "P5")) {
       return ChordQuality::Suspended4;
     }
     return ChordQuality::Unknown;
@@ -715,25 +720,25 @@ private:
 
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
-  /// @param lowerThird
-  /// @param upperThird
+  /// @param lower_third
+  /// @param upper_third
   /// @param smallThird
   /// @param largeThird
   /// @return
-  static ChordQuality classify_chord_quality_from_third_stack(int lowerThird,
-                                                              int upperThird,
+  static ChordQuality classify_chord_quality_from_third_stack(int lower_third,
+                                                              int upper_third,
                                                               int smallThird,
                                                               int largeThird)
   {
-    if (lowerThird > upperThird) {
+    if (lower_third > upper_third) {
       return ChordQuality::Major;
     }
-    if (lowerThird < upperThird) {
+    if (lower_third < upper_third) {
       return ChordQuality::Minor;
     }
 
     const int midpoint = smallThird + ((largeThird - smallThird) / 2);
-    if (lowerThird <= midpoint) {
+    if (lower_third <= midpoint) {
       return ChordQuality::Diminished;
     }
     return ChordQuality::Augmented;
@@ -860,78 +865,14 @@ private:
                                      int scale_span,
                                      int degrees_per_period)
   {
-    int rootPeriodOffset = 0;
-    int targetPeriodOffset = 0;
-    const Degree rootDegree =
-      scale.get_mapped_degree(root_index, rootPeriodOffset);
-    const Degree targetDegree =
-      scale.get_mapped_degree(root_index + scale_span, targetPeriodOffset);
-    return (targetDegree + (targetPeriodOffset * degrees_per_period)) -
-           (rootDegree + (rootPeriodOffset * degrees_per_period));
-  }
-
-  template<std::size_t N>
-  static int min_value(const std::array<int, N>& values, std::size_t count)
-  {
-    count = std::min(count, values.size());
-    if (count == 0) {
-      return 0;
-    }
-
-    int best = values[0];
-    for (std::size_t i = 1; i < count; ++i) {
-      best = std::min(values[i], best);
-    }
-    return best;
-  }
-
-  template<std::size_t N>
-  static int max_value(const std::array<int, N>& values, std::size_t count)
-  {
-    count = std::min(count, values.size());
-    if (count == 0) {
-      return 0;
-    }
-
-    int best = values[0];
-    for (std::size_t i = 1; i < count; ++i) {
-      best = std::max(values[i], best);
-    }
-    return best;
-  }
-
-  template<std::size_t N>
-  static int greatest_value_less_than(const std::array<int, N>& values,
-                                      std::size_t count,
-                                      int limit)
-  {
-    count = std::min(count, values.size());
-    int best = 0;
-    bool found = false;
-    for (std::size_t i = 0; i < count; ++i) {
-      if (values[i] < limit && (!found || values[i] > best)) {
-        best = values[i];
-        found = true;
-      }
-    }
-    return found ? best : limit;
-  }
-
-  template<std::size_t N>
-  static int least_value_greater_than(const std::array<int, N>& values,
-                                      std::size_t count,
-                                      int limit)
-  {
-    count = std::min(count, values.size());
-    int best = 0;
-    bool found = false;
-    for (std::size_t i = 0; i < count; ++i) {
-      if (values[i] > limit && (!found || values[i] < best)) {
-        best = values[i];
-        found = true;
-      }
-    }
-    return found ? best : limit;
+    int root_period_offset = 0;
+    int target_period_offset = 0;
+    const Degree root_degree =
+      scale.get_mapped_degree(root_index, root_period_offset);
+    const Degree target_degree =
+      scale.get_mapped_degree(root_index + scale_span, target_period_offset);
+    return (target_degree + (target_period_offset * degrees_per_period)) -
+           (root_degree + (root_period_offset * degrees_per_period));
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -1013,7 +954,7 @@ private:
 struct ChordTone
 {
   ScaleDegree degree; // temeprament or scale degree
-  Period preferredPeriod;
+  Period preferred_period;
   uint8_t flags; // optional: chord root, avoid doubling, tendency tone, etc.
 };
 
@@ -1021,8 +962,8 @@ struct ChordTone
 /// @brief
 struct ChordProbability
 {
-  ScaleDegree fromDegree;
-  float toDegree[SCALE_CHORD_COUNT];
+  ScaleDegree from_degree;
+  float to_degree[SCALE_CHORD_COUNT];
 };
 
 ///////////////////////////////////////////////////////////////////////////////

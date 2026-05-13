@@ -15,7 +15,7 @@ template<std::size_t MAX_DEGREES,
          std::size_t SCALE_DEGREES,
          std::size_t MAX_EVENTS>
 std::size_t
-GenerateWeightedChordEvents(
+generate_weighted_chord_events(
   const Setup<MAX_DEGREES, SCALE_DEGREES>& setup,
   Note tonic,
   NoteValue granularity,
@@ -26,30 +26,30 @@ GenerateWeightedChordEvents(
     return 0;
   }
 
-  const std::size_t totalEvents =
+  const std::size_t total_events =
     (static_cast<std::size_t>(setup.bars) *
      static_cast<std::size_t>(setup.time_signature.beats) *
-     static_cast<std::size_t>(setup.time_signature.beatValue)) /
+     static_cast<std::size_t>(setup.time_signature.beat_value)) /
     static_cast<std::size_t>(granularity);
-  const std::size_t chordsToEmit = min(totalEvents, chords.capacity());
+  const std::size_t chords_to_emit = min(total_events, chords.capacity());
   ScaleDegree degree =
     get_weighted_starting_chord(setup.scale_map.get_harmonic_mode());
-  const bool hasScale = (setup.scale_map.size() >= SCALE_CHORD_COUNT);
+  const bool has_scale = (setup.scale_map.size() >= SCALE_CHORD_COUNT);
 
   chords.clear();
-  for (std::size_t i = 0; i < chordsToEmit; ++i) {
-    const int degreeIndex =
+  for (std::size_t i = 0; i < chords_to_emit; ++i) {
+    const int degree_index =
       scale_degree_index(degree, setup.scale_map.get_harmonic_mode());
-    Note rootOffset = scale_degree_to_semitone(degree);
-    if (hasScale && degreeIndex >= 0) {
-      int scalePeriodOffset = 0;
-      rootOffset = static_cast<Note>(
-        setup.scale_map.get_mapped_degree(degreeIndex, scalePeriodOffset));
+    Note root_offset = scale_degree_to_semitone(degree);
+    if (has_scale && degree_index >= 0) {
+      int scale_period_offset = 0;
+      root_offset = static_cast<Note>(
+        setup.scale_map.get_mapped_degree(degree_index, scale_period_offset));
     }
 
     ChordExtension extensions =
       (degree == ScaleDegree::V) ? ChordExtension::Seventh : ChordExtension{};
-    chords.emplace(tonic + rootOffset, granularity, extensions);
+    chords.emplace(tonic + root_offset, granularity, extensions);
 
     degree =
       get_weighted_next_chord(degree, setup.scale_map.get_harmonic_mode());
@@ -61,12 +61,12 @@ template<std::size_t MAX_DEGREES,
          std::size_t SCALE_DEGREES,
          std::size_t MAX_EVENTS>
 std::size_t
-GenerateStandardChordEvents(
+generate_standard_chord_events(
   const Setup<MAX_DEGREES, SCALE_DEGREES>& setup,
   NoteValue granularity,
   ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords)
 {
-  return GenerateWeightedChordEvents<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
+  return generate_weighted_chord_events<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>(
     setup, 0, granularity, chords);
 }
 
@@ -74,7 +74,7 @@ template<std::size_t MAX_DEGREES,
          std::size_t SCALE_DEGREES,
          std::size_t MAX_EVENTS>
 std::size_t
-GenerateEventsFromPattern(
+generate_events_from_pattern(
   const PatternEventSet<MAX_EVENTS>& pattern,
   const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords,
   const TimeSignature& ts,
@@ -91,23 +91,23 @@ GenerateEventsFromPattern(
   }
 
   int pulses = 0;
-  int chordPulses = 0;
+  int chord_pulses = 0;
   int ppb = ts.get_pulses_per_bar();
   std::size_t chordIdx = 0;
 
   std::array<Note, 20> tones;
-  std::size_t toneCount = chords[chordIdx].get_chord_tones(
+  std::size_t tone_count = chords[chordIdx].get_chord_tones(
     scale, static_cast<int>(temperament.degrees_per_period()), tones);
 
   for (std::size_t i = 0; i < pattern.size() && !events.at_capacity(); i++,
                    pulses = pulses + granularity,
-                   chordPulses = chordPulses + granularity) {
-    if (chordPulses >= static_cast<int>(chords[chordIdx].value) &&
+                   chord_pulses = chord_pulses + granularity) {
+    if (chord_pulses >= static_cast<int>(chords[chordIdx].value) &&
         chordIdx < chords.size() - 1) {
       chordIdx++;
-      chordPulses = 0;
+      chord_pulses = 0;
 
-      toneCount = chords[chordIdx].get_chord_tones(
+      tone_count = chords[chordIdx].get_chord_tones(
         scale, static_cast<int>(temperament.degrees_per_period()), tones);
     }
 
@@ -115,7 +115,7 @@ GenerateEventsFromPattern(
       if (pulses % ppb == 0) {
         events.emplace(tones[0], 0, granularity);
       } else {
-        int idx = randomRange(0, static_cast<int>(toneCount) - 1);
+        int idx = random_range(0, static_cast<int>(tone_count) - 1);
         events.emplace(tones[idx], 0, granularity);
       }
     } else {
@@ -132,8 +132,8 @@ GenerateEventsFromPattern(
 
 template<std::size_t MAX_DEGREES, std::size_t MAX_EVENTS>
 NoteEventScore
-ScoreNoteEvents(const Temperament<MAX_DEGREES>& t,
-                const NoteEventSet<MAX_EVENTS>& events)
+score_note_events(const Temperament<MAX_DEGREES>& t,
+                  const NoteEventSet<MAX_EVENTS>& events)
 {
   NoteEventScore score;
   if (events.size() == 0) {
@@ -282,9 +282,9 @@ ScoreNoteEvents(const Temperament<MAX_DEGREES>& t,
 #ifdef USE_DEBUG
 template<std::size_t MAX_EVENTS>
 void
-DebugPattern(const TimeSignature& ts,
-             NoteValue granularity,
-             const PatternEventSet<MAX_EVENTS>& pattern)
+debug_pattern(const TimeSignature& ts,
+              NoteValue granularity,
+              const PatternEventSet<MAX_EVENTS>& pattern)
 {
   std::cout << TTY_FG_YELLOW << "PATTERN EVENTS" << TTY_RESET << "\t"
             << ts.beats << "/" << ts.get_denominator()
@@ -294,10 +294,10 @@ DebugPattern(const TimeSignature& ts,
   }
 
   const int g = static_cast<int>(granularity);
-  const int kPerBar = (ts.beats * static_cast<int>(ts.beatValue)) / g;
-  if (kPerBar > 0) {
+  const int n_per_bar = (ts.beats * static_cast<int>(ts.beat_value)) / g;
+  if (n_per_bar > 0) {
     for (std::size_t i = 0; i < pattern.size(); i++) {
-      if (i % kPerBar == 0) {
+      if (i % n_per_bar == 0) {
         std::cout << "|";
       }
       std::cout << (pattern[i] ? "*" : "-");
@@ -308,14 +308,14 @@ DebugPattern(const TimeSignature& ts,
 
 template<std::size_t MAX_DEGREES, std::size_t MAX_EVENTS>
 void
-DebugNoteEvents(const Temperament<MAX_DEGREES>& t,
-                const TimeSignature& ts,
-                const NoteEventSet<MAX_EVENTS>& events)
+debug_note_events(const Temperament<MAX_DEGREES>& t,
+                  const TimeSignature& ts,
+                  const NoteEventSet<MAX_EVENTS>& events)
 {
   std::cout << TTY_FG_CYAN << "NOTE EVENTS" << TTY_RESET
             << " Density: " << events.get_density() << std::endl;
 
-  int vPerBar = ts.beats * static_cast<int>(ts.beatValue);
+  int v_per_bar = ts.beats * static_cast<int>(ts.beat_value);
   int v = 0;
   MString<8> note_label;
   for (std::size_t i = 0; i < events.size(); i++) {
@@ -333,7 +333,7 @@ DebugNoteEvents(const Temperament<MAX_DEGREES>& t,
     }
 
     v = events[i].value + v;
-    if (v % vPerBar == 0) {
+    if (v % v_per_bar == 0) {
       std::cout << '\n';
     }
   }
@@ -343,35 +343,35 @@ template<std::size_t MAX_DEGREES,
          std::size_t SCALE_DEGREES,
          std::size_t MAX_EVENTS>
 void
-DebugChordEvents(
+debug_chord_events(
   const Setup<MAX_DEGREES, SCALE_DEGREES>& setup,
   const ChordEventSet<MAX_DEGREES, SCALE_DEGREES, MAX_EVENTS>& chords)
 {
-  int vPerBar = setup.time_signature.beats *
-                static_cast<int>(setup.time_signature.beatValue);
+  int v_per_bar = setup.time_signature.beats *
+                  static_cast<int>(setup.time_signature.beat_value);
   int v = 0;
   char note_label[8];
-  MString<16> chordName;
+  MString<16> chord_name;
   std::cout << TTY_FG_GREEN << "CHORD EVENTS" << TTY_RESET
             << " Density: " << chords.get_density() << std::endl;
   for (std::size_t i = 0; i < chords.size(); i++) {
     std::array<Note, 8> tones;
-    std::size_t toneCount = chords[i].get_chord_tones(
+    std::size_t tone_count = chords[i].get_chord_tones(
       setup.scale_map,
       static_cast<int>(setup.temperament.degrees_per_period()),
       tones);
 
-    if (v % vPerBar == 0) {
+    if (v % v_per_bar == 0) {
       std::cout << "| ";
     }
-    chords[i].get_chord_name(setup.scale_map, setup.temperament, chordName);
-    std::cout << chordName << " (";
+    chords[i].get_chord_name(setup.scale_map, setup.temperament, chord_name);
+    std::cout << chord_name << " (";
 
-    for (std::size_t j = 0; j < toneCount; j++) {
+    for (std::size_t j = 0; j < tone_count; j++) {
       setup.temperament.get_note_label(
         tones[j], note_label, sizeof(note_label));
       std::cout << note_label;
-      if (j < toneCount - 1) {
+      if (j < tone_count - 1) {
         std::cout << "|";
       }
     }

@@ -45,7 +45,7 @@ public:
 
   {
     events_.clear();
-    eventText_.clear();
+    event_text_.clear();
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -54,26 +54,26 @@ public:
   template<typename TRole>
   void set_persona(TPersona<TRole>& persona)
   {
-    personaContext_ = &persona;
+    persona_context_ = &persona;
 
     if constexpr (std::is_same_v<EVENT_TYPE, TNoteEventSet>) {
-      personaGenerate_ = [](void* context,
-                            const TChordEventSet& chordEvents,
-                            EVENT_TYPE& events) -> std::size_t {
+      persona_generate_ = [](void* context,
+                             const TChordEventSet& chord_events,
+                             EVENT_TYPE& events) -> std::size_t {
         auto* persona = static_cast<TPersona<TRole>*>(context);
-        return persona->GenerateNoteEvents(chordEvents, events);
+        return persona->GenerateNoteEvents(chord_events, events);
       };
     } else {
-      personaGenerate_ = nullptr;
+      persona_generate_ = nullptr;
     }
 
     if constexpr (std::is_same_v<EVENT_TYPE, TChordEventSet>) {
-      personaChords_ = [](void* context, EVENT_TYPE& events) -> std::size_t {
+      persona_chords_ = [](void* context, EVENT_TYPE& events) -> std::size_t {
         auto* persona = static_cast<TPersona<TRole>*>(context);
-        return persona->GenerateChordEvents(events);
+        return persona->generate_chord_events(events);
       };
     } else {
-      personaChords_ = nullptr;
+      persona_chords_ = nullptr;
     }
   }
 
@@ -81,25 +81,25 @@ public:
   /// @brief
   void clear_persona()
   {
-    personaContext_ = nullptr;
-    personaGenerate_ = nullptr;
-    personaChords_ = nullptr;
+    persona_context_ = nullptr;
+    persona_generate_ = nullptr;
+    persona_chords_ = nullptr;
   }
 
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
-  /// @param chordEvents
+  /// @param chord_events
   /// @return
-  std::size_t make_note_events_from_chords(const TChordEventSet& chordEvents)
+  std::size_t make_note_events_from_chords(const TChordEventSet& chord_events)
   {
     events_.clear();
-    currentIndex_ = 0;
+    current_index_ = 0;
 
-    if (personaGenerate_ == nullptr) {
+    if (persona_generate_ == nullptr) {
       return events_.size();
     }
 
-    return personaGenerate_(personaContext_, chordEvents, events_);
+    return persona_generate_(persona_context_, chord_events, events_);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -109,12 +109,12 @@ public:
   std::size_t make_chord_events()
   {
     events_.clear();
-    currentIndex_ = 0;
+    current_index_ = 0;
 
-    if (personaChords_ == nullptr) {
+    if (persona_chords_ == nullptr) {
       return events_.size();
     }
-    return personaChords_(personaContext_, events_);
+    return persona_chords_(persona_context_, events_);
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -122,7 +122,7 @@ public:
   /// @return
   [[nodiscard]] const TNoteEvent& get_current_note() const
   {
-    return events_[currentIndex_];
+    return events_[current_index_];
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -130,13 +130,13 @@ public:
   /// @return
   [[nodiscard]] const TChordEvent& get_current_chord() const
   {
-    return events_[currentIndex_];
+    return events_[current_index_];
   }
 
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @return
-  [[nodiscard]] const char* get_text() const { return eventText_.c_str(); }
+  [[nodiscard]] const char* get_text() const { return event_text_.c_str(); }
 
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
@@ -158,16 +158,16 @@ public:
   /// @param pulse
   void handle_pulse(int pulse)
   {
-    currentIndex_ = events_.get_event_index_for_pulse(pulse);
-    if (currentIndex_ < 0 ||
-        currentIndex_ >= static_cast<int>(events_.size())) {
+    current_index_ = events_.get_event_index_for_pulse(pulse);
+    if (current_index_ < 0 ||
+        current_index_ >= static_cast<int>(events_.size())) {
       gate_ = false;
       trigger_ = false;
       return;
     }
 
     if (is_event_rising_edge(pulse)) {
-      gate_ = events_.is_hit(static_cast<std::size_t>(currentIndex_));
+      gate_ = events_.is_hit(static_cast<std::size_t>(current_index_));
       trigger_ = gate_;
 
       update_event_text();
@@ -178,7 +178,7 @@ public:
 
       if (is_event_falling_edge(pulse)) {
         gate_ = false;
-        eventText_.clear();
+        event_text_.clear();
       }
     }
   }
@@ -206,59 +206,59 @@ protected:
       return false;
     }
 
-    const int totalPulses = events_.get_total_event_pulses();
-    if (totalPulses <= 0) {
+    const int total_pulses = events_.get_total_event_pulses();
+    if (total_pulses <= 0) {
       return false;
     }
 
-    int previousPulse = pulse - 1;
+    int previous_pulse = pulse - 1;
     if (pulse == 0) {
-      if (totalPulses > 0) {
-        previousPulse = totalPulses - 1;
+      if (total_pulses > 0) {
+        previous_pulse = total_pulses - 1;
       }
     }
 
-    const TEvent& currentEvent = events_.get_event_for_pulse(pulse);
-    const TEvent& previousEvent = events_.get_event_for_pulse(previousPulse);
+    const TEvent& current_event = events_.get_event_for_pulse(pulse);
+    const TEvent& previous_event = events_.get_event_for_pulse(previous_pulse);
 
     // Always release when the sequence transitions from note to rest.
-    if (EventTraits<TEvent>::is_hit(previousEvent) &&
-        !EventTraits<TEvent>::is_hit(currentEvent)) {
+    if (EventTraits<TEvent>::is_hit(previous_event) &&
+        !EventTraits<TEvent>::is_hit(current_event)) {
       return true;
     }
 
     // Legato keeps the gate high between adjacent note events_.
     if (articulation == Articulation::Legato ||
-        !EventTraits<TEvent>::is_hit(currentEvent)) {
+        !EventTraits<TEvent>::is_hit(current_event)) {
       return false;
     }
 
-    const int eventIdx = events_.get_event_index_for_pulse(pulse);
-    if (eventIdx < 0 || eventIdx >= static_cast<int>(events_.size())) {
+    const int event_idx = events_.get_event_index_for_pulse(pulse);
+    if (event_idx < 0 || event_idx >= static_cast<int>(events_.size())) {
       return false;
     }
 
-    const int eventPulseOffset = get_event_pulse_offset(pulse);
-    if (eventPulseOffset < 0) {
+    const int event_pulse_offset = get_event_pulse_offset(pulse);
+    if (event_pulse_offset < 0) {
       return false;
     }
 
     const int span =
-      static_cast<int>(events_.value(static_cast<std::size_t>(eventIdx)));
+      static_cast<int>(events_.value(static_cast<std::size_t>(event_idx)));
     if (span <= 1) {
       return true;
     }
 
-    float gateFraction = 0.90F; // Normal articulation.
+    float gate_fraction = 0.90F; // Normal articulation.
     if (articulation == Articulation::Staccato) {
-      gateFraction = 0.55F;
+      gate_fraction = 0.55F;
     }
 
-    int releasePulseOffset = static_cast<int>(span * gateFraction);
-    releasePulseOffset = std::max(releasePulseOffset, 0);
-    releasePulseOffset = std::min(releasePulseOffset, span - 1);
+    int release_pulse_offset = static_cast<int>(span * gate_fraction);
+    release_pulse_offset = std::max(release_pulse_offset, 0);
+    release_pulse_offset = std::min(release_pulse_offset, span - 1);
 
-    return eventPulseOffset == releasePulseOffset;
+    return event_pulse_offset == release_pulse_offset;
   }
 
   /////////////////////////////////////////////////////////////////////////////
@@ -271,30 +271,30 @@ protected:
       return -1;
     }
 
-    const int totalPulses = events_.get_total_event_pulses();
-    if (totalPulses <= 0) {
+    const int total_pulses = events_.get_total_event_pulses();
+    if (total_pulses <= 0) {
       return -1;
     }
 
-    const int eventIdx = events_.get_event_index_for_pulse(pulse);
-    if (eventIdx < 0 || eventIdx >= static_cast<int>(events_.size())) {
+    const int event_idx = events_.get_event_index_for_pulse(pulse);
+    if (event_idx < 0 || event_idx >= static_cast<int>(events_.size())) {
       return -1;
     }
 
-    const int eventStartPulse =
-      events_.get_event_start_pulse(static_cast<std::size_t>(eventIdx));
-    return ((pulse % totalPulses) - eventStartPulse + totalPulses) %
-           totalPulses;
+    const int event_start_pulse =
+      events_.get_event_start_pulse(static_cast<std::size_t>(event_idx));
+    return ((pulse % total_pulses) - event_start_pulse + total_pulses) %
+           total_pulses;
   }
 
 private:
   const TSetup* setup_;
   EVENT_TYPE events_;
-  int currentIndex_{ 0 };
-  void* personaContext_{ nullptr };
-  TPersonaGenerateFn personaGenerate_{ nullptr };
-  TPersonaChordsFn personaChords_{ nullptr };
-  MString<16> eventText_;
+  int current_index_{ 0 };
+  void* persona_context_{ nullptr };
+  TPersonaGenerateFn persona_generate_{ nullptr };
+  TPersonaChordsFn persona_chords_{ nullptr };
+  MString<16> event_text_;
   bool gate_{ false };
   bool trigger_{ false };
 
@@ -305,16 +305,16 @@ private:
     if constexpr (std::is_same_v<EVENT_TYPE, TChordEventSet>) {
       //      get_current_chord().get_chord_name(events_.
       get_current_chord().get_chord_name(
-        setup_->scale_map, setup_->temperament, eventText_);
+        setup_->scale_map, setup_->temperament, event_text_);
     } else if constexpr (std::is_same_v<EVENT_TYPE, TNoteEventSet>) {
       auto& n = get_current_note();
       if (n.IsPitched()) {
-        n.get_interval_name(setup_->temperament, eventText_);
+        n.get_interval_name(setup_->temperament, event_text_);
       } else {
-        eventText_.clear();
+        event_text_.clear();
       }
     } else {
-      eventText_.clear();
+      event_text_.clear();
     }
   }
 };

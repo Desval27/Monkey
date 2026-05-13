@@ -20,9 +20,9 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <monkey.hpp>
 #include <music/music.hpp>
 #include <music/music_templates.hpp>
-#include <monkey.hpp>
 
 namespace music {
 
@@ -32,7 +32,7 @@ build_euclid(int k, int n, int r, PatternEventSet<MAX_EVENTS>& pattern)
 {
   bool buffer[DEF_MAX_EVENTS];
   n = clamp(
-    n, 1, static_cast<int>(std::min(pattern.capacity(), ArrayLen(buffer))));
+    n, 1, static_cast<int>(std::min(pattern.capacity(), array_len(buffer))));
   k = clamp(k, 0, n);
 
   for (int i = 0; i < n; i++) {
@@ -106,11 +106,11 @@ public:
                                       PatternEventSet<MAX_EVENTS>& pattern)
   {
     if (pattern.capacity() == 0 || bars == 0 ||
-        ts.beatValue == NoteValue::None || granularity == NoteValue::None) {
+        ts.beat_value == NoteValue::None || granularity == NoteValue::None) {
       return 0; // Sanity check
     }
 
-    std::size_t t = static_cast<std::size_t>(bars) * ts.beats * ts.beatValue;
+    std::size_t t = static_cast<std::size_t>(bars) * ts.beats * ts.beat_value;
     std::size_t n = t / granularity;
     std::size_t r = t % granularity;
 #ifdef USE_DEBUG
@@ -120,9 +120,9 @@ public:
               << " slots remaining" << '\n';
 #endif
 
-    std::size_t eventsToEmit = min(n, pattern.capacity());
-    for (std::size_t i = 0; i < eventsToEmit; i++) {
-      pattern.emplace(randomRange(0.0F, 1.0F) < density);
+    std::size_t events_to_emit = min(n, pattern.capacity());
+    for (std::size_t i = 0; i < events_to_emit; i++) {
+      pattern.emplace(random_range(0.0F, 1.0F) < density);
     }
     return pattern.size();
   }
@@ -142,12 +142,12 @@ public:
                                       PatternEventSet<MAX_EVENTS>& pattern)
   {
     if (pattern.capacity() == 0 || bars == 0 ||
-        ts.beatValue == NoteValue::None || granularity == NoteValue::None ||
+        ts.beat_value == NoteValue::None || granularity == NoteValue::None ||
         pattern.size() == 0) {
       return 0; // Sanity check
     }
 
-    std::size_t t = static_cast<std::size_t>(bars) * ts.beats * ts.beatValue;
+    std::size_t t = static_cast<std::size_t>(bars) * ts.beats * ts.beat_value;
     std::size_t n = t / granularity;
     std::size_t r = t % granularity;
 #ifdef USE_DEBUG
@@ -159,8 +159,8 @@ public:
 #endif
 
     // In case the bars/beats had changed from one version to the other.
-    std::size_t eventsToEmit = min(n, pattern.size());
-    for (std::size_t i = 0; i < eventsToEmit; i++) {
+    std::size_t events_to_emit = min(n, pattern.size());
+    for (std::size_t i = 0; i < events_to_emit; i++) {
       pattern[i] = !pattern[i];
     }
     return pattern.size();
@@ -185,11 +185,11 @@ public:
                                       PatternEventSet<MAX_EVENTS>& pattern)
   {
     if (pattern.capacity() == 0 || bars == 0 ||
-        ts.beatValue == NoteValue::None || granularity == NoteValue::None) {
+        ts.beat_value == NoteValue::None || granularity == NoteValue::None) {
       return 0; // Sanity check
     }
 
-    int t = bars * ts.beats * ts.beatValue;
+    int t = bars * ts.beats * ts.beat_value;
     int n = t / granularity;
     int r = t % granularity;
     double k1 = static_cast<float>(n) * density;
@@ -215,7 +215,7 @@ public:
                                       NoteValue granularity,
                                       PatternEventSet<MAX_EVENTS>& pattern)
   {
-    switch (randomRange(0, 2)) {
+    switch (random_range(0, 2)) {
       case 0:
         pattern.clear();
         SimpleRandomPatternGenerator<MAX_EVENTS>::generate_pattern(
@@ -242,7 +242,7 @@ public:
         break;
     }
 #ifdef USE_DEBUG
-    DebugPattern<MAX_EVENTS>(ts, granularity, pattern);
+    debug_pattern<MAX_EVENTS>(ts, granularity, pattern);
     std::cout << '\n';
 #endif
     return pattern.size();

@@ -32,14 +32,14 @@ struct Setup
   /////////////////////////////////////////////////////////////////////////////
   /// @brief
   /// @param beats
-  /// @param beatValue
+  /// @param beat_value
   /// @param degreesPerPeriod
   /// @param periodRatio
   Setup(int beats,
-        NoteValue beatValue,
+        NoteValue beat_value,
         uint16_t degreesPerPeriod,
         float periodRatio)
-    : time_signature(beats, beatValue)
+    : time_signature(beats, beat_value)
     , tuning_reference(BASE_HZ, Note_M6, 0)
     , temperament(degreesPerPeriod, periodRatio)
     , bars(8)

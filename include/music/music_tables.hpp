@@ -132,7 +132,7 @@ namespace music {
     //     {5, s_Uniform, SCALE_WEIGHTS_5_UNIFORM},
     //     {5, s_Tonic_Heavy, SCALE_WEIGHTS_5_TONIC_HEAVY},
     //     {5, s_Chord_Tone_Heavy, SCALE_WEIGHTS_5_CHORD_TONE_HEAVY}};
-    // constexpr std::size_t NUM_WEIGHTS = ArrayLen(WEIGHT_TABLES);
+    // constexpr std::size_t NUM_WEIGHTS = array_len(WEIGHT_TABLES);
 
 // clang-format on
 
